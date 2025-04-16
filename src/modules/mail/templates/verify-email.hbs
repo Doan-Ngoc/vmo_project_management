@@ -20,6 +20,12 @@
         border-radius: 5px;
         margin: 20px 0;
       }
+      .credentials {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
       .footer {
         margin-top: 30px;
         font-size: 12px;
@@ -33,6 +39,14 @@
       the button below:</p>
 
     <a href='{{verificationUrl}}' class='button'>Verify Email Address</a>
+
+    <div class='credentials'>
+      <h3>Your Login Credentials:</h3>
+      <p><strong>Username:</strong> {{username}}</p>
+      <p><strong>Password:</strong> {{password}}</p>
+      <p><em>Please keep these credentials secure and change your password after
+          first login.</em></p>
+    </div>
 
     <p>If the button above doesn't work, you can also copy and paste this link
       into your browser:</p>

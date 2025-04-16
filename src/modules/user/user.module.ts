@@ -11,7 +11,8 @@ import { CreateUserDto } from './dtos';
 import { JwtModule } from '../jwt/jwt.module';
 import { PermissionModule } from '../permission/permission.module';
 import { MailModule } from '../mail/mail.module';
-
+import { FilesModule } from '../files/file.module';
+import { MulterModule } from '@nestjs/platform-express';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
@@ -21,6 +22,12 @@ import { MailModule } from '../mail/mail.module';
     JwtModule,
     PermissionModule,
     MailModule,
+    FilesModule,
+    MulterModule.register({
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB max file size
+      },
+    }),
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository],

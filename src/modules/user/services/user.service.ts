@@ -54,7 +54,6 @@ export class UserService {
     try {
       const newUser = this.userRepository.create(userData);
       const savedUser = await this.userRepository.save(newUser);
-      console.log('came here');
       // Generate verification token
       const verificationToken = this.jwtService.sign(
         { id: savedUser.id },
@@ -66,6 +65,8 @@ export class UserService {
       await this.mailService.sendVerificationEmail(
         savedUser.email,
         verificationToken,
+        savedUser.username,
+        password,
       );
 
       return User.plainToClass(savedUser);
@@ -76,6 +77,34 @@ export class UserService {
       console.log(error);
       throw new BadRequestException();
     }
+  }
+
+  async createBulkUsers(newUserDataArray: CreateUserDto[]) {
+    const createdUsers: User[] = [];
+    const errors: { email: string; error: string }[] = [];
+
+    for (const userData of newUserDataArray) {
+      try {
+        const user = await this.createUser(userData);
+        createdUsers.push(user);
+      } catch (error) {
+        errors.push({
+          email: userData.email,
+          error: error.message,
+        });
+      }
+    }
+
+    return {
+      message: 'Bulk user creation completed',
+      summary: {
+        total: newUserDataArray.length,
+        successful: createdUsers.length,
+        failed: errors.length,
+      },
+      createdUsers: createdUsers,
+      failedUsers: errors,
+    };
   }
 
   async getById(id: string): Promise<User> {

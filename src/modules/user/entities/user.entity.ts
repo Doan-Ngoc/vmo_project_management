@@ -20,7 +20,7 @@ import { Task } from '@/modules/task/entities/task.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'varchar', length: 255 })
   @IsEmail()
   email: string;
 

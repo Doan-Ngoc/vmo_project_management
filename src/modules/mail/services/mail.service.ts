@@ -9,6 +9,8 @@ export class MailService {
   async sendVerificationEmail(
     email: string,
     verificationToken: string,
+    username: string,
+    password: string,
   ): Promise<void> {
     const verificationUrl = `http://localhost:3000/auth/verify-email?token=${verificationToken}`;
 
@@ -18,6 +20,8 @@ export class MailService {
       template: 'verify-email',
       context: {
         verificationUrl,
+        username,
+        password,
       },
     });
   }

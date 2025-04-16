@@ -17,4 +17,16 @@ export class WorkingUnitService {
 
     return workingUnit;
   }
+
+  async findByName(name: string): Promise<WorkingUnit> {
+    const workingUnit = await this.workingUnitRepository.findOne({
+      where: { name },
+    });
+
+    if (!workingUnit) {
+      throw new NotFoundException(`Working unit with name ${name} not found`);
+    }
+
+    return workingUnit;
+  }
 }

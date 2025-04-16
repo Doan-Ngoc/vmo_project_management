@@ -8,10 +8,10 @@ export function generateRandomPassword(length: number = 12): string {
   let password = '';
 
   // Ensure at least one of each required character type
-  password += uppercase[Math.floor(Math.random() * uppercase.length)]; // random uppercase
-  password += lowercase[Math.floor(Math.random() * lowercase.length)]; // random lowercase
-  password += numbers[Math.floor(Math.random() * numbers.length)]; // random number
-  password += special[Math.floor(Math.random() * special.length)]; // random special char
+  password += uppercase[Math.floor(Math.random() * uppercase.length)];
+  password += lowercase[Math.floor(Math.random() * lowercase.length)];
+  password += numbers[Math.floor(Math.random() * numbers.length)];
+  password += special[Math.floor(Math.random() * special.length)];
 
   // Fill the rest with random characters from all categories
   for (let i = password.length; i < length; i++) {
