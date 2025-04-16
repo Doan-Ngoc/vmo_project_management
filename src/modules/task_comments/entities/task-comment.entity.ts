@@ -1,23 +1,20 @@
 import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity } from '@/databases/base.entity';
 import { Task } from '../../task/entities/task.entity';
 import { User } from '../../user/entities/user.entity';
-import { BaseEntity } from '@/databases/base.entity';
 
-@Entity('task_updates')
-export class TaskUpdate extends BaseEntity {
+@Entity('task_comments')
+export class TaskComment extends BaseEntity {
   @Column({ type: 'text' })
   content: string;
 
-  @ManyToOne(() => Task, (task) => task.updates, {
-    nullable: false,
+  @ManyToOne(() => Task, (task) => task.comments, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'task_id' })
   task: Task;
 
-  @ManyToOne(() => User, {
-    nullable: false,
-  })
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'created_by' })
   createdBy: User;
 }

@@ -17,7 +17,7 @@ import { MulterModule } from '@nestjs/platform-express';
   imports: [
     TypeOrmModule.forFeature([User]),
     forwardRef(() => AuthModule),
-    RoleModule,
+    forwardRef(() => RoleModule),
     WorkingUnitModule,
     JwtModule,
     PermissionModule,

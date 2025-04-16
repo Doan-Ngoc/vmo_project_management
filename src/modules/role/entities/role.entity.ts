@@ -1,25 +1,24 @@
 import {
   Column,
+  DeleteDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { RoleName } from '../../../enum/role.enum';
 import { Permission } from '../../permission/entities/permission.entity';
 import { User } from '../../user/entities/user.entity';
-
+import { BaseEntity } from '@/databases/base.entity';
 @Entity('roles')
-export class Role {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class Role extends BaseEntity {
   @Column({
-    type: 'enum',
-    enum: RoleName,
+    type: 'varchar',
+    unique: true,
   })
-  name: RoleName;
+  name: string;
 
   @ManyToMany(() => Permission, (permission) => permission.roles)
   @JoinTable({
@@ -31,4 +30,7 @@ export class Role {
 
   @OneToMany(() => User, (user) => user.role)
   users: User[];
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: Date;
 }

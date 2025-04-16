@@ -29,7 +29,7 @@ export class FileService {
     }
   }
 
-  private validateExcelData(data: any[]): void {
+  private async validateExcelData(data: any[]): Promise<void> {
     const requiredFields = ['Email', 'Employee Name', 'Role', 'Working Unit'];
     const emails = new Set<string>();
     const errors: string[] = [];
@@ -56,9 +56,11 @@ export class FileService {
 
       // Check if role name is one of the values in the RoleName enum
       const roleValue = row['Role']?.toLowerCase();
-      if (!Object.values(RoleName).includes(roleValue)) {
+      try {
+        await this.roleService.getByName(roleValue);
+      } catch (error) {
         errors.push(
-          `Invalid role at row ${rowNumber}: ${row['Role']}. Must be one of: ${Object.values(RoleName).join(', ')}`,
+          `Invalid role at row ${rowNumber}: ${row['Role']}. This role does not exist in the system.`,
         );
       }
     }
@@ -75,7 +77,7 @@ export class FileService {
     const transformedData: CreateUserDto[] = [];
 
     for (const row of data) {
-      const role = await this.roleService.findByName(
+      const role = await this.roleService.getByName(
         row['Role'].toLowerCase() as RoleName,
       );
       const workingUnit = await this.workingUnitService.findByName(

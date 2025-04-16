@@ -11,8 +11,9 @@ import {
 import { Project } from '../../project/entities/project.entity';
 import { User } from '../../user/entities/user.entity';
 import { BaseEntity } from '@/databases/base.entity';
-import { TaskUpdate } from '../../task_update/entities/task-update.entity';
+import { TaskComment } from '../../task_comments/entities/task-comment.entity';
 import { TaskStatus } from '@/enum/task-status.enum';
+
 @Entity('tasks')
 export class Task extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
@@ -70,6 +71,6 @@ export class Task extends BaseEntity {
   @JoinColumn({ name: 'deleted_by' })
   deletedBy: User;
 
-  @OneToMany(() => TaskUpdate, (update) => update.task)
-  updates: TaskUpdate[];
+  @OneToMany(() => TaskComment, (comment) => comment.task)
+  comments: TaskComment[];
 }

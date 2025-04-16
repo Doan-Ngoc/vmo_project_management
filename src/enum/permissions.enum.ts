@@ -2,6 +2,14 @@ export enum Permissions {
   CREATE_PERMISSION = 'create_permission',
   CREATE_CLIENT = 'create_client',
 
+  //roles
+  CREATE_ROLE = 'create_role',
+  GET_ROLE_BY_ID = 'get_role_by_id',
+  GET_ALL_ROLES = 'get_all_roles',
+  GET_ROLE_BY_NAME = 'get_role_by_name',
+  UPDATE_ROLE = 'update_role',
+  DELETE_ROLE = 'delete_role',
+
   //projects
   CREATE_PROJECT = 'create_project',
   GET_PROJECT_BY_ID = 'get_project_by_id',
@@ -18,4 +26,7 @@ export enum Permissions {
   UPDATE_TASK = 'update_task',
   UPDATE_TASK_STATUS = 'update_task_status',
   DELETE_TASK = 'delete_task',
+
+  //task comments
+  CREATE_TASK_COMMENT = 'create_task_comment',
 }
