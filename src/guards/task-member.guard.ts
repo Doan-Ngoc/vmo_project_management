@@ -53,15 +53,26 @@ export class TaskMemberGuard implements CanActivate {
     if (user.accountType === AccountType.ADMIN) {
       return true;
     }
-    // If user is PM of the project, allow access
+    // If user is a member of the project and is a pm or tech lead, allow access
+    const managerRoles = ['pm', 'tech_lead'];
     const project = await this.projectService.getById(task.project.id);
 
-    const isPM = project.members.some(
-      (member) => member.id === user.id && member.role.name === 'pm',
+    const isManager = project.members.some(
+      (member) =>
+        member.id === user.id &&
+        managerRoles.includes(member.role.name.toLowerCase()),
     );
-    if (isPM) {
+
+    if (isManager) {
       return true;
     }
+
+    // const isPM = project.members.some(
+    //   (member) => member.id === user.id && member.role.name === 'pm',
+    // );
+    // if (isPM) {
+    //   return true;
+    // }
 
     // Check if user is assigned for the task
     const isMember = task.members.some((member) => member.id === user.id);

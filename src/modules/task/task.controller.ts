@@ -36,6 +36,7 @@ import {
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { Project } from '../project/entities/project.entity';
+import { ProjectMember } from '@/decorators/project-member.decorator';
 
 @Controller('tasks')
 export class TaskController {
@@ -43,24 +44,27 @@ export class TaskController {
 
   //Create new task
   @Post()
-  @UseGuards(ProjectMemberGuard)
-  @Auth(Permissions.CREATE_TASK)
+  // @UseGuards(ProjectMemberGuard)
+  // @Auth(Permissions.CREATE_TASK)
+  @ProjectMember(Permissions.CREATE_TASK)
   createTask(@Body() createTaskDto: CreateTaskDto, @GetUser() user: User) {
     return this.taskService.createTask(createTaskDto, user.id);
   }
 
   //Get task by id
   @Get(':taskId')
-  @UseGuards(ProjectMemberGuard)
-  @Auth(Permissions.GET_TASK_BY_ID)
+  // @UseGuards(ProjectMemberGuard)
+  // @Auth(Permissions.GET_TASK_BY_ID)
+  @ProjectMember(Permissions.GET_TASK_BY_ID)
   getTaskById(@Param('taskId') id: string): Promise<Task> {
     return this.taskService.getById(id);
   }
 
   //Get all tasks of a project
   @Get('/project/:projectId')
-  @UseGuards(ProjectMemberGuard)
-  @Auth(Permissions.GET_ALL_TASKS)
+  // @UseGuards(ProjectMemberGuard)
+  // @Auth(Permissions.GET_ALL_TASKS)
+  @ProjectMember(Permissions.GET_ALL_TASKS)
   async getAllTasks(
     @Param('projectId') projectId: string,
     @Query('search') query: string,
@@ -78,22 +82,25 @@ export class TaskController {
 
   //Add member to task
   @Post('/members')
-  @UseGuards(ProjectMemberGuard)
-  @Auth(Permissions.ADD_TASK_MEMBERS)
+  // @UseGuards(ProjectMemberGuard)
+  // @Auth(Permissions.ADD_TASK_MEMBERS)
+  @ProjectMember(Permissions.ADD_TASK_MEMBERS)
   addMember(@Body() addTaskMemberDto: AddTaskMemberDto) {
     return this.taskService.addMember(addTaskMemberDto);
   }
 
   @Delete('/members')
-  @UseGuards(ProjectMemberGuard)
-  @Auth(Permissions.REMOVE_TASK_MEMBERS)
+  // @UseGuards(ProjectMemberGuard)
+  // @Auth(Permissions.REMOVE_TASK_MEMBERS)
+  @ProjectMember(Permissions.REMOVE_TASK_MEMBERS)
   removeMember(@Body() removeTaskMemberDto: RemoveTaskMemberDto) {
     return this.taskService.removeMember(removeTaskMemberDto);
   }
 
   @Patch(':taskId/status')
-  @UseGuards(TaskMemberGuard)
-  @Auth(Permissions.UPDATE_TASK_STATUS)
+  // @UseGuards(TaskMemberGuard)
+  // @Auth(Permissions.UPDATE_TASK_STATUS)
+  @ProjectMember(Permissions.UPDATE_TASK_STATUS)
   updateStatus(
     @Param('taskId') taskId: string,
     @Body() updateStatusDto: UpdateTaskStatusDto,
@@ -103,8 +110,9 @@ export class TaskController {
   }
 
   @Patch(':taskId')
-  @UseGuards(TaskMemberGuard)
-  @Auth(Permissions.UPDATE_TASK)
+  // @UseGuards(TaskMemberGuard)
+  // @Auth(Permissions.UPDATE_TASK)
+  @ProjectMember(Permissions.UPDATE_TASK)
   async updateTask(
     @Param('taskId') taskId: string,
     @Body() updateTaskDto: UpdateTaskDto,
@@ -114,8 +122,9 @@ export class TaskController {
   }
 
   @Delete(':taskId')
-  @UseGuards(ProjectMemberGuard)
-  @Auth(Permissions.DELETE_TASK)
+  // @UseGuards(ProjectMemberGuard)
+  // @Auth(Permissions.DELETE_TASK)
+  @ProjectMember(Permissions.DELETE_TASK)
   async deleteTask(
     @Param('taskId') taskId: string,
     @Body() deleteTaskDto: DeleteTaskDto,

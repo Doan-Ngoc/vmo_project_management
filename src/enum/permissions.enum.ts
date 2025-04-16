@@ -2,13 +2,20 @@ export enum Permissions {
   CREATE_PERMISSION = 'create_permission',
   CREATE_CLIENT = 'create_client',
 
-  //roles
-  CREATE_ROLE = 'create_role',
-  GET_ROLE_BY_ID = 'get_role_by_id',
-  GET_ALL_ROLES = 'get_all_roles',
-  GET_ROLE_BY_NAME = 'get_role_by_name',
-  UPDATE_ROLE = 'update_role',
-  DELETE_ROLE = 'delete_role',
+  //rbac
+  MANAGE_ROLES = 'manage_roles',
+  MANAGE_PERMISSIONS = 'manage_permissions',
+  // CREATE_ROLE = 'create_role',
+  // GET_ROLE_BY_ID = 'get_role_by_id',
+  // GET_ALL_ROLES = 'get_all_roles',
+  // GET_ROLE_BY_NAME = 'get_role_by_name',
+  // UPDATE_ROLE = 'update_role',
+  // DELETE_ROLE = 'delete_role',
+
+  // //rbac
+  // GET_ROLE_PERMISSIONS = 'get_role_permissions',
+  // ADD_PERMISSIONS_TO_ROLE = 'add_permissions_to_role',
+  // REMOVE_PERMISSIONS_FROM_ROLE = 'remove_permissions_from_role'
 
   //projects
   CREATE_PROJECT = 'create_project',

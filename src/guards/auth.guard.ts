@@ -39,7 +39,6 @@ export class AuthGuard implements CanActivate {
     const user = await this.userService.getById(decode.id);
 
     request.user = user;
-
     //Only allow active users
     if (user.accountStatus !== AccountStatus.ACTIVE) return false;
 
@@ -48,14 +47,13 @@ export class AuthGuard implements CanActivate {
       return true;
     }
     // Authorization check
-    const requiredPermission = this.reflector.get<string>(
+    const requiredPermission = this.reflector.getAllAndOverride<string>(
       PERMISSIONS_KEY,
-      context.getHandler(),
+      [context.getHandler(), context.getClass()],
     );
     if (!requiredPermission) {
       return true;
     }
-
     const allowedRoleIds =
       await this.permissionService.getPermissionRoles(requiredPermission);
     const userRoleId = user.role.id;

@@ -4,7 +4,9 @@ import { Permissions } from 'src/enum/permissions.enum';
 import { ProjectMemberGuard } from '@/guards/project-member.guard';
 
 export const PERMISSIONS_KEY = 'permission';
-export function Auth(permission: Permissions): MethodDecorator {
+export function Auth(
+  permission: Permissions,
+): MethodDecorator & ClassDecorator {
   return applyDecorators(
     SetMetadata(PERMISSIONS_KEY, permission),
     UseGuards(AuthGuard),

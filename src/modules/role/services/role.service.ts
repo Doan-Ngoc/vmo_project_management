@@ -8,10 +8,14 @@ import { RoleRepository } from '../repositories/role.repository';
 import { Role } from '../entities/role.entity';
 import { CreateRoleDto } from '../dtos/create-role.dto';
 import { UpdateRoleDto } from '../dtos/update-role.dto';
-
+import { PermissionService } from '../../permission/services/permission.service';
+import { Permission } from '../../permission/entities/permission.entity';
 @Injectable()
 export class RoleService {
-  constructor(private readonly roleRepository: RoleRepository) {}
+  constructor(
+    private readonly roleRepository: RoleRepository,
+    private readonly permissionService: PermissionService,
+  ) {}
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
     try {
@@ -71,5 +75,47 @@ export class RoleService {
   async delete(id: string): Promise<void> {
     const role = await this.getById(id);
     await this.roleRepository.softRemove(role);
+  }
+
+  async addPermissionsToRole(
+    roleId: string,
+    permissionIds: string[],
+  ): Promise<Role> {
+    const role = await this.getById(roleId);
+
+    const permissions = await Promise.all(
+      permissionIds.map((id) => this.permissionService.getById(id)),
+    );
+
+    role.permissions = [...role.permissions, ...permissions];
+
+    return this.roleRepository.save(role);
+  }
+
+  async removePermissionsFromRole(
+    roleId: string,
+    permissionIds: string[],
+  ): Promise<Role> {
+    const role = await this.getById(roleId);
+
+    role.permissions = role.permissions.filter(
+      (permission) => !permissionIds.includes(permission.id),
+    );
+
+    return this.roleRepository.save(role);
+  }
+
+  async getRolePermissions(roleId: string): Promise<Permission[]> {
+    const role = await this.getById(roleId);
+    return role.permissions;
+  }
+
+  async removeAllPermissionsFromRole(roleId: string): Promise<Role> {
+    const role = await this.getById(roleId);
+
+    // Clear all permissions
+    role.permissions = [];
+
+    return this.roleRepository.save(role);
   }
 }

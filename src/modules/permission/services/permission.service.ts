@@ -3,6 +3,7 @@ import {
   ConflictException,
   InternalServerErrorException,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreatePermissionDto } from '../dto/create-permission.dto';
 import { Permission } from '../entities/permission.entity';
@@ -14,9 +15,7 @@ export class PermissionService {
   constructor(private readonly permissionRepository: PermissionRepository) {}
 
   //Create New Permission
-  async createPermission(
-    createPermissionDto: CreatePermissionDto,
-  ): Promise<Permission> {
+  async create(createPermissionDto: CreatePermissionDto): Promise<Permission> {
     try {
       const permission = this.permissionRepository.create(createPermissionDto);
       return await this.permissionRepository.save(permission);
@@ -28,6 +27,13 @@ export class PermissionService {
     }
   }
 
+  //Get All Permissions
+  async getAll(): Promise<Permission[]> {
+    return await this.permissionRepository.find({
+      relations: ['roles'],
+    });
+  }
+
   //Get Permission Roles
   async getPermissionRoles(requiredPermission: string): Promise<string[]> {
     const permission = await this.permissionRepository.findOne({
@@ -36,5 +42,15 @@ export class PermissionService {
     });
 
     return permission ? permission.roles.map((role) => role.id) : [];
+  }
+
+  async getById(id: string): Promise<Permission> {
+    const permission = await this.permissionRepository.findOne({
+      where: { id },
+    });
+    if (!permission) {
+      throw new NotFoundException('Permission not found');
+    }
+    return permission;
   }
 }

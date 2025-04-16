@@ -7,14 +7,16 @@ import { Auth } from '@/decorators/auth.decorator';
 import { Permissions } from '@/enum/permissions.enum';
 import { User } from '@/modules/user/entities/user.entity';
 import { ProjectMemberGuard } from '@/guards/project-member.guard';
+import { ProjectMember } from '@/decorators/project-member.decorator';
 
 @Controller('comments')
 export class TaskCommentController {
   constructor(private readonly taskCommentService: TaskCommentService) {}
 
   @Post()
-  @UseGuards(ProjectMemberGuard)
-  @Auth(Permissions.CREATE_TASK_COMMENT)
+  @ProjectMember(Permissions.CREATE_TASK_COMMENT)
+  // @UseGuards(ProjectMemberGuard)
+  // @Auth(Permissions.CREATE_TASK_COMMENT)
   async createTaskComment(
     @Body() createTaskCommentDto: CreateTaskCommentDto,
     @GetUser() user: User,
