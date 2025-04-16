@@ -145,6 +145,14 @@ export class ProjectService {
         `Cannot add more project managers. Project already has ${project.pmNumber} project managers.`,
       );
     }
+    if (
+      roleName === 'tech_lead' &&
+      currentRoleMembers >= project.techLeadNumber
+    ) {
+      throw new BadRequestException(
+        `Cannot add more tech leads. Project already has ${project.techLeadNumber} tech leads.`,
+      );
+    }
     // Add the member
     project.members = [...project.members, user];
     return await this.projectRepository.save(project);

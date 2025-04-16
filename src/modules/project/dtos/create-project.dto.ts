@@ -33,4 +33,8 @@ export class CreateProjectDto {
   @IsNumber()
   @IsOptional()
   devNumber?: number;
+
+  @IsNumber()
+  @IsOptional()
+  techLeadNumber?: number;
 }

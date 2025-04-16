@@ -78,14 +78,14 @@ export class TaskController {
 
   //Add member to task
   @Post('/members')
-  @UseGuards(TaskMemberGuard)
+  @UseGuards(ProjectMemberGuard)
   @Auth(Permissions.ADD_TASK_MEMBERS)
   addMember(@Body() addTaskMemberDto: AddTaskMemberDto) {
     return this.taskService.addMember(addTaskMemberDto);
   }
 
   @Delete('/members')
-  @UseGuards(TaskMemberGuard)
+  @UseGuards(ProjectMemberGuard)
   @Auth(Permissions.REMOVE_TASK_MEMBERS)
   removeMember(@Body() removeTaskMemberDto: RemoveTaskMemberDto) {
     return this.taskService.removeMember(removeTaskMemberDto);
@@ -114,7 +114,7 @@ export class TaskController {
   }
 
   @Delete(':taskId')
-  @UseGuards(TaskMemberGuard)
+  @UseGuards(ProjectMemberGuard)
   @Auth(Permissions.DELETE_TASK)
   async deleteTask(
     @Param('taskId') taskId: string,
