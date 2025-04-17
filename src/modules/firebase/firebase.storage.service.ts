@@ -12,17 +12,20 @@ export class FirebaseStorageService {
 
   // Create a reference to a file
   getFileRef(path: string) {
-    return this.storage.bucket().file(path);
+    const bucket = this.storage.bucket();
+    return bucket.file(path);
   }
 
   // Create a reference to a folder
   getFolderRef(path: string) {
-    return this.storage.bucket().folder(path);
+    const bucket = this.storage.bucket();
+    return bucket.file(path);
   }
 
   // Upload a file
   async uploadFile(file: Buffer, path: string, metadata?: any) {
-    const fileRef = this.getFileRef(path);
+    const bucket = this.storage.bucket();
+    const fileRef = bucket.file(path);
     await fileRef.save(file, {
       metadata: metadata,
       contentType: metadata?.contentType || 'application/octet-stream',
@@ -32,7 +35,8 @@ export class FirebaseStorageService {
 
   // Get download URL for a file
   async getDownloadUrl(path: string) {
-    const fileRef = this.getFileRef(path);
+    const bucket = this.storage.bucket();
+    const fileRef = bucket.file(path);
     const [url] = await fileRef.getSignedUrl({
       action: 'read',
       expires: Date.now() + 15 * 60 * 1000, // URL expires in 15 minutes

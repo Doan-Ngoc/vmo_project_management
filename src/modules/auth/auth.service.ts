@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AuthLogInDto } from './dto/authLogIn.dto';
-import { UserService } from '../user/services/user.service';
+import { UserService } from '../users/services/user.service';
 import { JwtService } from '../jwt/services/jwt.service';
 import { ConfigService } from '@nestjs/config';
 import { AccountStatus } from '../../enum/account-status.enum';

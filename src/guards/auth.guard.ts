@@ -10,9 +10,9 @@ import { Request } from 'express';
 import { JwtService } from '../modules/jwt/services/jwt.service';
 import { Reflector } from '@nestjs/core';
 import { PERMISSIONS_KEY } from '@/decorators/auth.decorator';
-import { PermissionService } from 'src/modules/permission/services/permission.service';
+import { PermissionService } from '@/modules/permissions/services/permission.service';
 import { AccountType } from '@/enum/account-type.enum';
-import { UserService } from '@/modules/user/services/user.service';
+import { UserService } from '@/modules/users/services/user.service';
 import { AccountStatus } from '@/enum/account-status.enum';
 
 @Injectable()
@@ -60,7 +60,6 @@ export class AuthGuard implements CanActivate {
     if (!allowedRoleIds.includes(userRoleId)) {
       throw new ForbiddenException();
     }
-
     return true;
   }
   // }

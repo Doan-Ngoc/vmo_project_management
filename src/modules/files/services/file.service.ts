@@ -1,8 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as xlsx from 'xlsx';
-import { CreateUserDto } from '../../user/dtos';
-import { RoleService } from '../../role/services/role.service';
-import { WorkingUnitService } from '../../working-unit/services/working-unit.service';
+import { CreateUserDto } from '../../users/dtos';
+import { RoleService } from '../../roles/services/role.service';
+import { WorkingUnitService } from '../../working-units/services/working-unit.service';
 import { generateRandomPassword } from '@/utils/password-generator.util';
 import { RoleName } from '@/enum/role.enum';
 

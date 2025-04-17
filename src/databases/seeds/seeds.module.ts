@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Permission } from '@/modules/permission/entities/permission.entity';
+import { Permission } from '@/modules/permissions/entities/permission.entity';
 import { PermissionSeederService } from './services/permission-seeder.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PermissionModule } from '@/modules/permission/permission.module';
+import { PermissionModule } from '@/modules/permissions/permission.module';
 import typeorm from '../typeorm';
 import * as path from 'path';
 

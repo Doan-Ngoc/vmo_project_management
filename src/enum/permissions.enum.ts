@@ -36,6 +36,9 @@ export enum Permissions {
 
   //task comments
   CREATE_TASK_COMMENT = 'create_task_comment',
+  GET_TASK_COMMENTS = 'get_task_comments',
+  UPDATE_TASK_COMMENT = 'update_task_comment',
+  DELETE_TASK_COMMENT = 'delete_task_comment',
 
   //test
   TEST_PERMISSION = 'test_permission',

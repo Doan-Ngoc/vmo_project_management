@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Permission } from '@/modules/permission/entities/permission.entity';
+import { Permission } from '@/modules/permissions/entities/permission.entity';
 import { permissionsData } from '../data/permissions.data';
-import { PermissionService } from '@/modules/permission/services/permission.service';
+import { PermissionService } from '@/modules/permissions/services/permission.service';
 @Injectable()
 export class PermissionSeederService {
   constructor(private readonly permissionService: PermissionService) {}

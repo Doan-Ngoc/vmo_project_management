@@ -95,16 +95,26 @@ export const permissionsData: PermissionData[] = [
   },
   {
     name: 'create_task_comment',
-    path: '/tasks/:id/comments',
+    path: '/comments',
     method: 'POST',
   },
   {
-    name: 'test_permission',
-    path: '/test',
+    name: 'get_task_comments',
+    path: '/comments/:id',
     method: 'GET',
   },
   {
-    name: 'very_new_permission',
+    name: 'update_task_comment',
+    path: '/tasks/:id',
+    method: 'PUT',
+  },
+  {
+    name: 'delete_task_comment',
+    path: '/comments/:id',
+    method: 'DELETE',
+  },
+  {
+    name: 'test_permission',
     path: '/test',
     method: 'GET',
   },

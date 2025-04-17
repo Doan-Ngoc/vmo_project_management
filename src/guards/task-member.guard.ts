@@ -7,10 +7,10 @@ import {
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
-import { ProjectService } from '../modules/project/services/project.service';
+import { ProjectService } from '../modules/projects/services/project.service';
 import { AccountStatus } from '@/enum/account-status.enum';
 import { AccountType } from '@/enum/account-type.enum';
-import { TaskService } from '@/modules/task/services/task.service';
+import { TaskService } from '@/modules/tasks/services/task.service';
 @Injectable()
 export class TaskMemberGuard implements CanActivate {
   constructor(
@@ -43,7 +43,6 @@ export class TaskMemberGuard implements CanActivate {
     if (!task) {
       throw new NotFoundException('Task not found');
     }
-
     const user = request.user;
     if (!user) {
       throw new UnauthorizedException();
