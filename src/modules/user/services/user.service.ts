@@ -21,6 +21,7 @@ import { CreateUserDto } from '../dtos';
 import { MailService } from '../../mail/services/mail.service';
 import { JwtService } from '../../jwt/services/jwt.service';
 import { ConfigService } from '@nestjs/config';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -33,27 +34,35 @@ export class UserService {
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const { password, roleId, workingUnitId, ...createUserData } =
-      createUserDto;
-    const hashedPassword = this.authService.hashPassword(password);
-    const role = await this.roleService.getById(roleId);
-    const workingUnit = await this.workingUnitService.getById(workingUnitId);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const userData = {
-      ...createUserData,
-      username: createUserDto.email,
-      role,
-      workingUnit,
-      hashedPassword,
-      accountStatus: AccountStatus.PENDING,
-      accountType: AccountType.MEMBER,
-    };
     try {
+      const { password, roleId, workingUnitId, ...createUserData } =
+        createUserDto;
+      const hashedPassword = this.authService.hashPassword(password);
+      const role = await this.roleService.getById(roleId);
+      const workingUnit = await this.workingUnitService.getById(workingUnitId);
+
+      const userData = {
+        ...createUserData,
+        username: createUserDto.email,
+        role,
+        workingUnit,
+        hashedPassword,
+        accountStatus: AccountStatus.PENDING,
+        accountType: AccountType.MEMBER,
+      };
+
+      // Create user
       const newUser = this.userRepository.create(userData);
-      const savedUser = await this.userRepository.save(newUser);
+      const savedUser = await queryRunner.manager.save(newUser);
+
       // Generate verification token
       const verificationToken = this.jwtService.sign(
         { id: savedUser.id },
@@ -69,13 +78,16 @@ export class UserService {
         password,
       );
 
+      await queryRunner.commitTransaction();
       return User.plainToClass(savedUser);
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       if (error.code === '23505') {
         throw new ConflictException('Email already exists');
       }
-      console.log(error);
-      throw new BadRequestException();
+      throw new BadRequestException(error.message || 'Failed to create user');
+    } finally {
+      await queryRunner.release();
     }
   }
 

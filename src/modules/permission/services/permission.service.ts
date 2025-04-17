@@ -40,13 +40,15 @@ export class PermissionService {
       where: { name: requiredPermission },
       relations: ['roles'],
     });
-
+    console.log(requiredPermission);
+    console.log(permission);
     return permission ? permission.roles.map((role) => role.id) : [];
   }
 
   async getById(id: string): Promise<Permission> {
     const permission = await this.permissionRepository.findOne({
       where: { id },
+      relations: ['roles'],
     });
     if (!permission) {
       throw new NotFoundException('Permission not found');

@@ -12,6 +12,7 @@ import {
 import { Permission } from '../../permission/entities/permission.entity';
 import { User } from '../../user/entities/user.entity';
 import { BaseEntity } from '@/databases/base.entity';
+import { Exclude } from 'class-transformer';
 @Entity('roles')
 export class Role extends BaseEntity {
   @Column({
@@ -26,6 +27,7 @@ export class Role extends BaseEntity {
     joinColumn: { name: 'role_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'permission_id', referencedColumnName: 'id' },
   })
+  @Exclude()
   permissions: Permission[];
 
   @OneToMany(() => User, (user) => user.role)
