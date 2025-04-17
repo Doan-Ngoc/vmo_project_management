@@ -7,7 +7,11 @@ import { JwtModule } from '../jwt/jwt.module';
 import { PermissionModule } from '../permission/permission.module';
 import { UserModule } from '../user/user.module';
 @Module({
-  imports: [JwtModule, PermissionModule, forwardRef(() => UserModule)],
+  imports: [
+    JwtModule,
+    forwardRef(() => PermissionModule),
+    forwardRef(() => UserModule),
+  ],
   controllers: [RoleController],
   providers: [RoleService, RoleRepository],
   exports: [RoleService],

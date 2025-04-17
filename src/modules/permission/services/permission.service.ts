@@ -15,14 +15,14 @@ export class PermissionService {
   constructor(private readonly permissionRepository: PermissionRepository) {}
 
   //Create New Permission
-  async create(createPermissionDto: CreatePermissionDto): Promise<Permission> {
+  async create(
+    createPermissionDtos: CreatePermissionDto[],
+  ): Promise<Permission[]> {
     try {
-      const permission = this.permissionRepository.create(createPermissionDto);
-      return await this.permissionRepository.save(permission);
+      const permissions =
+        this.permissionRepository.create(createPermissionDtos);
+      return await this.permissionRepository.save(permissions);
     } catch (error) {
-      if (error.code === '23505') {
-        throw new ConflictException('Permission name already exists');
-      }
       throw new BadRequestException();
     }
   }

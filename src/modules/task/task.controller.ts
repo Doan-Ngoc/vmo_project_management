@@ -110,8 +110,8 @@ export class TaskController {
   }
 
   @Patch(':taskId')
-  // @UseGuards(TaskMemberGuard)
-  // @Auth(Permissions.UPDATE_TASK)
+  @UseGuards(TaskMemberGuard)
+  @Auth(Permissions.UPDATE_TASK)
   @ProjectMember(Permissions.UPDATE_TASK)
   async updateTask(
     @Param('taskId') taskId: string,

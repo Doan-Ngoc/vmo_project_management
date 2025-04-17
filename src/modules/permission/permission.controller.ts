@@ -12,9 +12,9 @@ export class PermissionController {
 
   @Post()
   async createPermission(
-    @Body() createPermissionDto: CreatePermissionDto,
-  ): Promise<Permission> {
-    return this.permissionService.create(createPermissionDto);
+    @Body() createPermissionDtos: CreatePermissionDto[],
+  ): Promise<Permission[]> {
+    return this.permissionService.create(createPermissionDtos);
   }
 
   @Get()
