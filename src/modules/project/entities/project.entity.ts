@@ -14,6 +14,7 @@ import { User } from '../../user/entities/user.entity';
 import { BaseEntity } from '@/databases/base.entity';
 import { Task } from '../../task/entities/task.entity';
 import { ProjectStatus } from '@/enum/project-status.enum';
+import { Exclude } from 'class-transformer';
 
 @Entity('projects')
 export class Project extends BaseEntity {
@@ -66,8 +67,10 @@ export class Project extends BaseEntity {
       referencedColumnName: 'id',
     },
   })
+  @Exclude()
   members: User[];
 
   @OneToMany(() => Task, (task) => task.project, { cascade: true })
+  @Exclude()
   tasks: Task[];
 }

@@ -13,6 +13,7 @@ import { PermissionModule } from '../permission/permission.module';
 import { MailModule } from '../mail/mail.module';
 import { FilesModule } from '../files/file.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { FirebaseModule } from '../firebase/firebase.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
@@ -28,6 +29,7 @@ import { MulterModule } from '@nestjs/platform-express';
         fileSize: 5 * 1024 * 1024, // 5MB max file size
       },
     }),
+    FirebaseModule,
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository],

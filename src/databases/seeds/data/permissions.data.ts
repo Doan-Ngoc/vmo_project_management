@@ -8,98 +8,103 @@ interface PermissionData {
 
 export const permissionsData: PermissionData[] = [
   {
-    name: Permissions.CREATE_PERMISSION,
+    name: 'create_permission',
     path: '/permissions',
     method: 'POST',
   },
   {
-    name: Permissions.CREATE_CLIENT,
+    name: 'create_client',
     path: '/clients',
     method: 'POST',
   },
   {
-    name: Permissions.MANAGE_ROLES,
+    name: 'manage_roles',
     path: '/roles',
     method: 'ALL',
   },
   {
-    name: Permissions.MANAGE_PERMISSIONS,
+    name: 'manage_permissions',
     path: '/permissions',
     method: 'ALL',
   },
   {
-    name: Permissions.CREATE_PROJECT,
+    name: 'create_project',
     path: '/projects',
     method: 'POST',
   },
   {
-    name: Permissions.GET_PROJECT_BY_ID,
+    name: 'get_project_by_id',
     path: '/projects/:id',
     method: 'GET',
   },
   {
-    name: Permissions.GET_PROJECTS,
+    name: 'get_projects',
     path: '/projects',
     method: 'GET',
   },
   {
-    name: Permissions.ADD_PROJECT_MEMBERS,
+    name: 'add_project_members',
     path: '/projects/:id/members',
     method: 'POST',
   },
   {
-    name: Permissions.REMOVE_PROJECT_MEMBERS,
+    name: 'remove_project_members',
     path: '/projects/:id/members',
     method: 'DELETE',
   },
   // Tasks
   {
-    name: Permissions.CREATE_TASK,
+    name: 'create_task',
     path: '/tasks',
     method: 'POST',
   },
   {
-    name: Permissions.GET_TASK_BY_ID,
+    name: 'get_task_by_id',
     path: '/tasks/:id',
     method: 'GET',
   },
   {
-    name: Permissions.GET_ALL_TASKS,
+    name: 'get_all_tasks',
     path: '/tasks',
     method: 'GET',
   },
   {
-    name: Permissions.ADD_TASK_MEMBERS,
+    name: 'add_task_members',
     path: '/tasks/:id/members',
     method: 'POST',
   },
   {
-    name: Permissions.REMOVE_TASK_MEMBERS,
+    name: 'remove_task_members',
     path: '/tasks/:id/members',
     method: 'DELETE',
   },
   {
-    name: Permissions.UPDATE_TASK,
+    name: 'update_task',
     path: '/tasks/:id',
     method: 'PATCH',
   },
   {
-    name: Permissions.UPDATE_TASK_STATUS,
+    name: 'update_task_status',
     path: '/tasks/:id/status',
     method: 'PATCH',
   },
   {
-    name: Permissions.DELETE_TASK,
+    name: 'delete_task',
     path: '/tasks/:id',
     method: 'DELETE',
   },
   {
-    name: Permissions.CREATE_TASK_COMMENT,
+    name: 'create_task_comment',
     path: '/tasks/:id/comments',
     method: 'POST',
   },
   {
-    name: Permissions.TEST_PERMISSION,
+    name: 'test_permission',
+    path: '/test',
+    method: 'GET',
+  },
+  {
+    name: 'very_new_permission',
     path: '/test',
     method: 'GET',
   },

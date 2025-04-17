@@ -2,6 +2,11 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 
+interface JwtPayload {
+  id: string;
+  [key: string]: any;
+}
+
 @Injectable()
 export class JwtService {
   constructor() {}
@@ -10,9 +15,9 @@ export class JwtService {
     return jwt.sign(payload, secretKey, options);
   }
 
-  verify(token: string, secretKey: string) {
+  verify(token: string, secretKey: string): JwtPayload {
     try {
-      return jwt.verify(token, secretKey);
+      return jwt.verify(token, secretKey) as JwtPayload;
     } catch (error) {
       throw new UnauthorizedException();
     }

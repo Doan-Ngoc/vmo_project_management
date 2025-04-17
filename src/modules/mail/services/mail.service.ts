@@ -16,7 +16,7 @@ export class MailService {
     password: string,
   ): Promise<void> {
     try {
-      const verificationUrl = `${this.configService.get('SITE_URL')}/verify-email?token=${verificationToken}`;
+      const verificationUrl = `${this.configService.get('SITE_URL')}/auth/verify-email?token=${verificationToken}`;
 
       if (email === 'hokanohito1234@gmail.com') {
         throw new BadRequestException('Email is not valid');
