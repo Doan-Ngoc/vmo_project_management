@@ -14,6 +14,7 @@ import { MailModule } from '../mails/mail.module';
 import { FilesModule } from '../files/file.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { FirebaseModule } from '../firebase/firebase.module';
+import { QueueModule } from '../queue/queue.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
@@ -30,6 +31,7 @@ import { FirebaseModule } from '../firebase/firebase.module';
       },
     }),
     FirebaseModule,
+    QueueModule,
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository],

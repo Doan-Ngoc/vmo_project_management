@@ -24,6 +24,7 @@ import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { FirebaseStorageService } from '@/modules/firebase/firebase.storage.service';
 import { extname } from 'path';
+import { QueueService } from '../../queue/services/queue.service';
 
 @Injectable()
 export class UserService {
@@ -38,6 +39,7 @@ export class UserService {
     private readonly configService: ConfigService,
     private readonly dataSource: DataSource,
     private readonly storageService: FirebaseStorageService,
+    private readonly queueService: QueueService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -73,13 +75,13 @@ export class UserService {
         { expiresIn: this.configService.get('JWT_VERIFICATION_EXPIRE') },
       );
 
-      // Send verification email
-      await this.mailService.sendVerificationEmail(
-        savedUser.email,
+      // Add verification email to queue
+      await this.queueService.addSignupJob({
+        email: savedUser.email,
         verificationToken,
-        savedUser.username,
+        username: savedUser.username,
         password,
-      );
+      });
 
       await queryRunner.commitTransaction();
       return User.plainToClass(savedUser);
@@ -95,31 +97,78 @@ export class UserService {
   }
 
   async createBulkUsers(newUserDataArray: CreateUserDto[]) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     const createdUsers: User[] = [];
     const errors: { email: string; error: string }[] = [];
 
-    for (const userData of newUserDataArray) {
-      try {
-        const user = await this.createUser(userData);
-        createdUsers.push(user);
-      } catch (error) {
-        errors.push({
-          email: userData.email,
-          error: error.message,
+    try {
+      for (const createUserDto of newUserDataArray) {
+        try {
+          const { password, roleId, workingUnitId, ...createUserData } =
+            createUserDto;
+          const hashedPassword = this.authService.hashPassword(password);
+          const role = await this.roleService.getById(roleId);
+          const workingUnit =
+            await this.workingUnitService.getById(workingUnitId);
+
+          const userData = {
+            ...createUserData,
+            username: createUserDto.email,
+            role,
+            workingUnit,
+            hashedPassword,
+            accountStatus: AccountStatus.PENDING,
+            accountType: AccountType.MEMBER,
+          };
+
+          const newUser = this.userRepository.create(userData);
+          const savedUser = await queryRunner.manager.save(newUser);
+          createdUsers.push(User.plainToClass(savedUser));
+        } catch (error) {
+          errors.push({
+            email: createUserDto.email,
+            error: error.message,
+          });
+        }
+      }
+
+      await queryRunner.commitTransaction();
+
+      // Queue email sending for successful users
+      for (const user of createdUsers) {
+        const verificationToken = this.jwtService.sign(
+          { id: user.id },
+          this.configService.get('JWT_VERIFICATION_KEY') as string,
+          { expiresIn: this.configService.get('JWT_VERIFICATION_EXPIRE') },
+        );
+
+        await this.queueService.addSignupJob({
+          email: user.email,
+          verificationToken,
+          username: user.username,
+          password: createUserDto.password,
         });
       }
-    }
 
-    return {
-      message: 'Bulk user creation completed',
-      summary: {
-        total: newUserDataArray.length,
-        successful: createdUsers.length,
-        failed: errors.length,
-      },
-      createdUsers: createdUsers,
-      failedUsers: errors,
-    };
+      return {
+        message: 'Bulk user creation completed',
+        summary: {
+          total: newUserDataArray.length,
+          successful: createdUsers.length,
+          failed: errors.length,
+        },
+        createdUsers: createdUsers,
+        failedUsers: errors,
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException(error.message || 'Failed to create users');
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async getById(id: string): Promise<User> {

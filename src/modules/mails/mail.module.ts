@@ -10,6 +10,7 @@ import { JwtModule } from '../jwt/jwt.module';
   imports: [
     MailerModule.forRootAsync({
       imports: [ConfigModule, JwtModule],
+      inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         transport: {
           host: configService.get('MAIL_HOST'),
@@ -33,7 +34,6 @@ import { JwtModule } from '../jwt/jwt.module';
           },
         },
       }),
-      inject: [ConfigService],
     }),
   ],
   providers: [MailService],
