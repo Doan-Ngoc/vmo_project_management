@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MailService } from './services/mail.service';
+import { EmailService } from './services/email.service';
 import * as path from 'path';
 import { JwtModule } from '../jwt/jwt.module';
+import { EmailController } from './email.controller';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { JwtModule } from '../jwt/jwt.module';
         },
         template: {
           // dir: __dirname + '/templates',
-          dir: 'src/modules/mail/templates',
+          dir: 'src/modules/emails/templates',
           // dir: path.join(process.cwd(), 'src/modules/mail/templates'),
           adapter: new HandlebarsAdapter(),
           options: {
@@ -35,8 +36,10 @@ import { JwtModule } from '../jwt/jwt.module';
         },
       }),
     }),
+    JwtModule,
   ],
-  providers: [MailService],
-  exports: [MailService],
+  controllers: [EmailController],
+  providers: [EmailService],
+  exports: [EmailService],
 })
-export class MailModule {}
+export class EmailModule {}

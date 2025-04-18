@@ -3,8 +3,7 @@ import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SignupProcessor } from './processors/signup.processor';
 import { QueueService } from './services/queue.service';
-import { MailModule } from '../mails/mail.module';
-
+import { EmailModule } from '../emails/email.module';
 @Module({
   imports: [
     BullModule.forRootAsync({
@@ -21,7 +20,7 @@ import { MailModule } from '../mails/mail.module';
     BullModule.registerQueue({
       name: 'signup',
     }),
-    MailModule,
+    EmailModule,
   ],
   providers: [SignupProcessor, QueueService],
   exports: [QueueService],

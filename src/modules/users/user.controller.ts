@@ -15,24 +15,25 @@ import { UserService } from './services/user.service';
 import { CreateUserDto } from './dtos';
 import { Auth } from '@/decorators/auth.decorator';
 import { Permissions } from '@/enum/permissions.enum';
-import { MailService } from '../mails/services/mail.service';
+import { EmailService } from '../emails/services/email.service';
 import { FileService } from '../files/services/file.service';
 import { User } from './entities/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FirebaseStorageService } from '../firebase/firebase.storage.service';
 import * as multer from 'multer';
 import { extname } from 'path';
-
+import { CreateUserResponseDto } from './dtos/create-user-response.dto';
 @Controller('users')
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly mailService: MailService,
     private readonly fileService: FileService,
     private readonly storageService: FirebaseStorageService,
   ) {}
   @Post()
-  createUser(@Body() createUserDto: CreateUserDto) {
+  createUser(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<CreateUserResponseDto> {
     return this.userService.createUser(createUserDto);
   }
 

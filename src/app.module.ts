@@ -15,6 +15,7 @@ import typeorm from './databases/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TaskCommentModule } from './modules/task_comments/task-comment.module';
 import { FirebaseModule } from './modules/firebase/firebase.module';
+import { EmailModule } from './modules/emails/email.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -42,6 +43,7 @@ import { FirebaseModule } from './modules/firebase/firebase.module';
     TaskCommentModule,
     ScheduleModule.forRoot(),
     FirebaseModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

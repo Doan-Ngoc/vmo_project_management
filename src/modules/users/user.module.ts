@@ -10,7 +10,7 @@ import { WorkingUnitModule } from '../working-units/working-unit.module';
 import { CreateUserDto } from './dtos';
 import { JwtModule } from '../jwt/jwt.module';
 import { PermissionModule } from '../permissions/permission.module';
-import { MailModule } from '../mails/mail.module';
+import { EmailModule } from '../emails/email.module';
 import { FilesModule } from '../files/file.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { FirebaseModule } from '../firebase/firebase.module';
@@ -23,7 +23,7 @@ import { QueueModule } from '../queue/queue.module';
     forwardRef(() => PermissionModule),
     WorkingUnitModule,
     JwtModule,
-    MailModule,
+    EmailModule,
     FilesModule,
     MulterModule.register({
       limits: {
