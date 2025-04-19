@@ -114,7 +114,6 @@ export const permissionsData: PermissionData[] = [
     method: 'DELETE',
   },
   {
-    id: ""
     name: 'test_permission',
     path: '/test',
     method: 'GET',

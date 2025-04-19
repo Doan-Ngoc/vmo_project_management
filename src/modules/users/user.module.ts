@@ -13,14 +13,14 @@ import { PermissionModule } from '../permissions/permission.module';
 import { EmailModule } from '../emails/email.module';
 import { FilesModule } from '../files/file.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { FirebaseModule } from '../firebase/firebase.module';
+import { FirebaseModule } from '../../infrastructure/firebase/firebase.module';
 import { QueueModule } from '../queue/queue.module';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
     forwardRef(() => AuthModule),
     forwardRef(() => RoleModule),
     forwardRef(() => PermissionModule),
+    forwardRef(() => FirebaseModule),
     WorkingUnitModule,
     JwtModule,
     EmailModule,
@@ -30,7 +30,6 @@ import { QueueModule } from '../queue/queue.module';
         fileSize: 5 * 1024 * 1024, // 5MB max file size
       },
     }),
-    FirebaseModule,
     QueueModule,
   ],
   controllers: [UserController],

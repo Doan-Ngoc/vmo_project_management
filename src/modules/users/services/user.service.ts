@@ -22,7 +22,7 @@ import { EmailService } from '../../emails/services/email.service';
 import { JwtService } from '../../jwt/services/jwt.service';
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import { FirebaseStorageService } from '@/modules/firebase/firebase.storage.service';
+import { FirebaseStorageService } from '@/infrastructure/firebase/services/firebase.storage.service';
 import { extname } from 'path';
 import { QueueService } from '../../queue/services/queue.service';
 import { CreateUserResponseDto } from '../dtos/create-user-response.dto';
@@ -212,31 +212,27 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
-  async uploadProfilePicture(file: Express.Multer.File, userId: string) {
-    try {
-      // Create a path for the profile picture in Firebase Storage
-      const filePath = `users/profile-picture/${userId}${extname(file.originalname)}`;
-
-      // Upload the file to Firebase Storage
-      return this.storageService.uploadFile(file.buffer, filePath, {
-        contentType: file.mimetype,
-        metadata: {
-          userId,
-          originalName: file.originalname,
-        },
-      });
-
-      // Get the download URL
-      // const downloadUrl = await this.storageService.getDownloadUrl(filePath);
-
-      // return {
-      //   message: 'Profile picture uploaded successfully',
-      //   downloadUrl,
-      // };
-    } catch (error) {
-      throw new BadRequestException(
-        'Failed to upload profile picture: ' + error.message,
-      );
-    }
+  async uploadProfilePictureToDatabase(url: string, userId: string) {
+    const user = await this.getById(userId);
+    user.profilePicture = url;
+    await this.userRepository.save(user);
   }
+
+  // async uploadProfilePicture(file: Express.Multer.File, userId: string) {
+  //   try {
+  //     const filePath = `users/profile-picture/${userId}${extname(file.originalname)}`;
+
+  //     return this.storageService.uploadFile(file.buffer, filePath, {
+  //       contentType: file.mimetype,
+  //       metadata: {
+  //         userId,
+  //         originalName: file.originalname,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     throw new BadRequestException(
+  //       'Failed to upload profile picture: ' + error.message,
+  //     );
+  //   }
+  // }
 }

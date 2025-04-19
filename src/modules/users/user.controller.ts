@@ -19,7 +19,7 @@ import { EmailService } from '../emails/services/email.service';
 import { FileService } from '../files/services/file.service';
 import { User } from './entities/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FirebaseStorageService } from '../firebase/firebase.storage.service';
+import { FirebaseStorageService } from '../../infrastructure/firebase/services/firebase.storage.service';
 import * as multer from 'multer';
 import { extname } from 'path';
 import { CreateUserResponseDto } from './dtos/create-user-response.dto';
@@ -90,6 +90,6 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
     @Body('userId') userId: string,
   ) {
-    return this.userService.uploadProfilePicture(file, userId);
+    return this.storageService.uploadProfilePicture(file, userId);
   }
 }

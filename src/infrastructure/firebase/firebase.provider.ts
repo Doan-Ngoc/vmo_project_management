@@ -1,9 +1,7 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import * as admin from 'firebase-admin';
-import { FirebaseStorageService } from './firebase.storage.service';
 
-const firebaseProvider = {
+export const firebaseProvider = {
   provide: 'FIREBASE_APP',
   inject: [ConfigService],
   useFactory: (configService: ConfigService) => {
@@ -22,10 +20,3 @@ const firebaseProvider = {
     });
   },
 };
-
-@Module({
-  imports: [ConfigModule],
-  providers: [firebaseProvider, FirebaseStorageService],
-  exports: [firebaseProvider, FirebaseStorageService],
-})
-export class FirebaseModule {}

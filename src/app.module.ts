@@ -14,7 +14,7 @@ import { TaskModule } from './modules/tasks/task.module';
 import typeorm from './databases/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TaskCommentModule } from './modules/task_comments/task-comment.module';
-import { FirebaseModule } from './modules/firebase/firebase.module';
+import { FirebaseModule } from './infrastructure/firebase/firebase.module';
 import { EmailModule } from './modules/emails/email.module';
 import { QueueModule } from './modules/queue/queue.module';
 @Module({
