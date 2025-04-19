@@ -19,5 +19,5 @@ export class CreateVerificationEmailDto {
 
   @IsString()
   @IsNotEmpty()
-  password: string;
+  temporaryPassword: string;
 }

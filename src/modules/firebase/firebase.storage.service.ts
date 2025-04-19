@@ -29,8 +29,14 @@ export class FirebaseStorageService {
     await fileRef.save(file, {
       metadata: metadata,
       contentType: metadata?.contentType || 'application/octet-stream',
+      public: true,
     });
-    return fileRef;
+    // await fileRef.makePublic();
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${path}`;
+
+    return {
+      publicUrl,
+    };
   }
 
   // Get download URL for a file

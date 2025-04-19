@@ -15,33 +15,27 @@ export class EmailService {
   async sendVerificationEmail(
     userData: CreateVerificationEmailDto,
   ): Promise<void> {
-    const { id, email, username, password } = userData;
+    const { id, email, username, temporaryPassword } = userData;
     const verificationToken = this.jwtService.sign(
       { id },
       this.configService.get('JWT_VERIFICATION_KEY') as string,
       { expiresIn: this.configService.get('JWT_VERIFICATION_EXPIRE') },
     );
+    const verificationUrl = `${this.configService.get('SITE_URL')}/auth/verify-email?token=${verificationToken}`;
 
-    try {
-      const verificationUrl = `${this.configService.get('SITE_URL')}/auth/verify-email?token=${verificationToken}`;
-
-      // if (email === 'hokanohito1234@gmail.com') {
-      //   throw new BadRequestException('Email is not valid');
-      // }
-      await this.mailerService.sendMail({
-        to: email,
-        subject: 'Please verify your account',
-        template: 'verify-email',
-        context: {
-          verificationUrl,
-          username,
-          password,
-        },
-      });
-    } catch (error) {
-      console.log(error);
-      throw new BadRequestException('Failed to send verification email', error);
-    }
+    // if (email === 'hokanohito1234@gmail.com') {
+    //   throw new BadRequestException('Email is not valid');
+    // }
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Please verify your account',
+      template: 'verify-email',
+      context: {
+        verificationUrl,
+        username,
+        temporaryPassword,
+      },
+    });
   }
 
   async sendBulk(userDataArray: CreateVerificationEmailDto[]) {

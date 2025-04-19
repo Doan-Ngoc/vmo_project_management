@@ -55,10 +55,6 @@ export class UserController {
     const userDataArray = await this.fileService.processExcelImport(file);
     return this.userService.createBulkUsers(userDataArray);
   }
-  // @Post('bulk')
-  // createBulkUsers(@Body() newUserDataArray: CreateUserDto[]) {
-  //   return this.userService.createBulkUsers(newUserDataArray);
-  // }
 
   @Auth(Permissions.CREATE_CLIENT)
   @Get()
@@ -77,7 +73,7 @@ export class UserController {
     FileInterceptor('file', {
       storage: multer.memoryStorage(),
       fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
           return cb(
             new BadRequestException('Only image files are allowed!'),
             false,
@@ -86,7 +82,7 @@ export class UserController {
         cb(null, true);
       },
       limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB limit
+        fileSize: 5 * 1024 * 1024,
       },
     }),
   )

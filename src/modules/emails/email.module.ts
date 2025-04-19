@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -6,11 +6,14 @@ import { EmailService } from './services/email.service';
 import * as path from 'path';
 import { JwtModule } from '../jwt/jwt.module';
 import { EmailController } from './email.controller';
+import { QueueModule } from '../queue/queue.module';
 
 @Module({
   imports: [
+    ConfigModule,
+    JwtModule,
+    forwardRef(() => QueueModule),
     MailerModule.forRootAsync({
-      imports: [ConfigModule, JwtModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         transport: {
@@ -36,7 +39,6 @@ import { EmailController } from './email.controller';
         },
       }),
     }),
-    JwtModule,
   ],
   controllers: [EmailController],
   providers: [EmailService],

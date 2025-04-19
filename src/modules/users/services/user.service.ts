@@ -98,9 +98,9 @@ export class UserService {
       try {
         const { password, roleId, workingUnitId, ...createUserData } =
           createUserDto;
-        // if (createUserDto.email === 'hokanohito1234@gmail.com') {
-        //   throw new Error('This is a test error');
-        // }
+        if (createUserDto.email === 'hokanohito1234@gmail.com') {
+          throw new Error('This is a test error');
+        }
         const hashedPassword = this.authService.hashPassword(password);
         const role = await this.roleService.getById(roleId);
         const workingUnit =
@@ -218,7 +218,7 @@ export class UserService {
       const filePath = `users/profile-picture/${userId}${extname(file.originalname)}`;
 
       // Upload the file to Firebase Storage
-      await this.storageService.uploadFile(file.buffer, filePath, {
+      return this.storageService.uploadFile(file.buffer, filePath, {
         contentType: file.mimetype,
         metadata: {
           userId,
@@ -227,12 +227,12 @@ export class UserService {
       });
 
       // Get the download URL
-      const downloadUrl = await this.storageService.getDownloadUrl(filePath);
+      // const downloadUrl = await this.storageService.getDownloadUrl(filePath);
 
-      return {
-        message: 'Profile picture uploaded successfully',
-        downloadUrl,
-      };
+      // return {
+      //   message: 'Profile picture uploaded successfully',
+      //   downloadUrl,
+      // };
     } catch (error) {
       throw new BadRequestException(
         'Failed to upload profile picture: ' + error.message,

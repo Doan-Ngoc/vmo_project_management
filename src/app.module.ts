@@ -16,6 +16,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TaskCommentModule } from './modules/task_comments/task-comment.module';
 import { FirebaseModule } from './modules/firebase/firebase.module';
 import { EmailModule } from './modules/emails/email.module';
+import { QueueModule } from './modules/queue/queue.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -44,6 +45,7 @@ import { EmailModule } from './modules/emails/email.module';
     ScheduleModule.forRoot(),
     FirebaseModule,
     EmailModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService],

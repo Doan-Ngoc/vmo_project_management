@@ -48,8 +48,9 @@ export class PermissionService {
       where: { id },
       relations: ['roles'],
     });
+
     if (!permission) {
-      throw new NotFoundException('Permission not found');
+      throw new NotFoundException(`Permission with id ${id} not found`);
     }
     return permission;
   }

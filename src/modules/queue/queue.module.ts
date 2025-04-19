@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SignupProcessor } from './processors/signup.processor';
+import { EmailProcessor } from './processors/email.processor';
 import { QueueService } from './services/queue.service';
 import { EmailModule } from '../emails/email.module';
 @Module({
@@ -18,11 +18,11 @@ import { EmailModule } from '../emails/email.module';
       }),
     }),
     BullModule.registerQueue({
-      name: 'signup',
+      name: 'email',
     }),
-    EmailModule,
+    forwardRef(() => EmailModule),
   ],
-  providers: [SignupProcessor, QueueService],
+  providers: [EmailProcessor, QueueService],
   exports: [QueueService],
 })
 export class QueueModule {}
