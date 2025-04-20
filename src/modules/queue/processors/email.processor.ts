@@ -15,7 +15,6 @@ export class EmailProcessor {
   @Process('send-verification-email')
   async handleSendVerificationEmail(job: Job<CreateVerificationEmailDto>) {
     try {
-      console.log('handleSendVerificationEmail');
       this.logger.debug(`Processing email job ${job.id} for ${job.data.email}`);
       await this.emailService.sendVerificationEmail(job.data);
       this.logger.debug(`Successfully sent email for job ${job.id}`);

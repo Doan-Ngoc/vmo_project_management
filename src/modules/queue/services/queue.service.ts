@@ -8,7 +8,6 @@ export class QueueService {
   constructor(@InjectQueue('email') private readonly emailQueue: Queue) {}
 
   async addSendingEmailJob(data: CreateVerificationEmailDto) {
-    console.log('addSendingEmailJob');
     try {
       return this.emailQueue.add('send-verification-email', data, {
         attempts: 3,

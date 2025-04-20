@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TaskCommentService } from './services/task-comment.service';
 import { TaskCommentController } from './task-comment.controller';
 import { TaskModule } from '../tasks/task.module';
@@ -9,7 +9,13 @@ import { ProjectModule } from '../projects/project.module';
 import { TaskCommentRepository } from './repositories/task-comment.repository';
 import { ProjectMemberGuard } from '@/guards/project-member.guard';
 @Module({
-  imports: [TaskModule, UserModule, JwtModule, PermissionModule, ProjectModule],
+  imports: [
+    forwardRef(() => TaskModule),
+    forwardRef(() => ProjectModule),
+    UserModule,
+    JwtModule,
+    PermissionModule,
+  ],
   controllers: [TaskCommentController],
   providers: [TaskCommentService, TaskCommentRepository],
   exports: [TaskCommentService],

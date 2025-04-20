@@ -16,7 +16,7 @@ import { CreateUserDto } from './dtos';
 import { Auth } from '@/decorators/auth.decorator';
 import { Permissions } from '@/enum/permissions.enum';
 import { EmailService } from '../emails/services/email.service';
-import { FileService } from '../files/services/file.service';
+import { FileService } from '../../shared/file-processing/services/file.service';
 import { User } from './entities/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FirebaseStorageService } from '../../infrastructure/firebase/services/firebase.storage.service';
@@ -30,14 +30,14 @@ export class UserController {
     private readonly fileService: FileService,
     private readonly storageService: FirebaseStorageService,
   ) {}
-  @Post()
-  createUser(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<CreateUserResponseDto> {
-    return this.userService.createUser(createUserDto);
-  }
+  // @Post()
+  // createUser(
+  //   @Body() createUserDto: CreateUserDto,
+  // ): Promise<CreateUserResponseDto> {
+  //   return this.userService.createUser(createUserDto);
+  // }
 
-  @Post('bulk')
+  @Post()
   @UseInterceptors(FileInterceptor('file'))
   async createBulkUsers(
     @UploadedFile(
@@ -55,6 +55,16 @@ export class UserController {
     const userDataArray = await this.fileService.processExcelImport(file);
     return this.userService.createBulkUsers(userDataArray);
   }
+  // catch (error) {
+
+  // if (error instanceof BadRequestException) {
+  //   throw error; // Re-throw the BadRequestException to let NestJS handle it
+  // }
+  // throw new BadRequestException(
+  //   error.message || 'Failed to process Excel file',
+  // );
+  // }
+  // }
 
   @Auth(Permissions.CREATE_CLIENT)
   @Get()

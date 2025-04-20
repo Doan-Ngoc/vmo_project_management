@@ -19,15 +19,15 @@ import { ProjectMemberGuard } from '@/guards/project-member.guard';
 import { ProjectMember } from '@/decorators/project-member.decorator';
 import { UpdateTaskCommentDto } from './dto/update-task-comment.dto';
 import { TaskComment } from './entities/task-comment.entity';
+import { TaskMember } from '@/decorators/task-member.decorator';
+import { TaskCommentOwner } from '@/decorators/task-comment-owner.decorator';
 
 @Controller('comments')
 export class TaskCommentController {
   constructor(private readonly taskCommentService: TaskCommentService) {}
 
-  @Post()
   @ProjectMember(Permissions.CREATE_TASK_COMMENT)
-  // @UseGuards(ProjectMemberGuard)
-  // @Auth(Permissions.CREATE_TASK_COMMENT)
+  @Post()
   async createTaskComment(
     @Body() createTaskCommentDto: CreateTaskCommentDto,
     @GetUser() user: User,
@@ -35,17 +35,16 @@ export class TaskCommentController {
     return this.taskCommentService.create(createTaskCommentDto, user.id);
   }
 
-  // @Get(':id')
+  @ProjectMember(Permissions.GET_ALL_TASK_COMMENTS)
   @Get(':taskId')
-  @ProjectMember(Permissions.GET_TASK_COMMENTS)
   async getCommentsByTask(
     @Param('taskId') taskId: string,
   ): Promise<TaskComment[]> {
     return this.taskCommentService.getByTask(taskId);
   }
 
+  @TaskCommentOwner(Permissions.UPDATE_TASK_COMMENT)
   @Put(':commentId')
-  @Auth(Permissions.UPDATE_TASK_COMMENT)
   async updateTaskComment(
     @Param('commentId') commentId: string,
     @Body() updateTaskCommentDto: UpdateTaskCommentDto,
@@ -58,9 +57,8 @@ export class TaskCommentController {
     );
   }
 
+  @TaskCommentOwner(Permissions.DELETE_TASK_COMMENT)
   @Delete(':commentId')
-  // @ProjectMember(Permissions.DELETE_TASK_COMMENT)
-  @Auth(Permissions.DELETE_TASK_COMMENT)
   async deleteTaskComment(
     @Param('commentId') commentId: string,
     @GetUser() user: User,

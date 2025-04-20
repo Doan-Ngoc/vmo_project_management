@@ -30,12 +30,11 @@ import {
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { Project } from '@/modules/projects/entities/project.entity';
-
+import { TaskRepository } from '../repositories/task.repository';
 @Injectable()
 export class TaskService {
   constructor(
-    @InjectRepository(Task)
-    private readonly taskRepository: Repository<Task>,
+    private readonly taskRepository: TaskRepository,
     @Inject(forwardRef(() => ProjectService))
     private readonly projectService: ProjectService,
     private readonly userService: UserService,

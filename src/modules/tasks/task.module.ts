@@ -7,16 +7,18 @@ import { ProjectModule } from '../projects/project.module';
 import { UserModule } from '../users/user.module';
 import { JwtModule } from '../jwt/jwt.module';
 import { PermissionModule } from '../permissions/permission.module';
+import { TaskCommentModule } from '../task_comments/task-comment.module';
+import { TaskRepository } from './repositories/task.repository';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Task]),
     forwardRef(() => ProjectModule),
+    forwardRef(() => TaskCommentModule),
     UserModule,
     JwtModule,
     PermissionModule,
   ],
   controllers: [TaskController],
-  providers: [TaskService],
+  providers: [TaskService, TaskRepository],
   exports: [TaskService],
 })
 export class TaskModule {}

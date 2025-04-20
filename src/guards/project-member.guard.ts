@@ -28,9 +28,6 @@ export class ProjectMemberGuard implements CanActivate {
       const taskId = request.params?.taskId || request.body?.taskId;
       if (!taskId) throw new BadRequestException();
       const task = await this.taskService.getById(taskId);
-      if (!task) {
-        throw new NotFoundException('Task not found');
-      }
       if (!task.project?.id)
         throw new BadRequestException(
           'Task is not associated with any project',

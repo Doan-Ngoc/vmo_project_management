@@ -11,7 +11,7 @@ import { CreateUserDto } from './dtos';
 import { JwtModule } from '../jwt/jwt.module';
 import { PermissionModule } from '../permissions/permission.module';
 import { EmailModule } from '../emails/email.module';
-import { FilesModule } from '../files/file.module';
+import { FilesModule } from '../../shared/file-processing/file.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { FirebaseModule } from '../../infrastructure/firebase/firebase.module';
 import { QueueModule } from '../queue/queue.module';

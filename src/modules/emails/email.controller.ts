@@ -14,7 +14,6 @@ export class EmailController {
     @Body() createVerificationEmailDtos: CreateVerificationEmailDto[],
   ) {
     // return this.emailService.sendBulk(createVerificationEmailDto);
-    console.log(createVerificationEmailDtos);
     const jobs = await Promise.all(
       createVerificationEmailDtos.map((dto) =>
         this.queueService.addSendingEmailJob(dto),

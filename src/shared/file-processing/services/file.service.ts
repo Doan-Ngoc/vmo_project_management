@@ -1,8 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as xlsx from 'xlsx';
-import { CreateUserDto } from '../../users/dtos';
-import { RoleService } from '../../roles/services/role.service';
-import { WorkingUnitService } from '../../working-units/services/working-unit.service';
+import { CreateUserDto } from '@/modules/users/dtos';
+import { RoleService } from '@/modules/roles/services/role.service';
+import { WorkingUnitService } from '@/modules/working-units/services/working-unit.service';
 import { generateRandomPassword } from '@/utils/password-generator.util';
 import { RoleName } from '@/enum/role.enum';
 
@@ -22,10 +22,17 @@ export class FileService {
       const jsonData = xlsx.utils.sheet_to_json(worksheet);
 
       // Validate data
-      this.validateExcelData(jsonData);
+      await this.validateExcelData(jsonData);
       return await this.mapExcelToCreateUserDto(jsonData);
     } catch (error) {
+      //   console.log('reach here');
+      //   throw new error();
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new BadRequestException('Invalid Excel file format');
+      //   // }
+      //   // throw new BadRequestException('Invalid Excel file format');
     }
   }
 
@@ -52,7 +59,15 @@ export class FileService {
           `Invalid email format at row ${rowNumber}: ${row['Email']}`,
         );
       }
-      emails.add(row['Email']);
+
+      // Check for duplicate emails within the file
+      if (emails.has(row['Email'])) {
+        errors.push(
+          `Duplicate email found at row ${rowNumber}: ${row['Email']}.`,
+        );
+      } else {
+        emails.add(row['Email']);
+      }
 
       // Check if role name is one of the values in the RoleName enum
       const roleValue = row['Role']?.toLowerCase();
@@ -68,7 +83,7 @@ export class FileService {
     if (errors.length > 0) {
       throw new BadRequestException({
         message: 'Excel validation failed',
-        errors,
+        errors: errors,
       });
     }
   }
