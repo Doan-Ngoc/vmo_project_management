@@ -106,36 +106,35 @@ export class UserService {
       try {
         // const { password, roleId, workingUnitId, ...createUserData } =
         //   createUserDto;
-        const role = roles.find((role) => role.name === row['Role']);
+        const role = roles.find((role) => role.name === row.role);
         if (!role) {
           errors.push(
-            `Role at row ${rowNumber} not found in the system: ${row['Role']}`,
+            `Role at row ${rowNumber} not found in the system: ${row.role}`,
           );
         }
         const workingUnit = workingUnits.find(
-          (workingUnit) => workingUnit.name === row['Working Unit'],
+          (workingUnit) => workingUnit.name === row.workingUnit,
         );
         if (!workingUnit) {
           errors.push(
-            `Working Unit at row ${rowNumber} not found in the system: ${row['Working Unit']}`,
+            `Working Unit at row ${rowNumber} not found in the system: ${row.workingUnit}`,
           );
         }
-        if (row['Email'] === 'hokanohito1234@gmail.com') {
-          errors.push(`Error at row ${rowNumber}: This is a test error`);
-        }
+        // if (row.email === 'hokanohito1234@gmail.com') {
+        //   errors.push(`Error at row ${rowNumber}: This is a test error`);
+        // }
 
         //Generate password
         const password = generateRandomPassword();
         const hashedPassword = this.authService.hashPassword(password);
 
         const userData = {
-          email: row['Email'],
-          username: row['Email'],
-          employeeName: row['Employee Name'],
+          email: row.email,
+          username: row.email,
+          employeeName: row.employeeName,
           role,
           workingUnit,
           hashedPassword,
-          accountStatus: AccountStatus.PENDING,
           accountType: AccountType.MEMBER,
         };
         const newUser = this.userRepository.create(userData);
@@ -166,31 +165,6 @@ export class UserService {
       createdUsers: createdUsers,
     };
   }
-
-  // await queryRunner.commitTransaction();
-
-  // // Queue email sending for successful users
-  // for (const user of createdUsers) {
-  //   const verificationToken = this.jwtService.sign(
-  //     { id: user.id },
-  //     this.configService.get('JWT_VERIFICATION_KEY') as string,
-  //     { expiresIn: this.configService.get('JWT_VERIFICATION_EXPIRE') },
-  //   );
-
-  //   await this.queueService.addSignupJob({
-  //     email: user.email,
-  //     verificationToken,
-  //     username: user.username,
-  //     password: createUserDto.password,
-  //   });
-  // }
-  //   catch (error) {
-  //     await queryRunner.rollbackTransaction();
-  //     throw new BadRequestException(error.message || 'Failed to create users');
-  //   } finally {
-  //     await queryRunner.release();
-  //   }
-  // }
 
   async getById(id: string): Promise<User> {
     const user = await this.userRepository.findOne({
@@ -231,7 +205,7 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
-  async uploadProfilePictureToDatabase(url: string, userId: string) {
+  async saveProfilePictureToDatabase(url: string, userId: string) {
     const user = await this.getById(userId);
     user.profilePicture = url;
     await this.userRepository.save(user);

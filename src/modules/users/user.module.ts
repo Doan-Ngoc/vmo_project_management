@@ -34,6 +34,6 @@ import { QueueModule } from '../queue/queue.module';
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository],
-  exports: [UserService],
+  exports: [UserService, UserRepository],
 })
 export class UserModule {}

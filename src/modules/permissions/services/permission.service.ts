@@ -54,4 +54,11 @@ export class PermissionService {
     }
     return permission;
   }
+
+  async upsertData(permissions: CreatePermissionDto[]) {
+    // Use a transaction for better performance
+    await this.permissionRepository.manager.transaction(async (manager) => {
+      await manager.upsert(Permission, permissions, ['id']);
+    });
+  }
 }

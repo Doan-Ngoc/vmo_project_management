@@ -37,7 +37,7 @@ export class FileService {
   }
 
   private async validateExcelData(data: any[]): Promise<void> {
-    const requiredFields = ['Email', 'Employee Name', 'Role', 'Working Unit'];
+    const requiredFields = ['email', 'employeeName', 'role', 'workingUnit'];
     const emails = new Set<string>();
     const errors: string[] = [];
 
@@ -57,25 +57,21 @@ export class FileService {
 
       // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(row['Email'])) {
-        errors.push(
-          `Invalid email format at row ${rowNumber}: ${row['Email']}`,
-        );
+      if (!emailRegex.test(row.email)) {
+        errors.push(`Invalid email format at row ${rowNumber}: ${row.email}`);
       }
 
       // Check for duplicate emails within the file
-      if (emails.has(row['Email'])) {
-        errors.push(
-          `Duplicate email found at row ${rowNumber}: ${row['Email']}`,
-        );
+      if (emails.has(row.email)) {
+        errors.push(`Duplicate email found at row ${rowNumber}: ${row.email}`);
       } else {
-        emails.add(row['Email']);
+        emails.add(row.email);
       }
 
       // Check if role name is one of the values in the RoleName enum
-      const roleValue = row['Role']?.toLowerCase();
+      const roleValue = row.role.toLowerCase();
       if (!roleNames.includes(roleValue)) {
-        errors.push(`Invalid role at row ${rowNumber}: ${row['Role']}`);
+        errors.push(`Invalid role at row ${rowNumber}: ${row.role}`);
       }
     }
 

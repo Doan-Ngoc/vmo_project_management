@@ -35,29 +35,14 @@ export class FirebaseStorageService {
     const fileRef = bucket.file(path);
     try {
       await fileRef.save(file.buffer, {
-        metadata: {
-          userId,
-          originalName: file.originalname,
-        },
         contentType: file.mimetype,
         public: true,
       });
       const publicUrl = `https://storage.googleapis.com/${bucket.name}/${path}`;
-      return this.userService.uploadProfilePictureToDatabase(publicUrl, userId);
+      return this.userService.saveProfilePictureToDatabase(publicUrl, userId);
     } catch (error) {
       console.error('Error uploading profile picture:', error);
       throw new Error('Error uploading profile picture');
     }
-  }
-
-  // Get download URL for a file
-  async getDownloadUrl(path: string) {
-    const bucket = this.storage.bucket();
-    const fileRef = bucket.file(path);
-    const [url] = await fileRef.getSignedUrl({
-      action: 'read',
-      expires: Date.now() + 15 * 60 * 1000, // URL expires in 15 minutes
-    });
-    return url;
   }
 }

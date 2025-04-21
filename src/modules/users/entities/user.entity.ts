@@ -45,7 +45,7 @@ export class User extends BaseEntity {
   @Column({
     type: 'enum',
     enum: AccountStatus,
-    default: AccountStatus.PENDING,
+    default: AccountStatus.UNVERIFIED,
     name: 'account_status',
   })
   accountStatus: AccountStatus;

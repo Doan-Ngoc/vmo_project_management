@@ -4,22 +4,22 @@ import * as path from 'path';
 // Sample data
 const users = [
   {
-    Email: 'user1@example.com',
-    'Employee Name': 'John Doe',
-    Role: 'PM',
-    'Working Unit': 'Development',
+    email: 'user1@example.com',
+    employeeName: 'John Doe',
+    role: 'pm',
+    workingUnit: 'working_unit_1',
   },
   {
-    Email: 'user2@example.com',
-    'Employee Name': 'Jane Smith',
-    Role: 'Member',
-    'Working Unit': 'Testing',
+    email: 'user2@example.com',
+    employeeName: 'Jane Smith',
+    role: 'tech_lead',
+    workingUnit: 'working_unit_1',
   },
   {
-    Email: 'user3@example.com',
-    'Employee Name': 'Bob Johnson',
-    Role: 'Admin',
-    'Working Unit': 'Management',
+    email: 'user3@example.com',
+    employeeName: 'Bob Johnson',
+    role: 'dev',
+    workingUnit: 'working_unit_2',
   },
 ];
 
@@ -33,7 +33,10 @@ const worksheet = XLSX.utils.json_to_sheet(users);
 XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
 
 // Write to file
-const outputPath = path.join(__dirname, '../../test-users.xlsx');
+const outputPath = path.join(
+  __dirname,
+  '../shared/file-processing/templates/user-import-template.xlsx',
+);
 XLSX.writeFile(workbook, outputPath);
 
 console.log(`Test Excel file generated at: ${outputPath}`);

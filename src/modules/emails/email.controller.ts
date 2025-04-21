@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Inject, forwardRef } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Inject,
+  forwardRef,
+  BadRequestException,
+} from '@nestjs/common';
 import { EmailService } from './services/email.service';
 import { CreateVerificationEmailDto } from './dtos/create-verification-email.dto';
 import { QueueService } from '../queue/services/queue.service';
@@ -13,16 +20,18 @@ export class EmailController {
   async sendBulkEmail(
     @Body() createVerificationEmailDtos: CreateVerificationEmailDto[],
   ) {
-    // return this.emailService.sendBulk(createVerificationEmailDto);
-    const jobs = await Promise.all(
+    // try {
+    await Promise.all(
       createVerificationEmailDtos.map((dto) =>
         this.queueService.addSendingEmailJob(dto),
       ),
     );
-
     return {
       message: 'Emails queued for sending',
       totalEmails: createVerificationEmailDtos.length,
     };
+    // } catch (error) {
+    //   throw new BadRequestException('Failed to queue emails: ' + error.message);
+    // }
   }
 }

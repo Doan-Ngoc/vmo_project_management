@@ -23,9 +23,10 @@ export class EmailService {
     );
     const verificationUrl = `${this.configService.get('SITE_URL')}/auth/verify-email?token=${verificationToken}`;
 
-    // if (email === 'hokanohito1234@gmail.com') {
-    //   throw new BadRequestException('Email is not valid');
-    // }
+    if (email === 'hokanohito1234@gmail.com') {
+      throw new BadRequestException('Testing failed email');
+    }
+    // try {
     await this.mailerService.sendMail({
       to: email,
       subject: 'Please verify your account',
@@ -36,6 +37,9 @@ export class EmailService {
         temporaryPassword,
       },
     });
+    // } catch (error) {
+    //   console.log('error', error);
+    // }
   }
 
   async sendBulk(userDataArray: CreateVerificationEmailDto[]) {

@@ -18,18 +18,7 @@ export class QueueService {
       });
     } catch (error) {
       console.log('error', error);
+      // throw error;
     }
-  }
-
-  async getJobStatus(jobId: string) {
-    const job = (await this.emailQueue.getJob(jobId)) as Job;
-    return {
-      id: job.id,
-      status: await job.getState(),
-      progress: job.progress(),
-      failCount: job.attemptsMade,
-      result: job.returnvalue,
-      error: job.failedReason,
-    };
   }
 }

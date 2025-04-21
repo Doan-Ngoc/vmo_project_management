@@ -10,6 +10,6 @@ import { UserModule } from '../users/user.module';
   imports: [JwtModule, forwardRef(() => UserModule)],
   controllers: [PermissionController],
   providers: [PermissionService, PermissionRepository],
-  exports: [PermissionService],
+  exports: [PermissionService, PermissionRepository],
 })
 export class PermissionModule {}

@@ -36,8 +36,8 @@ export class AuthService {
       password,
       user.hashedPassword,
     );
-    if (user.accountStatus === AccountStatus.PENDING) {
-      throw new BadRequestException('Please verify your email address');
+    if (user.accountStatus !== AccountStatus.ACTIVE) {
+      throw new BadRequestException('Your account is not active');
     }
     if (!checkPassword) throw new BadRequestException('Password incorrect');
 
