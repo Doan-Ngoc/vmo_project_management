@@ -41,9 +41,6 @@ export class FileService {
     const emails = new Set<string>();
     const errors: string[] = [];
 
-    const roles = await this.roleService.getAll();
-    const roleNames = roles.map((role) => role.name);
-
     for (let rowIndex = 0; rowIndex < data.length; rowIndex++) {
       const row = data[rowIndex];
       const rowNumber = rowIndex + 1;
@@ -66,12 +63,6 @@ export class FileService {
         errors.push(`Duplicate email found at row ${rowNumber}: ${row.email}`);
       } else {
         emails.add(row.email);
-      }
-
-      // Check if role name is one of the values in the RoleName enum
-      const roleValue = row.role.toLowerCase();
-      if (!roleNames.includes(roleValue)) {
-        errors.push(`Invalid role at row ${rowNumber}: ${row.role}`);
       }
     }
 

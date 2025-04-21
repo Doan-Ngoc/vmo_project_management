@@ -88,9 +88,10 @@ export class UserService {
   // }
 
   async createBulkUsers(newUserDataArray: CreateUserDto[]) {
-    // const queryRunner = this.dataSource.createQueryRunner();
-    // await queryRunner.connect();
-    // await queryRunner.startTransaction();
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     const createdUsers: CreateUserResponseDto[] = [];
     const errors: string[] = [];
 
@@ -100,30 +101,34 @@ export class UserService {
     const workingUnitNames = workingUnits.map(
       (workingUnit) => workingUnit.name,
     );
+    // console.log(newUserDataArray);
     for (let rowIndex = 0; rowIndex < newUserDataArray.length; rowIndex++) {
       const row = newUserDataArray[rowIndex];
       const rowNumber = rowIndex + 1;
-      try {
-        // const { password, roleId, workingUnitId, ...createUserData } =
-        //   createUserDto;
-        const role = roles.find((role) => role.name === row.role);
-        if (!role) {
-          errors.push(
-            `Role at row ${rowNumber} not found in the system: ${row.role}`,
-          );
-        }
-        const workingUnit = workingUnits.find(
-          (workingUnit) => workingUnit.name === row.workingUnit,
-        );
-        if (!workingUnit) {
-          errors.push(
-            `Working Unit at row ${rowNumber} not found in the system: ${row.workingUnit}`,
-          );
-        }
-        // if (row.email === 'hokanohito1234@gmail.com') {
-        //   errors.push(`Error at row ${rowNumber}: This is a test error`);
-        // }
 
+      const inputRole = row.role.toLowerCase();
+      const role = roles.find((role) => role.name === inputRole);
+      if (!role) {
+        errors.push(
+          `Role at row ${rowNumber} not found in the system: ${row.role}`,
+        );
+      }
+
+      const inputWorkingUnit = row.workingUnit.toLowerCase();
+      const workingUnit = workingUnits.find(
+        (workingUnit) => workingUnit.name === inputWorkingUnit,
+      );
+      if (!workingUnit) {
+        errors.push(
+          `Working Unit at row ${rowNumber} not found in the system: ${row.workingUnit}`,
+        );
+      }
+
+      if (!role || !workingUnit) {
+        continue;
+      }
+
+      try {
         //Generate password
         const password = generateRandomPassword();
         const hashedPassword = this.authService.hashPassword(password);
@@ -137,8 +142,14 @@ export class UserService {
           hashedPassword,
           accountType: AccountType.MEMBER,
         };
+
+        if (userData.email === 'hokanohito1234@gmail.com') {
+          errors.push(`Error at row ${rowNumber}: This is a test error`);
+        }
         const newUser = this.userRepository.create(userData);
+
         const savedUser = await this.userRepository.save(newUser);
+
         const sentBackData: CreateUserResponseDto = {
           id: savedUser.id,
           email: savedUser.email,
@@ -153,17 +164,23 @@ export class UserService {
         errors.push(`Error at row ${rowNumber}: ${error.message}`);
       }
     }
-    console.log(errors);
+
     if (errors.length > 0) {
+      await queryRunner.rollbackTransaction();
       throw new BadRequestException({
         message: 'Bulk user creation failed',
         errors: errors,
       });
     }
+
+    await queryRunner.commitTransaction();
+
     return {
       message: 'Bulk user creation completed',
       createdUsers: createdUsers,
     };
+
+    await queryRunner.release();
   }
 
   async getById(id: string): Promise<User> {
