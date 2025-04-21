@@ -26,6 +26,7 @@ import { FirebaseStorageService } from '@/infrastructure/firebase/services/fireb
 import { extname } from 'path';
 import { QueueService } from '../../queue/services/queue.service';
 import { CreateUserResponseDto } from '../dtos/create-user-response.dto';
+import { generateRandomPassword } from '@/utils/password-generator.util';
 
 @Injectable()
 export class UserService {
@@ -43,79 +44,100 @@ export class UserService {
     private readonly queueService: QueueService,
   ) {}
 
-  async createUser(
-    createUserDto: CreateUserDto,
-  ): Promise<CreateUserResponseDto> {
-    const { password, roleId, workingUnitId, ...createUserData } =
-      createUserDto;
-    const hashedPassword = this.authService.hashPassword(password);
-    const role = await this.roleService.getById(roleId);
-    const workingUnit = await this.workingUnitService.getById(workingUnitId);
+  // async createUser(
+  //   createUserDto: CreateUserDto,
+  // ): Promise<CreateUserResponseDto> {
+  //   const { password, roleId, workingUnitId, ...createUserData } =
+  //     createUserDto;
+  //   const hashedPassword = this.authService.hashPassword(password);
+  //   const role = await this.roleService.getById(roleId);
+  //   const workingUnit = await this.workingUnitService.getById(workingUnitId);
 
-    const userData = {
-      ...createUserData,
-      username: createUserDto.email,
-      role,
-      workingUnit,
-      hashedPassword,
-      accountStatus: AccountStatus.PENDING,
-      accountType: AccountType.MEMBER,
-    };
+  //   const userData = {
+  //     ...createUserData,
+  //     username: createUserDto.email,
+  //     role,
+  //     workingUnit,
+  //     hashedPassword,
+  //     accountStatus: AccountStatus.PENDING,
+  //     accountType: AccountType.MEMBER,
+  //   };
 
-    // Create user
-    try {
-      const newUser = this.userRepository.create(userData);
-      const savedUser = await this.userRepository.save(newUser);
+  //   // Create user
+  //   try {
+  //     const newUser = this.userRepository.create(userData);
+  //     const savedUser = await this.userRepository.save(newUser);
 
-      // Create response DT,O
-      const sentBackData: CreateUserResponseDto = {
-        id: savedUser.id,
-        email: savedUser.email,
-        employeeName: savedUser.employeeName,
-        username: savedUser.username,
-        roleId: savedUser.role.id,
-        workingUnitId: savedUser.workingUnit.id,
-        temporaryPassword: password,
-      };
-      return sentBackData;
-    } catch (error) {
-      if (error.code === '23505') {
-        throw new ConflictException('Email already exists');
-      }
-      throw new BadRequestException(error.message || 'Failed to create user');
-    }
-  }
+  //     // Create response DTO
+  //     const sentBackData: CreateUserResponseDto = {
+  //       id: savedUser.id,
+  //       email: savedUser.email,
+  //       employeeName: savedUser.employeeName,
+  //       username: savedUser.username,
+  //       roleId: savedUser.role.id,
+  //       workingUnitId: savedUser.workingUnit.id,
+  //       temporaryPassword: password,
+  //     };
+  //     return sentBackData;
+  //   } catch (error) {
+  //     if (error.code === '23505') {
+  //       throw new ConflictException('Email already exists');
+  //     }
+  //     throw new BadRequestException(error.message || 'Failed to create user');
+  //   }
+  // }
 
   async createBulkUsers(newUserDataArray: CreateUserDto[]) {
     // const queryRunner = this.dataSource.createQueryRunner();
     // await queryRunner.connect();
     // await queryRunner.startTransaction();
-
     const createdUsers: CreateUserResponseDto[] = [];
-    const errors: { email: string; error: string }[] = [];
+    const errors: string[] = [];
 
-    for (const createUserDto of newUserDataArray) {
+    const roles = await this.roleService.getAll();
+    const roleNames = roles.map((role) => role.name);
+    const workingUnits = await this.workingUnitService.getAll();
+    const workingUnitNames = workingUnits.map(
+      (workingUnit) => workingUnit.name,
+    );
+    for (let rowIndex = 0; rowIndex < newUserDataArray.length; rowIndex++) {
+      const row = newUserDataArray[rowIndex];
+      const rowNumber = rowIndex + 1;
       try {
-        const { password, roleId, workingUnitId, ...createUserData } =
-          createUserDto;
-        if (createUserDto.email === 'hokanohito1234@gmail.com') {
-          throw new Error('This is a test error');
+        // const { password, roleId, workingUnitId, ...createUserData } =
+        //   createUserDto;
+        const role = roles.find((role) => role.name === row['Role']);
+        if (!role) {
+          errors.push(
+            `Role at row ${rowNumber} not found in the system: ${row['Role']}`,
+          );
         }
+        const workingUnit = workingUnits.find(
+          (workingUnit) => workingUnit.name === row['Working Unit'],
+        );
+        if (!workingUnit) {
+          errors.push(
+            `Working Unit at row ${rowNumber} not found in the system: ${row['Working Unit']}`,
+          );
+        }
+        if (row['Email'] === 'hokanohito1234@gmail.com') {
+          errors.push(`Error at row ${rowNumber}: This is a test error`);
+        }
+
+        //Generate password
+        const password = generateRandomPassword();
         const hashedPassword = this.authService.hashPassword(password);
-        const role = await this.roleService.getById(roleId);
-        const workingUnit =
-          await this.workingUnitService.getById(workingUnitId);
 
         const userData = {
-          ...createUserData,
-          username: createUserDto.email,
+          email: row['Email'],
+          username: row['Email'],
+          employeeName: row['Employee Name'],
           role,
           workingUnit,
           hashedPassword,
           accountStatus: AccountStatus.PENDING,
           accountType: AccountType.MEMBER,
         };
-
         const newUser = this.userRepository.create(userData);
         const savedUser = await this.userRepository.save(newUser);
         const sentBackData: CreateUserResponseDto = {
@@ -129,22 +151,19 @@ export class UserService {
         };
         createdUsers.push(sentBackData);
       } catch (error) {
-        errors.push({
-          email: createUserDto.email,
-          error: error.message,
-        });
+        errors.push(`Error at row ${rowNumber}: ${error.message}`);
       }
     }
-
+    console.log(errors);
+    if (errors.length > 0) {
+      throw new BadRequestException({
+        message: 'Bulk user creation failed',
+        errors: errors,
+      });
+    }
     return {
       message: 'Bulk user creation completed',
-      summary: {
-        total: newUserDataArray.length,
-        successful: createdUsers.length,
-        failed: errors.length,
-      },
       createdUsers: createdUsers,
-      failedUsers: errors,
     };
   }
 

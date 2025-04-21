@@ -18,6 +18,10 @@ export class WorkingUnitService {
     return workingUnit;
   }
 
+  async getAll(): Promise<WorkingUnit[]> {
+    return await this.workingUnitRepository.find();
+  }
+
   async findByName(name: string): Promise<WorkingUnit> {
     const workingUnit = await this.workingUnitRepository.findOne({
       where: { name },

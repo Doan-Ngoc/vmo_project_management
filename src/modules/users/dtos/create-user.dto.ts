@@ -14,20 +14,12 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  password: string;
-
-  @IsString()
-  @IsNotEmpty()
   employeeName: string;
 
-  @IsUUID()
-  @IsNotEmpty()
-  roleId: string;
-
-  @IsUUID()
-  workingUnitId: string;
-
   @IsString()
-  @IsOptional()
-  profilePicture?: string;
+  @IsNotEmpty()
+  role: string;
+
+  @IsUUID()
+  workingUnit: string;
 }
