@@ -30,7 +30,7 @@ import { RolePermissionSeedData } from '../data/new-role-permissions-seed-data';
 import { RoleName } from '../../../enum/role.enum';
 
 @Injectable()
-export class SeederService {
+export class SeedsService {
   constructor(
     private readonly permissionService: PermissionService,
     private readonly roleService: RoleService,

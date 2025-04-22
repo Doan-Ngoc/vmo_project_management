@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { SeedsModule } from './seeds.module';
-import { SeederService } from './services/seeder.service';
+import { SeedsService } from './services/seeds.service';
+import * as path from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(SeedsModule);
-  const seeder = app.get(SeederService);
+  const seeder = app.get(SeedsService);
   try {
     console.log('Seeding started');
     const seedType = process.argv[2]; // Get the seeder type from command line

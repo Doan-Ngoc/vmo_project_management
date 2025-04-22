@@ -11,7 +11,7 @@ import { PermissionModule } from './modules/permissions/permission.module';
 import { ClientModule } from './modules/clients/client.module';
 import { ProjectModule } from './modules/projects/project.module';
 import { TaskModule } from './modules/tasks/task.module';
-import typeorm from './databases/typeorm';
+import typeorm from './databases/typeorm/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TaskCommentModule } from './modules/task_comments/task-comment.module';
 import { FirebaseModule } from './infrastructure/firebase/firebase.module';
@@ -48,7 +48,6 @@ import { SeedsModule } from './databases/seeds/seeds.module';
     FirebaseModule,
     EmailModule,
     QueueModule,
-    SeedsModule,
   ],
   controllers: [AppController],
   providers: [

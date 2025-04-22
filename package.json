@@ -23,7 +23,7 @@
     "typeorm:migration:create": "ts-node node_modules/typeorm/cli.js migration:create ./src/databases/migrations/%npm_config_name%",
     "typeorm:migration:run": "npm run typeorm migration:run",
     "typeorm:migration:revert": "npm run typeorm migration:revert",
-    "seed": "ts-node -r tsconfig-paths/register src/databases/seeds/seed.ts",
+    "seed": "ts-node src/databases/seeds/seed.ts",
     "seed:permissions": "ts-node src/databases/seeds/seed.ts permissions",
     "seed:role-permissions": "ts-node src/databases/seeds/seed.ts role-permissions",
     "seed:admin": "ts-node src/databases/seeds/seed.ts admin",

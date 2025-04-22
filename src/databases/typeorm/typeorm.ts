@@ -6,7 +6,7 @@ import { registerAs } from '@nestjs/config';
 dotenv.config({
   path: path.join(
     __dirname,
-    `../../src/configs/.env-${process.env.NODE_ENV || 'dev'}`,
+    `../../../src/configs/.env-${process.env.NODE_ENV || 'dev'}`,
   ),
 });
 
@@ -17,9 +17,11 @@ const config = {
   database: process.env.POSTGRES_DATABASE,
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
-  entities: [path.join(__dirname, '../**/*.entity{.ts,.js}')],
+  entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
   migrations: [path.join(__dirname, '/migrations/**/*{.ts,.js}')],
   migrationsTableName: 'migrations',
+  logger: 'advanced-console',
+  logging: ['query', 'error', 'schema', 'warn', 'info', 'log', 'migration'],
 };
 
 export default registerAs('typeorm', () => config);
