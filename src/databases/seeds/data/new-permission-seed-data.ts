@@ -141,4 +141,11 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
     path: '/tasks/:taskId',
     method: 'PATCH',
   },
+
+  {
+    id: 'd998dccb-6918-4e24-8b86-f2a875dd7eba',
+    name: Permissions.UPDATE_PROJECT_MEMBERS,
+    path: '/projects/members',
+    method: 'PUT',
+  },
 ];

@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Body,
   Param,
   UseGuards,
@@ -21,13 +22,15 @@ import { GetUser } from '../../decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { Project } from './entities/project.entity';
 // import { AddProjectMemberDto } from './dtos/add-project-member.dto';
-import { ProjectMemberGuard } from '@/guards/project-member.guard';
+import { ProjectMemberGuard } from '../../guards/project-member.guard';
 // import { RemoveProjectMemberDto } from './dtos/remove-project-member.dto';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
+import { ProjectMember } from '../../decorators/project-member.decorator';
 import {
   CreateProjectDto,
   AddProjectMemberDto,
   RemoveProjectMemberDto,
+  UpdateProjectMemberDto,
 } from './dtos';
 
 @Controller('projects')
@@ -78,5 +81,14 @@ export class ProjectController {
   @Auth(Permissions.REMOVE_PROJECT_MEMBERS)
   removeMember(@Body() removeProjectMemberDto: RemoveProjectMemberDto) {
     return this.projectService.removeMember(removeProjectMemberDto);
+  }
+
+  @Put('/members')
+  @ProjectMember(Permissions.UPDATE_PROJECT_MEMBERS)
+  updateMembers(
+    @Body() updateProjectMemberDto: UpdateProjectMemberDto,
+    @GetUser() user: User,
+  ) {
+    return this.projectService.updateMembers(updateProjectMemberDto, user.id);
   }
 }

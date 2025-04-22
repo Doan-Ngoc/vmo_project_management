@@ -68,7 +68,6 @@ export class Project extends BaseEntity {
       referencedColumnName: 'id',
     },
   })
-  @Exclude()
   members: User[];
 
   @OneToMany(() => Task, (task) => task.project, { cascade: true })

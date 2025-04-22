@@ -27,7 +27,14 @@ import {
   CreateProjectDto,
   AddProjectMemberDto,
   RemoveProjectMemberDto,
+  UpdateProjectMemberDto,
 } from '../dtos';
+import { DataSource } from 'typeorm';
+import { UpdateProjectMemberDto as NewUpdateProjectMemberDto } from '../dtos/update-project-member.dto';
+import { RoleName } from '../../../enum/role.enum';
+import { Role } from '../../roles/entities/role.entity';
+import { In } from 'typeorm';
+
 @Injectable()
 export class ProjectService {
   constructor(
@@ -35,6 +42,7 @@ export class ProjectService {
     private readonly workingUnitService: WorkingUnitService,
     private readonly clientService: ClientService,
     private readonly userService: UserService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async getProjects(
@@ -114,6 +122,11 @@ export class ProjectService {
   async addMember(addProjectMemberDto: AddProjectMemberDto): Promise<Project> {
     const { projectId, userId } = addProjectMemberDto;
     const project = await this.getById(projectId);
+    if (project.status !== ProjectStatus.ACTIVE) {
+      throw new BadRequestException(
+        'You can only add member to an active project',
+      );
+    }
     const user = await this.userService.getById(userId);
     //Check if user account is active
     if (user.accountStatus !== AccountStatus.ACTIVE) {
@@ -164,6 +177,11 @@ export class ProjectService {
   ): Promise<Project> {
     const { projectId, userId } = removeProjectMemberDto;
     const project = await this.getById(projectId);
+    if (project.status !== ProjectStatus.ACTIVE) {
+      throw new BadRequestException(
+        'You can only remove member from an active project',
+      );
+    }
     const user = await this.userService.getById(userId);
 
     // Check if user is a member of the project
@@ -175,5 +193,108 @@ export class ProjectService {
     // Remove the member
     project.members = project.members.filter((member) => member.id !== user.id);
     return await this.projectRepository.save(project);
+  }
+
+  async updateMembers(
+    updateProjectMemberDto: UpdateProjectMemberDto,
+    userId: string,
+  ): Promise<Project> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    const errors: string[] = [];
+    const { projectId, userIds } = updateProjectMemberDto;
+
+    try {
+      // Get the project and project members
+      const project = await this.getById(projectId);
+      if (project.status !== ProjectStatus.ACTIVE) {
+        errors.push('You can only update members of an active project');
+        throw new BadRequestException();
+      }
+      const currentMembers = project.members;
+      const currentMemberIds = currentMembers.map((member) => member.id);
+
+      // Check if the request sender is a project member
+      const isIncluded = userIds.some((memberId) => memberId === userId);
+      if (isIncluded) {
+        errors.push('You cannot remove yourself from the project');
+        throw new BadRequestException();
+      }
+
+      //Separate the users to be added and removed
+      const usersToAdd = userIds.filter(
+        (userId) => !currentMemberIds.includes(userId),
+      );
+      const usersToRemove = userIds.filter((userId) =>
+        currentMemberIds.includes(userId),
+      );
+
+      //Remove members
+      const usersToRemoveIds = usersToRemove.map((userId) => userId);
+      const membersAfterRemove = currentMembers.filter(
+        (member) => !usersToRemoveIds.includes(member.id),
+      );
+
+      //Add members
+      const usersToAddIds = usersToAdd.map((userId) => userId);
+      let usersToAddData: User[] = [];
+      for (const userId of usersToAddIds) {
+        const user = await this.userService.getById(userId);
+        //Check if user account is valid
+        if (user.accountStatus !== AccountStatus.ACTIVE) {
+          errors.push(`User ${userId} account is not active`);
+          continue;
+        }
+        if (user.workingUnit.id !== project.workingUnit.id) {
+          errors.push(`User ${userId} is not a member of this working unit`);
+          continue;
+        }
+        usersToAddData.push(user);
+      }
+
+      const membersAfterAdd = [...membersAfterRemove, ...usersToAddData];
+
+      //Check if the number of members is within the limit
+      const devNumber = membersAfterAdd.filter(
+        (member) => member.role.name === RoleName.DEV,
+      ).length;
+      const pmNumber = membersAfterAdd.filter(
+        (member) => member.role.name === RoleName.PM,
+      ).length;
+      const techLeadNumber = membersAfterAdd.filter(
+        (member) => member.role.name === RoleName.TECH_LEAD,
+      ).length;
+
+      if (devNumber > project.devNumber) {
+        errors.push('Developer number limit exceeded');
+      }
+      if (pmNumber > project.pmNumber) {
+        errors.push('Project manager number limit exceeded');
+      }
+      if (techLeadNumber > project.techLeadNumber) {
+        errors.push('Tech lead number limit exceeded');
+      }
+
+      if (errors.length > 0) {
+        throw new BadRequestException();
+      }
+
+      //Save the project
+      project.members = membersAfterAdd;
+      const updatedProject = await queryRunner.manager.save(Project, project);
+
+      await queryRunner.commitTransaction();
+      return updatedProject;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException({
+        message: 'Project member update failed',
+        errors: errors,
+      });
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

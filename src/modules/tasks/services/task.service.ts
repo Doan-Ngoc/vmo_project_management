@@ -16,6 +16,7 @@ import { CronExpression } from '@nestjs/schedule';
 import { TaskStatus } from '@/enum/task-status.enum';
 // import { AddTaskMemberDto } from '../dto/add-task-member.dto';
 import { AccountStatus } from '../../../enum/account-status.enum';
+import { ProjectStatus } from '../../../enum/project-status.enum';
 // import { RemoveTaskMemberDto } from '../dto/remove-task-member.dto';
 // import { DeleteTaskDto } from '../dto/delete-task.dto';
 // import { UpdateTaskStatusDto } from '../dto/update-task-status.dto';
@@ -77,13 +78,18 @@ export class TaskService {
     userId: string,
   ): Promise<Task> {
     const { projectId, dueDate, ...taskData } = createTaskDto;
-    const project = await this.projectService.getById(projectId);
-    const user = await this.userService.getById(userId);
-
     // Check if due date is in the past
     if (dueDate && new Date(dueDate) < new Date()) {
       throw new BadRequestException('Due date cannot be in the past');
     }
+
+    const project = await this.projectService.getById(projectId);
+    if (project.status !== ProjectStatus.ACTIVE) {
+      throw new BadRequestException(
+        'You can only add task to an active project',
+      );
+    }
+    const user = await this.userService.getById(userId);
 
     // Create the task
     const newTask = this.taskRepository.create({

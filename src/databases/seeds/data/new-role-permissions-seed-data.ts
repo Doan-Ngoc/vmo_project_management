@@ -55,6 +55,7 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.GET_ALL_TASKS),
           getPermissionId(Permissions.GET_ALL_TASK_COMMENTS),
           getPermissionId(Permissions.TEST_PERMISSION),
+          getPermissionId(Permissions.UPDATE_PROJECT_MEMBERS),
         ],
       },
       {
@@ -86,6 +87,7 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.ADD_TASK_MEMBERS),
           getPermissionId(Permissions.REMOVE_TASK_MEMBERS),
           getPermissionId(Permissions.TEST_PERMISSION),
+          getPermissionId(Permissions.UPDATE_PROJECT_MEMBERS),
         ],
       },
     ];
