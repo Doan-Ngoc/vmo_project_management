@@ -41,25 +41,34 @@ export class AuthService {
     }
     if (!checkPassword) throw new BadRequestException('Password incorrect');
 
+    const accessToken = this.jwtService.sign(
+      {
+        id: user.id,
+        ...(user.role && { roleId: user.role.id }),
+        accountType: user.accountType,
+      },
+      this.configService.getOrThrow('JWT_ACCESS_KEY') as string,
+      {
+        expiresIn: this.configService.getOrThrow('JWT_ACCESS_EXPIRE'),
+      },
+    );
+
+    const refreshToken = this.jwtService.sign(
+      { id: user.id },
+      this.configService.getOrThrow('JWT_REFRESH_KEY') as string,
+      { expiresIn: this.configService.getOrThrow('JWT_REFRESH_EXPIRE') },
+    );
+
     return {
-      accessToken: this.jwtService.sign(
-        {
-          id: user.id,
-          ...(user.role && { roleId: user.role.id }),
-          accountType: user.accountType,
-        },
-        this.configService.get('JWT_ACCESS_KEY') as string,
-        {
-          expiresIn: this.configService.get('JWT_ACCESS_EXPIRE'),
-        },
-      ),
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     };
   }
 
   async verifyEmail(token: string) {
     const decoded = this.jwtService.verify(
       token,
-      this.configService.get('JWT_VERIFICATION_KEY') as string,
+      this.configService.getOrThrow('JWT_VERIFICATION_KEY') as string,
     );
     await this.userService.updateAccountStatus(
       AccountStatus.ACTIVE,

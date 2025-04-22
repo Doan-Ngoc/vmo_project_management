@@ -126,11 +126,11 @@ export class SeedsService {
   async seedDefaultAdmin() {
     try {
       console.log('Starting default admin seeder...');
-      const password = this.configService.get('DEFAULT_ADMIN_PASSWORD');
+      const password = this.configService.getOrThrow('DEFAULT_ADMIN_PASSWORD');
       const hashedPassword = await this.authService.hashPassword(password);
       const defaultAdminData = {
-        email: this.configService.get('DEFAULT_ADMIN_EMAIL'),
-        username: this.configService.get('DEFAULT_ADMIN_EMAIL'),
+        email: this.configService.getOrThrow('DEFAULT_ADMIN_EMAIL'),
+        username: this.configService.getOrThrow('DEFAULT_ADMIN_EMAIL'),
         hashedPassword,
         employeeName: 'Default Admin',
         accountType: AccountType.ADMIN,

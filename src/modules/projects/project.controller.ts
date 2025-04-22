@@ -31,6 +31,7 @@ import {
   AddProjectMemberDto,
   RemoveProjectMemberDto,
   UpdateProjectMemberDto,
+  UpdateProjectStatusDto,
 } from './dtos';
 
 @Controller('projects')
@@ -69,20 +70,6 @@ export class ProjectController {
     return this.projectService.getProjects(options, query);
   }
 
-  @Post('/members')
-  @UseGuards(ProjectMemberGuard)
-  @Auth(Permissions.ADD_PROJECT_MEMBERS)
-  addMember(@Body() addProjectMemberDto: AddProjectMemberDto) {
-    return this.projectService.addMember(addProjectMemberDto);
-  }
-
-  @Delete('/members')
-  @UseGuards(ProjectMemberGuard)
-  @Auth(Permissions.REMOVE_PROJECT_MEMBERS)
-  removeMember(@Body() removeProjectMemberDto: RemoveProjectMemberDto) {
-    return this.projectService.removeMember(removeProjectMemberDto);
-  }
-
   @Put('/members')
   @ProjectMember(Permissions.UPDATE_PROJECT_MEMBERS)
   updateMembers(
@@ -90,5 +77,13 @@ export class ProjectController {
     @GetUser() user: User,
   ) {
     return this.projectService.updateMembers(updateProjectMemberDto, user.id);
+  }
+
+  @Put('/status')
+  @Auth(Permissions.UPDATE_PROJECT_STATUS)
+  async updateProjectStatus(
+    @Body() updateProjectStatusDto: UpdateProjectStatusDto,
+  ) {
+    return this.projectService.updateProjectStatus(updateProjectStatusDto);
   }
 }

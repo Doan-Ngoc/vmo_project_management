@@ -44,50 +44,7 @@ export class UserService {
     private readonly queueService: QueueService,
   ) {}
 
-  // async createUser(
-  //   createUserDto: CreateUserDto,
-  // ): Promise<CreateUserResponseDto> {
-  //   const { password, roleId, workingUnitId, ...createUserData } =
-  //     createUserDto;
-  //   const hashedPassword = this.authService.hashPassword(password);
-  //   const role = await this.roleService.getById(roleId);
-  //   const workingUnit = await this.workingUnitService.getById(workingUnitId);
-
-  //   const userData = {
-  //     ...createUserData,
-  //     username: createUserDto.email,
-  //     role,
-  //     workingUnit,
-  //     hashedPassword,
-  //     accountStatus: AccountStatus.PENDING,
-  //     accountType: AccountType.MEMBER,
-  //   };
-
-  //   // Create user
-  //   try {
-  //     const newUser = this.userRepository.create(userData);
-  //     const savedUser = await this.userRepository.save(newUser);
-
-  //     // Create response DTO
-  //     const sentBackData: CreateUserResponseDto = {
-  //       id: savedUser.id,
-  //       email: savedUser.email,
-  //       employeeName: savedUser.employeeName,
-  //       username: savedUser.username,
-  //       roleId: savedUser.role.id,
-  //       workingUnitId: savedUser.workingUnit.id,
-  //       temporaryPassword: password,
-  //     };
-  //     return sentBackData;
-  //   } catch (error) {
-  //     if (error.code === '23505') {
-  //       throw new ConflictException('Email already exists');
-  //     }
-  //     throw new BadRequestException(error.message || 'Failed to create user');
-  //   }
-  // }
-
-  async createBulkUsers(newUserDataArray: CreateUserDto[]) {
+  async create(newUserDataArray: CreateUserDto[]) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -210,7 +167,7 @@ export class UserService {
   async updateAccountStatus(
     status: AccountStatus,
     userId: string,
-  ): Promise<void> {
+  ): Promise<User> {
     // const result = await this.userRepository.update(userId, {
     //   accountStatus: status,
     // });
@@ -219,7 +176,7 @@ export class UserService {
       throw new BadRequestException('User already has this status');
     }
     user.accountStatus = status;
-    await this.userRepository.save(user);
+    return await this.userRepository.save(user);
   }
 
   async saveProfilePictureToDatabase(url: string, userId: string) {
@@ -228,21 +185,9 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
-  // async uploadProfilePicture(file: Express.Multer.File, userId: string) {
-  //   try {
-  //     const filePath = `users/profile-picture/${userId}${extname(file.originalname)}`;
-
-  //     return this.storageService.uploadFile(file.buffer, filePath, {
-  //       contentType: file.mimetype,
-  //       metadata: {
-  //         userId,
-  //         originalName: file.originalname,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     throw new BadRequestException(
-  //       'Failed to upload profile picture: ' + error.message,
-  //     );
-  //   }
-  // }
+  async changePassword(newPassword: string, userId: string) {
+    const user = await this.getById(userId);
+    user.hashedPassword = this.authService.hashPassword(newPassword);
+    return await this.userRepository.save(user);
+  }
 }

@@ -18,10 +18,10 @@ export class EmailService {
     const { id, email, username, temporaryPassword } = userData;
     const verificationToken = this.jwtService.sign(
       { id },
-      this.configService.get('JWT_VERIFICATION_KEY') as string,
-      { expiresIn: this.configService.get('JWT_VERIFICATION_EXPIRE') },
+      this.configService.getOrThrow('JWT_VERIFICATION_KEY') as string,
+      { expiresIn: this.configService.getOrThrow('JWT_VERIFICATION_EXPIRE') },
     );
-    const verificationUrl = `${this.configService.get('SITE_URL')}/auth/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${this.configService.getOrThrow('SITE_URL')}/auth/verify-email?token=${verificationToken}`;
 
     if (email === 'hokanohito1234@gmail.com') {
       throw new BadRequestException('Testing failed email');

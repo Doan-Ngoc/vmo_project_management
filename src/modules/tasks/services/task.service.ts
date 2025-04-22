@@ -6,7 +6,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 // import { CreateTaskDto } from '../dto/create-task.dto';
 import { Task } from '../entities/task.entity';
 import { ProjectService } from '../../projects/services/project.service';
@@ -32,6 +32,8 @@ import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { Project } from '@/modules/projects/entities/project.entity';
 import { TaskRepository } from '../repositories/task.repository';
+import { UpdateTaskMemberDto } from '../dto/update-task-member.dto';
+import { User } from '../../users/entities/user.entity';
 @Injectable()
 export class TaskService {
   constructor(
@@ -39,6 +41,7 @@ export class TaskService {
     @Inject(forwardRef(() => ProjectService))
     private readonly projectService: ProjectService,
     private readonly userService: UserService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async getById(id: string): Promise<Task> {
@@ -201,6 +204,90 @@ export class TaskService {
     // Remove the member
     task.members = task.members.filter((member) => member.id !== user.id);
     return await this.taskRepository.save(task);
+  }
+
+  async updateTaskMembers(
+    updateTaskMemberDto: UpdateTaskMemberDto,
+    userId: string,
+  ): Promise<Task> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    const errors: string[] = [];
+    const { taskId, userIds } = updateTaskMemberDto;
+
+    try {
+      // Get task with its project and members
+      const task = await this.getById(taskId);
+
+      // Check task status
+      if (
+        task.status === TaskStatus.COMPLETED ||
+        task.status === TaskStatus.EXPIRED
+      ) {
+        errors.push('Cannot update members of a completed or expired task');
+        throw new BadRequestException();
+      }
+
+      const currentMembers = task.members;
+      const currentMemberIds = currentMembers.map((member) => member.id);
+
+      //Separate the users to be added and removed
+      const usersToAddIds = userIds.filter(
+        (userId) => !currentMemberIds.includes(userId),
+      );
+      const usersToRemoveIds = userIds.filter((userId) =>
+        currentMemberIds.includes(userId),
+      );
+
+      //Remove members
+      const membersAfterRemove = currentMembers.filter(
+        (member) => !usersToRemoveIds.includes(member.id),
+      );
+
+      //Add members
+      let usersToAddData: User[] = [];
+      for (const userId of usersToAddIds) {
+        const user = await this.userService.getById(userId);
+
+        //Check if user account is valid
+        if (user.accountStatus !== AccountStatus.ACTIVE) {
+          errors.push(`User ${userId} account is not active`);
+          continue;
+        }
+
+        // Check if user is a member of the project
+        if (!task.project.members.some((member) => member.id === user.id)) {
+          errors.push(`User ${userId} is not a member of the project`);
+          continue;
+        }
+
+        usersToAddData.push(user);
+      }
+
+      const membersAfterAdd = [...membersAfterRemove, ...usersToAddData];
+
+      if (errors.length > 0) {
+        throw new BadRequestException();
+      }
+
+      //Save the task
+      task.members = membersAfterAdd;
+      const updatedTask = await queryRunner.manager.save(Task, task);
+
+      await queryRunner.commitTransaction();
+      return updatedTask;
+    } catch (error) {
+      errors.push(error.message);
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException({
+        message: 'Task member update failed',
+        errors: errors,
+      });
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   //Update task status

@@ -9,12 +9,14 @@ import {
   FileTypeValidator,
   ParseFilePipe,
   BadRequestException,
+  Param,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './services/user.service';
 // import { CreateUserDto } from './dtos/create-user.dto';
 import { CreateUserDto } from './dtos';
-import { Auth } from '@/decorators/auth.decorator';
-import { Permissions } from '@/enum/permissions.enum';
+import { Auth } from '../../decorators/auth.decorator';
+import { Permissions } from '../../enum/permissions.enum';
 import { EmailService } from '../emails/services/email.service';
 import { FileService } from '../../shared/file-processing/services/file.service';
 import { User } from './entities/user.entity';
@@ -23,6 +25,8 @@ import { FirebaseStorageService } from '../../infrastructure/firebase/services/f
 import * as multer from 'multer';
 import { extname } from 'path';
 import { CreateUserResponseDto } from './dtos/create-user-response.dto';
+import { AccountStatus } from '../../enum/account-status.enum';
+import { GetUser } from '@/decorators/get-user.decorator';
 @Controller('users')
 export class UserController {
   constructor(
@@ -30,16 +34,17 @@ export class UserController {
     private readonly fileService: FileService,
     private readonly storageService: FirebaseStorageService,
   ) {}
-  // @Post()
-  // createUser(
-  //   @Body() createUserDto: CreateUserDto,
-  // ): Promise<CreateUserResponseDto> {
-  //   return this.userService.createUser(createUserDto);
-  // }
+
+  @Get(':id')
+  @Auth(Permissions.GET_USER_BY_ID)
+  async getUserById(@Param('id') id: string): Promise<User> {
+    return this.userService.getById(id);
+  }
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async createBulkUsers(
+  @Auth(Permissions.CREATE_USERS)
+  async createUsers(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -53,21 +58,20 @@ export class UserController {
     file: Express.Multer.File,
   ) {
     const userDataArray = await this.fileService.processExcelImport(file);
-    return this.userService.createBulkUsers(userDataArray);
+    return this.userService.create(userDataArray);
   }
-  // catch (error) {
 
-  // if (error instanceof BadRequestException) {
-  //   throw error; // Re-throw the BadRequestException to let NestJS handle it
-  // }
-  // throw new BadRequestException(
-  //   error.message || 'Failed to process Excel file',
-  // );
-  // }
-  // }
-
+  @Put('/:id')
+  @Auth(Permissions.UPDATE_ACCOUNT_STATUS)
+  async updateUser(
+    @Param('id') id: string,
+    @Body() accountStatus: AccountStatus,
+  ): Promise<User> {
+    return this.userService.updateAccountStatus(accountStatus, id);
+  }
 
   @Post('profile-picture')
+  @Auth(Permissions.UPLOAD_PROFILE_PICTURE)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: multer.memoryStorage(),
@@ -90,5 +94,14 @@ export class UserController {
     @Body('userId') userId: string,
   ) {
     return this.storageService.uploadProfilePicture(file, userId);
+  }
+
+  @Put('/password')
+  @Auth(Permissions.CHANGE_PASSWORD)
+  async changePassword(
+    @Body('newPassword') newPassword: string,
+    @GetUser() user: User,
+  ) {
+    return this.userService.changePassword(newPassword, user.id);
   }
 }

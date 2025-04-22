@@ -25,6 +25,10 @@ export class ClientService {
     }
   }
 
+  async getAll(): Promise<Client[]> {
+    return await this.clientRepository.find();
+  }
+
   async getById(id: string): Promise<Client> {
     const client = await this.clientRepository.findOne({
       where: { id },

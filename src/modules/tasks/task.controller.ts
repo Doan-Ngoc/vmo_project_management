@@ -80,23 +80,6 @@ export class TaskController {
     return this.taskService.getAllTasks(projectId, options, query);
   }
 
-  //Add member to task
-  @Post('/members')
-  // @UseGuards(ProjectMemberGuard)
-  // @Auth(Permissions.ADD_TASK_MEMBERS)
-  @ProjectMember(Permissions.ADD_TASK_MEMBERS)
-  addMember(@Body() addTaskMemberDto: AddTaskMemberDto) {
-    return this.taskService.addMember(addTaskMemberDto);
-  }
-
-  @Delete('/members')
-  // @UseGuards(ProjectMemberGuard)
-  // @Auth(Permissions.REMOVE_TASK_MEMBERS)
-  @ProjectMember(Permissions.REMOVE_TASK_MEMBERS)
-  removeMember(@Body() removeTaskMemberDto: RemoveTaskMemberDto) {
-    return this.taskService.removeMember(removeTaskMemberDto);
-  }
-
   @Patch(':taskId/status')
   // @UseGuards(TaskMemberGuard)
   // @Auth(Permissions.UPDATE_TASK_STATUS)

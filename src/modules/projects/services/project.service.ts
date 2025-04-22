@@ -34,6 +34,7 @@ import { UpdateProjectMemberDto as NewUpdateProjectMemberDto } from '../dtos/upd
 import { RoleName } from '../../../enum/role.enum';
 import { Role } from '../../roles/entities/role.entity';
 import { In } from 'typeorm';
+import { UpdateProjectStatusDto } from '../dtos/update-project-status.dto';
 
 @Injectable()
 export class ProjectService {
@@ -224,21 +225,19 @@ export class ProjectService {
       }
 
       //Separate the users to be added and removed
-      const usersToAdd = userIds.filter(
+      const usersToAddIds = userIds.filter(
         (userId) => !currentMemberIds.includes(userId),
       );
-      const usersToRemove = userIds.filter((userId) =>
+      const usersToRemoveIds = userIds.filter((userId) =>
         currentMemberIds.includes(userId),
       );
 
       //Remove members
-      const usersToRemoveIds = usersToRemove.map((userId) => userId);
       const membersAfterRemove = currentMembers.filter(
         (member) => !usersToRemoveIds.includes(member.id),
       );
 
       //Add members
-      const usersToAddIds = usersToAdd.map((userId) => userId);
       let usersToAddData: User[] = [];
       for (const userId of usersToAddIds) {
         const user = await this.userService.getById(userId);
@@ -288,6 +287,7 @@ export class ProjectService {
       await queryRunner.commitTransaction();
       return updatedProject;
     } catch (error) {
+      errors.push(error.message);
       await queryRunner.rollbackTransaction();
       throw new BadRequestException({
         message: 'Project member update failed',
@@ -296,5 +296,14 @@ export class ProjectService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async updateProjectStatus(
+    updateProjectStatusDto: UpdateProjectStatusDto,
+  ): Promise<Project> {
+    const { projectId, status } = updateProjectStatusDto;
+    const project = await this.getById(projectId);
+    project.status = status;
+    return await this.projectRepository.save(project);
   }
 }

@@ -1,6 +1,5 @@
 export enum Permissions {
   CREATE_PERMISSION = 'create_permission',
-  CREATE_CLIENT = 'create_client',
 
   //rbac
   MANAGE_ROLES = 'manage_roles',
@@ -17,6 +16,13 @@ export enum Permissions {
   // ADD_PERMISSIONS_TO_ROLE = 'add_permissions_to_role',
   // REMOVE_PERMISSIONS_FROM_ROLE = 'remove_permissions_from_role'
 
+  //users
+  GET_USER_BY_ID = 'get_user_by_id',
+  CREATE_USERS = 'create_users',
+  UPLOAD_PROFILE_PICTURE = 'upload_profile_picture',
+  UPDATE_ACCOUNT_STATUS = 'update_account_status',
+  CHANGE_PASSWORD = 'change_password',
+
   //projects
   CREATE_PROJECT = 'create_project',
   GET_PROJECT_BY_ID = 'get_project_by_id',
@@ -24,6 +30,7 @@ export enum Permissions {
   ADD_PROJECT_MEMBERS = 'add_project_members',
   REMOVE_PROJECT_MEMBERS = 'remove_project_members',
   UPDATE_PROJECT_MEMBERS = 'update_project_members',
+  UPDATE_PROJECT_STATUS = 'update_project_status',
 
   //tasks
   CREATE_TASK = 'create_task',
@@ -43,4 +50,14 @@ export enum Permissions {
 
   //test
   TEST_PERMISSION = 'test_permission',
+
+  //clients
+  GET_ALL_CLIENTS = 'get_all_clients',
+  GET_CLIENT_BY_ID = 'get_client_by_id',
+  CREATE_CLIENT = 'create_client',
+
+  //working units
+  CREATE_WORKING_UNIT = 'create_working_unit',
+  GET_ALL_WORKING_UNITS = 'get_all_working_units',
+  GET_WORKING_UNIT_BY_ID = 'get_working_unit_by_id',
 }

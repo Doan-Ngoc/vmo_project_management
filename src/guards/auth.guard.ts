@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate {
     }
     const decode = this.jwtService.verify(
       token,
-      this.configService.get('JWT_ACCESS_KEY') as string,
+      this.configService.getOrThrow('JWT_ACCESS_KEY') as string,
     );
     const user = await this.userService.getById(decode.id);
 

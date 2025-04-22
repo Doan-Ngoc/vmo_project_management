@@ -22,7 +22,7 @@ import { QueueModule } from '../queue/queue.module';
     forwardRef(() => RoleModule),
     forwardRef(() => PermissionModule),
     forwardRef(() => FirebaseModule),
-    WorkingUnitModule,
+    forwardRef(() => WorkingUnitModule),
     JwtModule,
     EmailModule,
     FilesModule,
