@@ -1,8 +1,14 @@
-import { IsString, IsNotEmpty, MaxLength, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
 
 export class CreatePermissionDto {
   @IsUUID()
-  @IsNotEmpty()
+  @IsOptional()
   id: string;
 
   @IsString()
