@@ -15,8 +15,8 @@ import { Exclude } from 'class-transformer';
 import { IsEmail } from 'class-validator';
 import { AccountType } from '../../../enum/account-type.enum';
 import { Project } from '../../projects/entities/project.entity';
-import { BaseEntity } from '@/databases/base.entity';
-import { Task } from '@/modules/tasks/entities/task.entity';
+import { BaseEntity } from '../../../databases/base.entity';
+import { Task } from '../../tasks/entities/task.entity';
 
 @Entity('users')
 export class User extends BaseEntity {

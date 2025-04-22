@@ -1,15 +1,34 @@
+// import { BadRequestException, Injectable } from '@nestjs/common';
+// import { PermissionService } from '@/modules/permissions/services/permission.service';
+// import * as fs from 'fs';
+// import * as path from 'path';
+// import { RoleService } from '@/modules/roles/services/role.service';
+// import { AccountType } from '@/enum/account-type.enum';
+// import { AccountStatus } from '@/enum/account-status.enum';
+// import { UserService } from '@/modules/users/services/user.service';
+// import { ConfigService } from '@nestjs/config';
+// import { AuthService } from '@/modules/auth/auth.service';
+// import { UserRepository } from '@/modules/users/repositories/user.repository';
+// import { PermissionRepository } from '@/modules/permissions/repositories/permission.repository';
+// import { PERMISSION_SEED_DATA } from '../data/new-permission-seed-data';
+// import { RolePermissionSeedData } from '../data/new-role-permissions-seed-data';
+// import { RoleName } from '@/enum/role.enum';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PermissionService } from '@/modules/permissions/services/permission.service';
+import { PermissionService } from '../../../modules/permissions/services/permission.service';
 import * as fs from 'fs';
 import * as path from 'path';
-import { RoleService } from '@/modules/roles/services/role.service';
-import { AccountType } from '@/enum/account-type.enum';
-import { AccountStatus } from '@/enum/account-status.enum';
-import { UserService } from '@/modules/users/services/user.service';
+import { RoleService } from '../../../modules/roles/services/role.service';
+import { AccountType } from '../../../enum/account-type.enum';
+import { AccountStatus } from '../../../enum/account-status.enum';
+import { UserService } from '../../../modules/users/services/user.service';
 import { ConfigService } from '@nestjs/config';
-import { AuthService } from '@/modules/auth/auth.service';
-import { UserRepository } from '@/modules/users/repositories/user.repository';
-import { PermissionRepository } from '@/modules/permissions/repositories/permission.repository';
+import { AuthService } from '../../../modules/auth/auth.service';
+import { UserRepository } from '../../../modules/users/repositories/user.repository';
+import { PermissionRepository } from '../../../modules/permissions/repositories/permission.repository';
+import { PERMISSION_SEED_DATA } from '../data/new-permission-seed-data';
+import { RolePermissionSeedData } from '../data/new-role-permissions-seed-data';
+import { RoleName } from '../../../enum/role.enum';
+
 @Injectable()
 export class SeederService {
   constructor(
@@ -20,53 +39,55 @@ export class SeederService {
     private readonly authService: AuthService,
     private readonly userRepository: UserRepository,
     private readonly permissionRepository: PermissionRepository,
+    private readonly rolePermissionSeedData: RolePermissionSeedData,
   ) {}
 
   async seedPermissions() {
-    console.log('Starting permission seeder...');
-    // Import JSON data
-    const permissionData = require('../data/permission-seed-data.json');
-
     try {
-      await this.permissionRepository.upsert(permissionData, ['id']);
-      // await this.permissionService.upsertData(permissionData);
-      console.log('Successfully seeded permissions');
+      const existingPermissions = await this.permissionRepository.find();
+      const existingPermissionNames = new Set(
+        existingPermissions.map((p) => p.name),
+      );
+      await this.permissionRepository.upsert(PERMISSION_SEED_DATA, ['id']);
+      console.log('Permission seeding completed');
+      // Get all existing permissions
+      const newPermissions = await this.permissionRepository.find();
+
+      // Filter out permissions that already exist
+      const seededPermissions = newPermissions.filter(
+        (permission) => !existingPermissionNames.has(permission.name),
+      );
+
+      if (seededPermissions.length > 0) {
+        console.log(`Added ${seededPermissions.length} new permissions`);
+        console.log(seededPermissions);
+      } else {
+        console.log('No new permissions to add');
+      }
     } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Failed to seed permissions');
+      console.error('Error seeding permissions:', error);
+      throw error;
     }
   }
 
   async seedRolePermissions() {
-    console.log('Starting role_permissions seeder...');
-    const rolePermissionsData = require('../data/role-permissions-seed-data.json');
-
     try {
-      //Group permissions by role
-      const groupedPermissions = rolePermissionsData.reduce(
-        (acc, rolePermission) => {
-          if (!acc[rolePermission.role_id]) {
-            acc[rolePermission.role_id] = [];
-          }
-          acc[rolePermission.role_id].push(rolePermission.permission_id);
-          return acc;
-        },
-        {} as Record<string, string[]>,
-      );
+      // Get role-permission data
+      const rolePermissionData =
+        await this.rolePermissionSeedData.seedRolePermission();
 
-      //Update each role with its permissions
-      for (const [role_id, permission_ids] of Object.entries(
-        groupedPermissions,
-      )) {
+      // Add permissions to each role
+      for (const rolePermission of rolePermissionData) {
+        const { roleId, permissionIds } = rolePermission;
         await this.roleService.addPermissionsToRole(
-          role_id,
-          permission_ids as string[],
+          roleId as string,
+          permissionIds,
         );
       }
-      console.log('Role_permissions data seeded successfully');
+      console.log('Role permissions seeded successfully');
     } catch (error) {
-      console.error(error);
-      throw new BadRequestException('Failed to seed role_permissions');
+      console.error('Error seeding role permissions:', error);
+      throw error;
     }
   }
 

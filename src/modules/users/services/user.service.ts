@@ -10,10 +10,10 @@ import {
 } from '@nestjs/common';
 // import { CreateUserDto } from '../dtos';
 import { User } from '../entities/user.entity';
-import { AuthService } from 'src/modules/auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
 import { UserRepository } from '../repositories/user.repository';
-import { AccountStatus } from 'src/enum/account-status.enum';
-import { AccountType } from 'src/enum/account-type.enum';
+import { AccountStatus } from '../../../enum/account-status.enum';
+import { AccountType } from '../../../enum/account-type.enum';
 import { RoleService } from '../../roles/services/role.service';
 import { WorkingUnitService } from '../../working-units/services/working-unit.service';
 import { Auth } from '@/decorators/auth.decorator';
@@ -22,11 +22,11 @@ import { EmailService } from '../../emails/services/email.service';
 import { JwtService } from '../../jwt/services/jwt.service';
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import { FirebaseStorageService } from '@/infrastructure/firebase/services/firebase.storage.service';
+import { FirebaseStorageService } from '../../../infrastructure/firebase/services/firebase.storage.service';
 import { extname } from 'path';
 import { QueueService } from '../../queue/services/queue.service';
 import { CreateUserResponseDto } from '../dtos/create-user-response.dto';
-import { generateRandomPassword } from '@/utils/password-generator.util';
+import { generateRandomPassword } from '../../../utils/password-generator.util';
 
 @Injectable()
 export class UserService {

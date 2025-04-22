@@ -7,8 +7,8 @@ import {
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
-import { UserService } from '@/modules/users/services/user.service';
-import { AccountType } from '@/enum/account-type.enum';
+import { UserService } from '../modules/users/services/user.service';
+import { AccountType } from '../enum/account-type.enum';
 
 @Injectable()
 export class WorkingUnitMemberGuard implements CanActivate {

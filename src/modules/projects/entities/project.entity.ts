@@ -11,9 +11,10 @@ import {
 import { WorkingUnit } from '../../working-units/entities/working-unit.entity';
 import { Client } from '../../clients/entities/client.entity';
 import { User } from '../../users/entities/user.entity';
-import { BaseEntity } from '@/databases/base.entity';
+import { BaseEntity } from '../../../databases/base.entity';
 import { Task } from '../../tasks/entities/task.entity';
-import { ProjectStatus } from '@/enum/project-status.enum';
+// import { ProjectStatus } from '@/enum/project-status.enum';
+import { ProjectStatus } from '../../../enum/project-status.enum';
 import { Exclude } from 'class-transformer';
 
 @Entity('projects')

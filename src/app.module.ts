@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, ClassSerializerInterceptor } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -17,6 +17,8 @@ import { TaskCommentModule } from './modules/task_comments/task-comment.module';
 import { FirebaseModule } from './infrastructure/firebase/firebase.module';
 import { EmailModule } from './modules/emails/email.module';
 import { QueueModule } from './modules/queue/queue.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { SeedsModule } from './databases/seeds/seeds.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,8 +48,15 @@ import { QueueModule } from './modules/queue/queue.module';
     FirebaseModule,
     EmailModule,
     QueueModule,
+    SeedsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+  ],
 })
 export class AppModule {}

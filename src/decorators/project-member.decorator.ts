@@ -1,7 +1,8 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
 import { ProjectMemberGuard } from '@/guards/project-member.guard';
 import { Auth } from './auth.decorator';
-import { Permissions } from 'src/enum/permissions.enum';
+// import { Permissions } from 'src/enum/permissions.enum';
+import { Permissions } from '../enum/permissions.enum';
 
 export function ProjectMember(
   permission: Permissions,

@@ -10,9 +10,10 @@ import {
 } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
-import { BaseEntity } from '@/databases/base.entity';
+import { BaseEntity } from '../../../databases/base.entity';
 import { TaskComment } from '../../task_comments/entities/task-comment.entity';
-import { TaskStatus } from '@/enum/task-status.enum';
+// import { TaskStatus } from '@/enum/task-status.enum';
+import { TaskStatus } from '../../../enum/task-status.enum';
 
 @Entity('tasks')
 export class Task extends BaseEntity {

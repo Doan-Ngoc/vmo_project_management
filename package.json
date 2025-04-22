@@ -24,9 +24,9 @@
     "typeorm:migration:run": "npm run typeorm migration:run",
     "typeorm:migration:revert": "npm run typeorm migration:revert",
     "seed": "ts-node -r tsconfig-paths/register src/databases/seeds/seed.ts",
-    "seed:permissions": "ts-node -r tsconfig-paths/register src/databases/seeds/seed.ts permissions",
-    "seed:role-permissions": "ts-node -r tsconfig-paths/register src/databases/seeds/seed.ts role-permissions",
-    "seed:admin": "ts-node -r tsconfig-paths/register src/databases/seeds/seed.ts admin",
+    "seed:permissions": "ts-node src/databases/seeds/seed.ts permissions",
+    "seed:role-permissions": "ts-node src/databases/seeds/seed.ts role-permissions",
+    "seed:admin": "ts-node src/databases/seeds/seed.ts admin",
     "generate:template": "ts-node -r tsconfig-paths/register src/scripts/generate-test-users.ts"
   },
   "dependencies": {

@@ -1,10 +1,14 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as xlsx from 'xlsx';
-import { CreateUserDto } from '@/modules/users/dtos';
-import { RoleService } from '@/modules/roles/services/role.service';
-import { WorkingUnitService } from '@/modules/working-units/services/working-unit.service';
-import { generateRandomPassword } from '@/utils/password-generator.util';
-import { RoleName } from '@/enum/role.enum';
+// import { CreateUserDto } from '@/modules/users/dtos';
+// import { RoleService } from '@/modules/roles/services/role.service';
+import { CreateUserDto } from '../../../modules/users/dtos';
+import { RoleService } from '../../../modules/roles/services/role.service';
+// import { WorkingUnitService } from '@/modules/working-units/services/working-unit.service';
+import { WorkingUnitService } from '../../../modules/working-units/services/working-unit.service';
+import { generateRandomPassword } from '../../../utils/password-generator.util';
+// import { RoleName } from '@/enum/role.enum';
+import { RoleName } from '../../../enum/role.enum';
 
 @Injectable()
 export class FileService {

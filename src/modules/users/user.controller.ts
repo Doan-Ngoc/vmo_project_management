@@ -66,11 +66,6 @@ export class UserController {
   // }
   // }
 
-  @Auth(Permissions.CREATE_CLIENT)
-  @Get()
-  getUsers() {
-    return 'abc';
-  }
 
   @Post('profile-picture')
   @UseInterceptors(

@@ -1,4 +1,4 @@
-import { BaseEntity } from '@/databases/base.entity';
+import { BaseEntity } from '../../../databases/base.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 

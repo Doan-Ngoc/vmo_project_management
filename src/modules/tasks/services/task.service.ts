@@ -15,7 +15,7 @@ import { Cron } from '@nestjs/schedule';
 import { CronExpression } from '@nestjs/schedule';
 import { TaskStatus } from '@/enum/task-status.enum';
 // import { AddTaskMemberDto } from '../dto/add-task-member.dto';
-import { AccountStatus } from '@/enum/account-status.enum';
+import { AccountStatus } from '../../../enum/account-status.enum';
 // import { RemoveTaskMemberDto } from '../dto/remove-task-member.dto';
 // import { DeleteTaskDto } from '../dto/delete-task.dto';
 // import { UpdateTaskStatusDto } from '../dto/update-task-status.dto';

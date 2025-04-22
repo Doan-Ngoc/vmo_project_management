@@ -1,4 +1,4 @@
-import { UserService } from '@/modules/users/services/user.service';
+import { UserService } from '../../../modules/users/services/user.service';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { app } from 'firebase-admin';
 import { getStorage } from 'firebase-admin/storage';

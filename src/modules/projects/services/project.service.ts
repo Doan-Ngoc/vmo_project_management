@@ -7,7 +7,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ProjectStatus } from '@/enum/project-status.enum';
+// import { ProjectStatus } from '@/enum/project-status.enum';
+import { ProjectStatus } from '../../../enum/project-status.enum';
 import { Project } from '../entities/project.entity';
 // import { CreateProjectDto } from '../dtos/create-project.dto';
 import { User } from '../../users/entities/user.entity';

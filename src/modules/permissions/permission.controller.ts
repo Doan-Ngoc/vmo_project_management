@@ -2,8 +2,9 @@ import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { PermissionService } from './services/permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { Permission } from './entities/permission.entity';
-import { Auth } from '@/decorators/auth.decorator';
-import { Permissions } from '@/enum/permissions.enum';
+import { Auth } from '../../decorators/auth.decorator';
+// import { Permissions } from '@/enum/permissions.enum';
+import { Permissions } from '../../enum/permissions.enum';
 
 @Controller('permissions')
 @Auth(Permissions.MANAGE_PERMISSIONS)

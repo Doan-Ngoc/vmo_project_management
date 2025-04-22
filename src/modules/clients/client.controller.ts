@@ -2,8 +2,8 @@ import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { ClientService } from './services/client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { Client } from './entities/client.entity';
-import { Auth } from 'src/decorators/auth.decorator';
-import { Permissions } from 'src/enum/permissions.enum';
+import { Auth } from '../../decorators/auth.decorator';
+import { Permissions } from '../../enum/permissions.enum';
 @Controller('clients')
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}

@@ -8,9 +8,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ProjectService } from '../modules/projects/services/project.service';
-import { AccountStatus } from '@/enum/account-status.enum';
-import { AccountType } from '@/enum/account-type.enum';
-import { TaskService } from '@/modules/tasks/services/task.service';
+// import { AccountStatus } from '@/enum/account-status.enum';
+// import { AccountType } from '@/enum/account-type.enum';
+// import { TaskService } from '@/modules/tasks/services/task.service';
+import { AccountStatus } from '../enum/account-status.enum';
+import { AccountType } from '../enum/account-type.enum';
+import { TaskService } from '../modules/tasks/services/task.service';
+
 @Injectable()
 export class ProjectMemberGuard implements CanActivate {
   constructor(

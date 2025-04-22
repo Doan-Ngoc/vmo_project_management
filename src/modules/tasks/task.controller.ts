@@ -14,11 +14,11 @@ import {
 import { TaskService } from './services/task.service';
 // import { CreateTaskDto } from './dto/create-task.dto';
 // import { UpdateTaskDto } from './dto/update-task.dto';
-import { Auth } from 'src/decorators/auth.decorator';
-import { Permissions } from 'src/enum/permissions.enum';
-import { GetUser } from 'src/decorators/get-user.decorator';
+import { Auth } from '../../decorators/auth.decorator';
+import { Permissions } from '../../enum/permissions.enum';
+import { GetUser } from '../../decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
-import { ProjectMemberGuard } from '@/guards/project-member.guard';
+import { ProjectMemberGuard } from '../../guards/project-member.guard';
 // import { AddTaskMemberDto } from './dto/add-task-member.dto';
 // import { RemoveTaskMemberDto } from './dto/remove-task-member.dto';
 import { Task } from './entities/task.entity';
