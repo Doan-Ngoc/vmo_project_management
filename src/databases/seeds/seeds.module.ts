@@ -48,6 +48,7 @@ import { RolePermissionSeedData } from './data/new-role-permissions-seed-data';
     RoleModule,
     AuthModule,
     UserModule,
+    RoleModule
   ],
   providers: [SeedsService, RolePermissionSeedData],
   exports: [SeedsService],

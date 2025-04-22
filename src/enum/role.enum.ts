@@ -1,5 +1,5 @@
 export enum RoleName {
   DEV = 'dev',
   PM = 'pm',
-  LEAD_TECH = 'lead_tech',
+  TECH_LEAD = 'tech_lead',
 }

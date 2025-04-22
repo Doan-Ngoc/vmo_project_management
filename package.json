@@ -27,6 +27,7 @@
     "seed:permissions": "ts-node src/databases/seeds/seed.ts permissions",
     "seed:role-permissions": "ts-node src/databases/seeds/seed.ts role-permissions",
     "seed:admin": "ts-node src/databases/seeds/seed.ts admin",
+    "seed:roles": "ts-node src/databases/seeds/seed.ts roles",
     "generate:template": "ts-node -r tsconfig-paths/register src/scripts/generate-test-users.ts"
   },
   "dependencies": {

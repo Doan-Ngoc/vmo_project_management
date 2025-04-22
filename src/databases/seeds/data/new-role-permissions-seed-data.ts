@@ -22,7 +22,7 @@ export class RolePermissionSeedData {
     const pmRoleId = roles.find((role) => role.name === RoleName.PM)?.id;
     const devRoleId = roles.find((role) => role.name === RoleName.DEV)?.id;
     const leadTechRoleId = roles.find(
-      (role) => role.name === RoleName.LEAD_TECH,
+      (role) => role.name === RoleName.TECH_LEAD,
     )?.id;
 
     const getPermissionId = (name: string) => {

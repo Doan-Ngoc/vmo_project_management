@@ -28,6 +28,8 @@ import { PermissionRepository } from '../../../modules/permissions/repositories/
 import { PERMISSION_SEED_DATA } from '../data/new-permission-seed-data';
 import { RolePermissionSeedData } from '../data/new-role-permissions-seed-data';
 import { RoleName } from '../../../enum/role.enum';
+import { RoleRepository } from '../../../modules/roles/repositories/role.repository';
+import { ROLE_SEED_DATA } from '../data/role-seed-data';
 
 @Injectable()
 export class SeedsService {
@@ -40,6 +42,7 @@ export class SeedsService {
     private readonly userRepository: UserRepository,
     private readonly permissionRepository: PermissionRepository,
     private readonly rolePermissionSeedData: RolePermissionSeedData,
+    private readonly roleRepository: RoleRepository,
   ) {}
 
   async seedPermissions() {
@@ -59,13 +62,42 @@ export class SeedsService {
       );
 
       if (seededPermissions.length > 0) {
-        console.log(`Added ${seededPermissions.length} new permissions`);
+        console.log(
+          `Added ${seededPermissions.length} new permissions`,
+          seededPermissions,
+        );
         console.log(seededPermissions);
       } else {
         console.log('No new permissions to add');
       }
     } catch (error) {
       console.error('Error seeding permissions:', error);
+      throw error;
+    }
+  }
+
+  async seedRoles() {
+    try {
+      const existingRoles = await this.roleService.getAll();
+      const existingRoleNames = new Set(existingRoles.map((r) => r.name));
+
+      await this.roleRepository.upsert(ROLE_SEED_DATA, ['id']);
+      console.log('Role seeding completed');
+      // Get all existing roles
+      const newRoles = await this.roleRepository.find();
+
+      // Filter out roles that already exist
+      const seededRoles = newRoles.filter(
+        (role) => !existingRoleNames.has(role.name),
+      );
+      if (seededRoles.length > 0) {
+        console.log(`Added ${seededRoles.length} new roles`, seededRoles);
+        console.log(seededRoles);
+      } else {
+        console.log('No new role to add');
+      }
+    } catch (error) {
+      console.error('Error seeding roles:', error);
       throw error;
     }
   }
@@ -110,7 +142,7 @@ export class SeedsService {
       return defaultAdmin;
     } catch (error) {
       console.error(error);
-      throw new BadRequestException('Failed to seed default admin');
+      throw new BadRequestException('Failed to seed default admin', error);
     }
   }
 }

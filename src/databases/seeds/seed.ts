@@ -15,6 +15,10 @@ async function bootstrap() {
         await seeder.seedPermissions();
         break;
 
+      case 'roles':
+        await seeder.seedRoles();
+        break;
+
       case 'role-permissions':
         await seeder.seedRolePermissions();
         break;
@@ -26,6 +30,7 @@ async function bootstrap() {
       default:
         // Run all seeds if no specific seed is specified
         await seeder.seedPermissions();
+        await seeder.seedRoles();
         await seeder.seedRolePermissions();
         await seeder.seedDefaultAdmin();
         console.log('All seeding completed');
