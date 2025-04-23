@@ -21,7 +21,7 @@ import * as path from 'path';
 import { RoleModule } from '../../modules/roles/role.module';
 import { AuthModule } from '../../modules/auth/auth.module';
 import { UserModule } from '../../modules/users/user.module';
-import { RolePermissionSeedData } from './data/new-role-permissions-seed-data';
+import { RolePermissionSeedData } from './data/role-permissions-seed-data';
 
 @Module({
   imports: [
@@ -48,7 +48,7 @@ import { RolePermissionSeedData } from './data/new-role-permissions-seed-data';
     RoleModule,
     AuthModule,
     UserModule,
-    RoleModule
+    RoleModule,
   ],
   providers: [SeedsService, RolePermissionSeedData],
   exports: [SeedsService],

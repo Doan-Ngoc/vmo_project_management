@@ -39,6 +39,7 @@ export class FirebaseStorageService {
         public: true,
       });
       const publicUrl = `https://storage.googleapis.com/${bucket.name}/${path}`;
+      console.log('publicUrl', publicUrl);
       return this.userService.saveProfilePictureToDatabase(publicUrl, userId);
     } catch (error) {
       console.error('Error uploading profile picture:', error);

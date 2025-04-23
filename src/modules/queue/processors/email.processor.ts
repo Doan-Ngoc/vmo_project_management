@@ -26,6 +26,10 @@ export class EmailProcessor {
   async handleSendVerificationEmail(job: Job<CreateVerificationEmailDto>) {
     try {
       this.logger.debug(`Processing email job ${job.id} for ${job.data.email}`);
+      const user = await this.userService.getById(job.data.id);
+      this.logger.debug(
+        `Current user status before sending email: ${user.accountStatus}`,
+      );
 
       await this.emailService.sendVerificationEmail(job.data);
     } catch (error) {
@@ -41,10 +45,22 @@ export class EmailProcessor {
     this.logger.error(
       `Job ${job.id} failed after ${job.attemptsMade} attempts: ${error.message}`,
     );
-    await this.userService.updateAccountStatus(
-      AccountStatus.EMAIL_SEND_FAILED,
-      job.data.id,
+    const user = await this.userService.getById(job.data.id);
+    this.logger.debug(
+      `Current user status before updating to failed: ${user.accountStatus}`,
     );
+
+    if (user.accountStatus !== AccountStatus.EMAIL_SEND_FAILED) {
+      await this.userService.updateAccountStatus(
+        AccountStatus.EMAIL_SEND_FAILED,
+        job.data.id,
+      );
+      this.logger.debug(`Updated user status to EMAIL_SEND_FAILED`);
+    } else {
+      this.logger.debug(
+        `User already has EMAIL_SEND_FAILED status, skipping update`,
+      );
+    }
   }
 
   @OnQueueCompleted()
@@ -52,9 +68,15 @@ export class EmailProcessor {
     this.logger.debug(
       `Successfully completed job ${job.id} for ${job.data.email}`,
     );
+    const user = await this.userService.getById(job.data.id);
+    this.logger.debug(
+      `Current user status before updating to pending: ${user.accountStatus}`,
+    );
+
     await this.userService.updateAccountStatus(
       AccountStatus.PENDING_ACTIVATION,
       job.data.id,
     );
+    this.logger.debug(`Updated user status to PENDING_ACTIVATION`);
   }
 }

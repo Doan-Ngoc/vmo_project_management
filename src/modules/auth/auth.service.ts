@@ -20,6 +20,13 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
+  validatePassword(password: string): boolean {
+    console.log(password);
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+    return passwordRegex.test(password);
+  }
+
   hashPassword(password: string) {
     const salt = bcrypt.genSaltSync();
     return bcrypt.hashSync(password, salt);

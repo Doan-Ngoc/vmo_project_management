@@ -44,8 +44,6 @@ export class TaskController {
 
   //Create new task
   @Post()
-  // @UseGuards(ProjectMemberGuard)
-  // @Auth(Permissions.CREATE_TASK)
   @ProjectMember(Permissions.CREATE_TASK)
   createTask(@Body() createTaskDto: CreateTaskDto, @GetUser() user: User) {
     return this.taskService.createTask(createTaskDto, user.id);
@@ -53,8 +51,6 @@ export class TaskController {
 
   //Get task by id
   @Get(':taskId')
-  // @UseGuards(ProjectMemberGuard)
-  // @Auth(Permissions.GET_TASK_BY_ID)
   @ProjectMember(Permissions.GET_TASK_BY_ID)
   getTaskById(@Param('taskId') id: string): Promise<Task> {
     return this.taskService.getById(id);
@@ -62,8 +58,6 @@ export class TaskController {
 
   //Get all tasks of a project
   @Get('/project/:projectId')
-  // @UseGuards(ProjectMemberGuard)
-  // @Auth(Permissions.GET_ALL_TASKS)
   @ProjectMember(Permissions.GET_ALL_TASKS)
   async getAllTasks(
     @Param('projectId') projectId: string,
@@ -81,8 +75,6 @@ export class TaskController {
   }
 
   @Patch(':taskId/status')
-  // @UseGuards(TaskMemberGuard)
-  // @Auth(Permissions.UPDATE_TASK_STATUS)
   @ProjectMember(Permissions.UPDATE_TASK_STATUS)
   updateStatus(
     @Param('taskId') taskId: string,
@@ -95,7 +87,6 @@ export class TaskController {
   @Patch(':taskId')
   @UseGuards(TaskMemberGuard)
   @Auth(Permissions.UPDATE_TASK)
-  // @ProjectMember(Permissions.UPDATE_TASK)
   async updateTask(
     @Param('taskId') taskId: string,
     @Body() updateTaskDto: UpdateTaskDto,
@@ -105,8 +96,6 @@ export class TaskController {
   }
 
   @Delete(':taskId')
-  // @UseGuards(ProjectMemberGuard)
-  // @Auth(Permissions.DELETE_TASK)
   @ProjectMember(Permissions.DELETE_TASK)
   async deleteTask(
     @Param('taskId') taskId: string,

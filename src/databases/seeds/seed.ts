@@ -8,7 +8,7 @@ async function bootstrap() {
   const seeder = app.get(SeedsService);
   try {
     console.log('Seeding started');
-    const seedType = process.argv[2]; // Get the seeder type from command line
+    const seedType = process.argv[2];
 
     switch (seedType) {
       case 'permissions':

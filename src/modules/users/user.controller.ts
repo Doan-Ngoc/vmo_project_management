@@ -26,7 +26,7 @@ import * as multer from 'multer';
 import { extname } from 'path';
 import { CreateUserResponseDto } from './dtos/create-user-response.dto';
 import { AccountStatus } from '../../enum/account-status.enum';
-import { GetUser } from '@/decorators/get-user.decorator';
+import { GetUser } from '../../decorators/get-user.decorator';
 @Controller('users')
 export class UserController {
   constructor(
@@ -59,6 +59,15 @@ export class UserController {
   ) {
     const userDataArray = await this.fileService.processExcelImport(file);
     return this.userService.create(userDataArray);
+  }
+
+  @Put('/password')
+  @Auth(Permissions.CHANGE_PASSWORD)
+  async changePassword(
+    @Body('newPassword') newPassword: string,
+    @GetUser() user: User,
+  ) {
+    return this.userService.changePassword(newPassword, user.id);
   }
 
   @Put('/:id')
@@ -94,14 +103,5 @@ export class UserController {
     @Body('userId') userId: string,
   ) {
     return this.storageService.uploadProfilePicture(file, userId);
-  }
-
-  @Put('/password')
-  @Auth(Permissions.CHANGE_PASSWORD)
-  async changePassword(
-    @Body('newPassword') newPassword: string,
-    @GetUser() user: User,
-  ) {
-    return this.userService.changePassword(newPassword, user.id);
   }
 }

@@ -9,6 +9,8 @@ import {
 import { EmailService } from './services/email.service';
 import { CreateVerificationEmailDto } from './dtos/create-verification-email.dto';
 import { QueueService } from '../queue/services/queue.service';
+import { Auth } from '../../decorators/auth.decorator';
+import { Permissions } from '../../enum/permissions.enum';
 @Controller('emails')
 export class EmailController {
   constructor(
@@ -17,6 +19,7 @@ export class EmailController {
     private readonly queueService: QueueService,
   ) {}
   @Post('bulk')
+  @Auth(Permissions.SEND_BULK_EMAIL)
   async sendBulkEmail(
     @Body() createVerificationEmailDtos: CreateVerificationEmailDto[],
   ) {

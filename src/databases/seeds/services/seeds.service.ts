@@ -25,8 +25,8 @@ import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../../../modules/auth/auth.service';
 import { UserRepository } from '../../../modules/users/repositories/user.repository';
 import { PermissionRepository } from '../../../modules/permissions/repositories/permission.repository';
-import { PERMISSION_SEED_DATA } from '../data/new-permission-seed-data';
-import { RolePermissionSeedData } from '../data/new-role-permissions-seed-data';
+import { PERMISSION_SEED_DATA } from '../data/permission-seed-data';
+import { RolePermissionSeedData } from '../data/role-permissions-seed-data';
 import { RoleName } from '../../../enum/role.enum';
 import { RoleRepository } from '../../../modules/roles/repositories/role.repository';
 import { ROLE_SEED_DATA } from '../data/role-seed-data';
@@ -51,7 +51,7 @@ export class SeedsService {
       const existingPermissionNames = new Set(
         existingPermissions.map((p) => p.name),
       );
-      await this.permissionRepository.upsert(PERMISSION_SEED_DATA, ['id']);
+      await this.permissionRepository.upsert(PERMISSION_SEED_DATA, ['name']);
       console.log('Permission seeding completed');
       // Get all existing permissions
       const newPermissions = await this.permissionRepository.find();
@@ -66,7 +66,6 @@ export class SeedsService {
           `Added ${seededPermissions.length} new permissions`,
           seededPermissions,
         );
-        console.log(seededPermissions);
       } else {
         console.log('No new permissions to add');
       }
@@ -81,7 +80,7 @@ export class SeedsService {
       const existingRoles = await this.roleService.getAll();
       const existingRoleNames = new Set(existingRoles.map((r) => r.name));
 
-      await this.roleRepository.upsert(ROLE_SEED_DATA, ['id']);
+      await this.roleRepository.upsert(ROLE_SEED_DATA, ['name']);
       console.log('Role seeding completed');
       // Get all existing roles
       const newRoles = await this.roleRepository.find();

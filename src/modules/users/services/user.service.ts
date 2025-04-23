@@ -100,9 +100,9 @@ export class UserService {
           accountType: AccountType.MEMBER,
         };
 
-        if (userData.email === 'hokanohito1234@gmail.com') {
-          errors.push(`Error at row ${rowNumber}: This is a test error`);
-        }
+        // if (userData.email === 'hokanohito1234@gmail.com') {
+        //   errors.push(`Error at row ${rowNumber}: This is a test error`);
+        // }
         const newUser = this.userRepository.create(userData);
 
         const savedUser = await this.userRepository.save(newUser);
@@ -173,6 +173,7 @@ export class UserService {
     // });
     const user = await this.getById(userId);
     if (user.accountStatus === status) {
+      console.log(user, user.accountStatus);
       throw new BadRequestException('User already has this status');
     }
     user.accountStatus = status;
@@ -180,12 +181,18 @@ export class UserService {
   }
 
   async saveProfilePictureToDatabase(url: string, userId: string) {
+    console.log('url', url);
     const user = await this.getById(userId);
     user.profilePicture = url;
     await this.userRepository.save(user);
+    console.log('done updating to db');
   }
 
   async changePassword(newPassword: string, userId: string) {
+    console.log(newPassword);
+    if (!this.authService.validatePassword(newPassword)) {
+      throw new BadRequestException('Invalid password');
+    }
     const user = await this.getById(userId);
     user.hashedPassword = this.authService.hashPassword(newPassword);
     return await this.userRepository.save(user);

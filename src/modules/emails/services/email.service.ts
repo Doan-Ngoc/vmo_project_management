@@ -3,6 +3,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '../../jwt/services/jwt.service';
 import { CreateVerificationEmailDto } from '../dtos/create-verification-email.dto';
+import { AccountStatus } from '@/enum/account-status.enum';
 
 @Injectable()
 export class EmailService {

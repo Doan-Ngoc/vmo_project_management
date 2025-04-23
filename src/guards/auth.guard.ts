@@ -51,14 +51,19 @@ export class AuthGuard implements CanActivate {
       PERMISSIONS_KEY,
       [context.getHandler(), context.getClass()],
     );
+    console.log('requiredPermission', requiredPermission);
     if (!requiredPermission) {
       return true;
     }
     const allowedRoleIds =
       await this.permissionService.getPermissionRoles(requiredPermission);
     const userRoleId = user.role.id;
+    console.log('allowedRoleIds', allowedRoleIds);
+    console.log('userRoleId', userRoleId);
     if (!allowedRoleIds.includes(userRoleId)) {
-      throw new ForbiddenException();
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
     }
     return true;
   }

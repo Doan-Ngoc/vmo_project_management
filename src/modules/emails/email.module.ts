@@ -7,12 +7,15 @@ import * as path from 'path';
 import { JwtModule } from '../jwt/jwt.module';
 import { EmailController } from './email.controller';
 import { QueueModule } from '../queue/queue.module';
-
+import { PermissionModule } from '../permissions/permission.module';
+import { UserModule } from '../users/user.module';
 @Module({
   imports: [
     ConfigModule,
     JwtModule,
     forwardRef(() => QueueModule),
+    forwardRef(() => PermissionModule),
+    forwardRef(() => UserModule),
     MailerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({

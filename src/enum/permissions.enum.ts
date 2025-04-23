@@ -22,6 +22,7 @@ export enum Permissions {
   UPLOAD_PROFILE_PICTURE = 'upload_profile_picture',
   UPDATE_ACCOUNT_STATUS = 'update_account_status',
   CHANGE_PASSWORD = 'change_password',
+  SEND_BULK_EMAIL = 'send_bulk_email',
 
   //projects
   CREATE_PROJECT = 'create_project',
@@ -41,6 +42,7 @@ export enum Permissions {
   UPDATE_TASK = 'update_task',
   UPDATE_TASK_STATUS = 'update_task_status',
   DELETE_TASK = 'delete_task',
+  UPDATE_TASK_MEMBERS = 'update_task_members',
 
   //task comments
   CREATE_TASK_COMMENT = 'create_task_comment',

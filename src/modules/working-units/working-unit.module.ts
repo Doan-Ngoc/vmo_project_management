@@ -8,7 +8,11 @@ import { PermissionModule } from '../permissions/permission.module';
 import { JwtModule } from '../jwt/jwt.module';
 import { UserModule } from '../users/user.module';
 @Module({
-  imports: [PermissionModule, JwtModule, forwardRef(() => UserModule)],
+  imports: [
+    JwtModule,
+    forwardRef(() => UserModule),
+    forwardRef(() => PermissionModule),
+  ],
   controllers: [WorkingUnitController],
   providers: [WorkingUnitService, WorkingUnitRepository],
   exports: [WorkingUnitService],

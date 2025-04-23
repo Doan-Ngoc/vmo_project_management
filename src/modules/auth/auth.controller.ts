@@ -21,7 +21,7 @@ export class AuthController {
     return this.authService.logIn(authLogInDto);
   }
 
-  @Post('verify-email')
+  @Get('verify-email')
   async verifyEmail(@Query('token') token: string) {
     await this.authService.verifyEmail(token);
     return { message: 'Email verified successfully' };

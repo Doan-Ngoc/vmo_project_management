@@ -9,7 +9,7 @@ import {
   Get,
 } from '@nestjs/common';
 import { TaskCommentService } from './services/task-comment.service';
-import { GetUser } from '@/decorators/get-user.decorator';
+import { GetUser } from '../../decorators/get-user.decorator';
 import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
 import { TaskMemberGuard } from '@/guards/task-member.guard';
 import { Auth } from '@/decorators/auth.decorator';
@@ -26,8 +26,8 @@ import { TaskCommentOwner } from '@/decorators/task-comment-owner.decorator';
 export class TaskCommentController {
   constructor(private readonly taskCommentService: TaskCommentService) {}
 
-  @ProjectMember(Permissions.CREATE_TASK_COMMENT)
   @Post()
+  @ProjectMember(Permissions.CREATE_TASK_COMMENT)
   async createTaskComment(
     @Body() createTaskCommentDto: CreateTaskCommentDto,
     @GetUser() user: User,
@@ -35,16 +35,16 @@ export class TaskCommentController {
     return this.taskCommentService.create(createTaskCommentDto, user.id);
   }
 
-  @ProjectMember(Permissions.GET_ALL_TASK_COMMENTS)
   @Get(':taskId')
+  @ProjectMember(Permissions.GET_ALL_TASK_COMMENTS)
   async getCommentsByTask(
     @Param('taskId') taskId: string,
   ): Promise<TaskComment[]> {
     return this.taskCommentService.getByTask(taskId);
   }
 
-  @TaskCommentOwner(Permissions.UPDATE_TASK_COMMENT)
   @Put(':commentId')
+  @TaskCommentOwner(Permissions.UPDATE_TASK_COMMENT)
   async updateTaskComment(
     @Param('commentId') commentId: string,
     @Body() updateTaskCommentDto: UpdateTaskCommentDto,
@@ -57,8 +57,8 @@ export class TaskCommentController {
     );
   }
 
-  @TaskCommentOwner(Permissions.DELETE_TASK_COMMENT)
   @Delete(':commentId')
+  @TaskCommentOwner(Permissions.DELETE_TASK_COMMENT)
   async deleteTaskComment(
     @Param('commentId') commentId: string,
     @GetUser() user: User,
