@@ -1,7 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { UserService } from './services/user.service';
 import { UserController } from './user.controller';
-// import { AuthModule } from 'src/modules/auth/auth.module';
 import { AuthModule } from '../../modules/auth/auth.module';
 import { User } from './entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';

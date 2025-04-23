@@ -44,6 +44,9 @@ export class Project extends BaseEntity {
   @Column({ type: 'integer', nullable: true, name: 'tech_lead_number' })
   techLeadNumber: number;
 
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt: Date;
+
   @ManyToOne(() => WorkingUnit, (unit) => unit.projects)
   @JoinColumn({ name: 'working_unit_id' })
   workingUnit: WorkingUnit;

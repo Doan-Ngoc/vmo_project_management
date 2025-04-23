@@ -18,7 +18,7 @@ const config = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
-  migrations: [path.join(__dirname, '/migrations/**/*{.ts,.js}')],
+  migrations: [path.join(__dirname, '../migrations/**/*{.ts,.js}')],
   migrationsTableName: 'migrations',
   // logger: 'advanced-console',
   // logging: ['query', 'error', 'schema', 'warn', 'info', 'log', 'migration'],

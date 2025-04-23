@@ -61,6 +61,7 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.GET_ALL_CLIENTS),
           getPermissionId(Permissions.UPDATE_PROJECT_STATUS),
           getPermissionId(Permissions.CHANGE_PASSWORD),
+          getPermissionId(Permissions.GET_WORKING_UNIT_MEMBERS),
         ],
       },
       {
@@ -77,6 +78,7 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.TEST_PERMISSION),
           getPermissionId(Permissions.GET_WORKING_UNIT_BY_ID),
           getPermissionId(Permissions.CHANGE_PASSWORD),
+          getPermissionId(Permissions.GET_WORKING_UNIT_MEMBERS),
         ],
       },
       {
@@ -98,6 +100,7 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.GET_WORKING_UNIT_BY_ID),
           getPermissionId(Permissions.UPDATE_TASK_MEMBERS),
           getPermissionId(Permissions.CHANGE_PASSWORD),
+          getPermissionId(Permissions.GET_WORKING_UNIT_MEMBERS),
         ],
       },
     ];

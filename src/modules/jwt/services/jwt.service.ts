@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { ConfigService } from '@nestjs/config';
 
 interface JwtPayload {
   id: string;

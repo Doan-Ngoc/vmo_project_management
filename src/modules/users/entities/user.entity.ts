@@ -1,8 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   JoinColumn,
   ManyToOne,
   JoinTable,
@@ -20,7 +18,7 @@ import { Task } from '../../tasks/entities/task.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, unique: true })
   @IsEmail()
   email: string;
 
@@ -28,7 +26,7 @@ export class User extends BaseEntity {
   @Exclude()
   hashedPassword: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, unique: true })
   username: string;
 
   @Column({ type: 'varchar', length: 255, name: 'employee_name' })

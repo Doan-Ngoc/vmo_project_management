@@ -23,7 +23,7 @@ export class EmailController {
   async sendBulkEmail(
     @Body() createVerificationEmailDtos: CreateVerificationEmailDto[],
   ) {
-    // try {
+    console.log(createVerificationEmailDtos);
     await Promise.all(
       createVerificationEmailDtos.map((dto) =>
         this.queueService.addSendingEmailJob(dto),
@@ -33,8 +33,5 @@ export class EmailController {
       message: 'Emails queued for sending',
       totalEmails: createVerificationEmailDtos.length,
     };
-    // } catch (error) {
-    //   throw new BadRequestException('Failed to queue emails: ' + error.message);
-    // }
   }
 }

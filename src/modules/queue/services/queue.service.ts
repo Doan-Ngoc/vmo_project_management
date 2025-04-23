@@ -9,16 +9,16 @@ export class QueueService {
 
   async addSendingEmailJob(data: CreateVerificationEmailDto) {
     try {
-      return this.emailQueue.add('send-verification-email', data, {
+      const job = await this.emailQueue.add('send-verification-email', data, {
         attempts: 3,
         backoff: {
           type: 'exponential',
           delay: 1000,
         },
       });
+      return job;
     } catch (error) {
-      console.log('error', error);
-      // throw error;
+      throw new Error(`Failed to add email job to queue: ${error.message}`);
     }
   }
 }

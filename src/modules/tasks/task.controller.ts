@@ -12,30 +12,21 @@ import {
   Query,
 } from '@nestjs/common';
 import { TaskService } from './services/task.service';
-// import { CreateTaskDto } from './dto/create-task.dto';
-// import { UpdateTaskDto } from './dto/update-task.dto';
 import { Auth } from '../../decorators/auth.decorator';
 import { Permissions } from '../../enum/permissions.enum';
 import { GetUser } from '../../decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
-import { ProjectMemberGuard } from '../../guards/project-member.guard';
-// import { AddTaskMemberDto } from './dto/add-task-member.dto';
-// import { RemoveTaskMemberDto } from './dto/remove-task-member.dto';
 import { Task } from './entities/task.entity';
-// import { DeleteTaskDto } from './dto/delete-task.dto';
-// import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { TaskMemberGuard } from '@/guards/task-member.guard';
 import {
   CreateTaskDto,
-  AddTaskMemberDto,
-  RemoveTaskMemberDto,
   DeleteTaskDto,
   UpdateTaskStatusDto,
   UpdateTaskDto,
+  UpdateTaskMemberDto,
 } from './dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
-import { Project } from '../projects/entities/project.entity';
 import { ProjectMember } from '@/decorators/project-member.decorator';
 
 @Controller('tasks')
@@ -82,6 +73,15 @@ export class TaskController {
     @GetUser() user: User,
   ) {
     return this.taskService.updateStatus(taskId, updateStatusDto, user.id);
+  }
+
+  @Patch('/members')
+  @ProjectMember(Permissions.UPDATE_TASK_MEMBERS)
+  updateTaskMembers(
+    @Body() updateTaskMemberDto: UpdateTaskMemberDto,
+    @GetUser() user: User,
+  ) {
+    return this.taskService.updateTaskMembers(updateTaskMemberDto, user.id);
   }
 
   @Patch(':taskId')

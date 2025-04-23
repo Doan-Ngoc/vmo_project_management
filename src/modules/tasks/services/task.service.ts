@@ -5,32 +5,23 @@ import {
   forwardRef,
   Inject,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-// import { CreateTaskDto } from '../dto/create-task.dto';
+import { DataSource } from 'typeorm';
 import { Task } from '../entities/task.entity';
 import { ProjectService } from '../../projects/services/project.service';
 import { UserService } from '../../users/services/user.service';
 import { Cron } from '@nestjs/schedule';
 import { CronExpression } from '@nestjs/schedule';
 import { TaskStatus } from '@/enum/task-status.enum';
-// import { AddTaskMemberDto } from '../dto/add-task-member.dto';
 import { AccountStatus } from '../../../enum/account-status.enum';
 import { ProjectStatus } from '../../../enum/project-status.enum';
-// import { RemoveTaskMemberDto } from '../dto/remove-task-member.dto';
-// import { DeleteTaskDto } from '../dto/delete-task.dto';
-// import { UpdateTaskStatusDto } from '../dto/update-task-status.dto';
 import {
   CreateTaskDto,
-  AddTaskMemberDto,
-  RemoveTaskMemberDto,
   DeleteTaskDto,
   UpdateTaskDto,
   UpdateTaskStatusDto,
 } from '../dto';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
-import { Project } from '@/modules/projects/entities/project.entity';
 import { TaskRepository } from '../repositories/task.repository';
 import { UpdateTaskMemberDto } from '../dto/update-task-member.dto';
 import { User } from '../../users/entities/user.entity';
@@ -129,83 +120,6 @@ export class TaskService {
     }
   }
 
-  //Add member to task
-  async addMember(addTaskMemberDto: AddTaskMemberDto): Promise<Task> {
-    const { taskId, userId } = addTaskMemberDto;
-
-    // Get task with its project and members
-    const task = await this.taskRepository.findOne({
-      where: {
-        id: taskId,
-      },
-      relations: ['project', 'project.members', 'members', 'members.role'],
-    });
-
-    if (!task) {
-      throw new NotFoundException(`Task with ID ${taskId} not found`);
-    }
-
-    // Check task status
-    if (
-      task.status === TaskStatus.COMPLETED ||
-      task.status === TaskStatus.EXPIRED
-    ) {
-      throw new BadRequestException(
-        'Cannot add members to a completed or expired task',
-      );
-    }
-
-    const user = await this.userService.getById(userId);
-    //Check if user account is active
-    if (user.accountStatus !== AccountStatus.ACTIVE) {
-      throw new BadRequestException('User account is not active');
-    }
-    // Check if user is already assigned to the task
-    if (task.members.some((member) => member.id === user.id)) {
-      throw new BadRequestException('User is already assigned to this task');
-    }
-
-    // Check if user is a member of the project
-    if (!task.project.members.some((member) => member.id === user.id)) {
-      throw new BadRequestException('User is not a member of the project');
-    }
-
-    // Add the member
-    task.members = [...task.members, user];
-    return await this.taskRepository.save(task);
-  }
-
-  async removeMember(removeTaskMemberDto: RemoveTaskMemberDto): Promise<Task> {
-    const { taskId, userId } = removeTaskMemberDto;
-    const task = await this.getById(taskId);
-
-    if (!task) {
-      throw new NotFoundException(`Task with ID ${taskId} not found`);
-    }
-
-    // Check task status
-    if (
-      task.status === TaskStatus.COMPLETED ||
-      task.status === TaskStatus.EXPIRED
-    ) {
-      throw new BadRequestException(
-        'Cannot remove members from a completed or expired task',
-      );
-    }
-
-    const user = await this.userService.getById(userId);
-
-    // Check if user is a member of the task
-    const isMember = task.members.some((member) => member.id === user.id);
-    if (!isMember) {
-      throw new BadRequestException('User is not a member of this task');
-    }
-
-    // Remove the member
-    task.members = task.members.filter((member) => member.id !== user.id);
-    return await this.taskRepository.save(task);
-  }
-
   async updateTaskMembers(
     updateTaskMemberDto: UpdateTaskMemberDto,
     userId: string,
@@ -219,7 +133,13 @@ export class TaskService {
 
     try {
       // Get task with its project and members
-      const task = await this.getById(taskId);
+      const task = await this.taskRepository.findOne({
+        where: { id: taskId },
+        relations: ['project', 'project.members', 'members', 'members.role'],
+      });
+      if (!task) {
+        throw new NotFoundException(`Task with ID ${taskId} not found`);
+      }
 
       // Check task status
       if (
@@ -240,6 +160,8 @@ export class TaskService {
       const usersToRemoveIds = userIds.filter((userId) =>
         currentMemberIds.includes(userId),
       );
+      console.log('usersToRemoveIds', usersToRemoveIds);
+      console.log('usersToAddIds', usersToAddIds);
 
       //Remove members
       const membersAfterRemove = currentMembers.filter(
@@ -256,7 +178,7 @@ export class TaskService {
           errors.push(`User ${userId} account is not active`);
           continue;
         }
-
+        console.log(task.project);
         // Check if user is a member of the project
         if (!task.project.members.some((member) => member.id === user.id)) {
           errors.push(`User ${userId} is not a member of the project`);

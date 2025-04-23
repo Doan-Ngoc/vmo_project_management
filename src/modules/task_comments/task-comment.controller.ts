@@ -35,7 +35,7 @@ export class TaskCommentController {
     return this.taskCommentService.create(createTaskCommentDto, user.id);
   }
 
-  @Get(':taskId')
+  @Get('/task/:taskId')
   @ProjectMember(Permissions.GET_ALL_TASK_COMMENTS)
   async getCommentsByTask(
     @Param('taskId') taskId: string,

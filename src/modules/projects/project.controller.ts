@@ -10,26 +10,19 @@ import {
   ParseIntPipe,
   DefaultValuePipe,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { ProjectService } from './services/project.service';
-// import { CreateProjectDto } from './dtos/create-project.dto';
-// import { Auth } from 'src/decorators/auth.decorator';
-// import { Permissions } from 'src/enum/permissions.enum';
-// import { GetUser } from 'src/decorators/get-user.decorator';
 import { Auth } from '../../decorators/auth.decorator';
 import { Permissions } from '../../enum/permissions.enum';
 import { GetUser } from '../../decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { Project } from './entities/project.entity';
-// import { AddProjectMemberDto } from './dtos/add-project-member.dto';
 import { ProjectMemberGuard } from '../../guards/project-member.guard';
-// import { RemoveProjectMemberDto } from './dtos/remove-project-member.dto';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 import { ProjectMember } from '../../decorators/project-member.decorator';
 import {
   CreateProjectDto,
-  AddProjectMemberDto,
-  RemoveProjectMemberDto,
   UpdateProjectMemberDto,
   UpdateProjectStatusDto,
 } from './dtos';
@@ -70,7 +63,7 @@ export class ProjectController {
     return this.projectService.getProjects(options, query);
   }
 
-  @Put('/members')
+  @Patch('/members')
   @ProjectMember(Permissions.UPDATE_PROJECT_MEMBERS)
   updateMembers(
     @Body() updateProjectMemberDto: UpdateProjectMemberDto,

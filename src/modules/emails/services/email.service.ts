@@ -2,8 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '../../jwt/services/jwt.service';
-import { CreateVerificationEmailDto } from '../dtos/create-verification-email.dto';
-import { AccountStatus } from '@/enum/account-status.enum';
+import { CreateVerificationEmailDto } from '../dtos';
 
 @Injectable()
 export class EmailService {
@@ -27,7 +26,6 @@ export class EmailService {
     if (email === 'hokanohito1234@gmail.com') {
       throw new BadRequestException('Testing failed email');
     }
-    // try {
     await this.mailerService.sendMail({
       to: email,
       subject: 'Please verify your account',
@@ -38,14 +36,5 @@ export class EmailService {
         temporaryPassword,
       },
     });
-    // } catch (error) {
-    //   console.log('error', error);
-    // }
-  }
-
-  async sendBulk(userDataArray: CreateVerificationEmailDto[]) {
-    for (const user of userDataArray) {
-      await this.sendVerificationEmail(user);
-    }
   }
 }

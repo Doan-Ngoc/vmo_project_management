@@ -8,7 +8,6 @@ import {
   NotFoundException,
   UseGuards,
 } from '@nestjs/common';
-// import { CreateUserDto } from '../dtos';
 import { User } from '../entities/user.entity';
 import { AuthService } from '../../auth/auth.service';
 import { UserRepository } from '../repositories/user.repository';
@@ -16,15 +15,8 @@ import { AccountStatus } from '../../../enum/account-status.enum';
 import { AccountType } from '../../../enum/account-type.enum';
 import { RoleService } from '../../roles/services/role.service';
 import { WorkingUnitService } from '../../working-units/services/working-unit.service';
-import { Auth } from '@/decorators/auth.decorator';
 import { CreateUserDto } from '../dtos';
-import { EmailService } from '../../emails/services/email.service';
-import { JwtService } from '../../jwt/services/jwt.service';
-import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
-import { FirebaseStorageService } from '../../../infrastructure/firebase/services/firebase.storage.service';
-import { extname } from 'path';
-import { QueueService } from '../../queue/services/queue.service';
 import { CreateUserResponseDto } from '../dtos/create-user-response.dto';
 import { generateRandomPassword } from '../../../utils/password-generator.util';
 
@@ -36,12 +28,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly roleService: RoleService,
     private readonly workingUnitService: WorkingUnitService,
-    private readonly emailService: EmailService,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
     private readonly dataSource: DataSource,
-    private readonly storageService: FirebaseStorageService,
-    private readonly queueService: QueueService,
   ) {}
 
   async create(newUserDataArray: CreateUserDto[]) {
@@ -53,12 +40,7 @@ export class UserService {
     const errors: string[] = [];
 
     const roles = await this.roleService.getAll();
-    const roleNames = roles.map((role) => role.name);
     const workingUnits = await this.workingUnitService.getAll();
-    const workingUnitNames = workingUnits.map(
-      (workingUnit) => workingUnit.name,
-    );
-    // console.log(newUserDataArray);
     for (let rowIndex = 0; rowIndex < newUserDataArray.length; rowIndex++) {
       const row = newUserDataArray[rowIndex];
       const rowNumber = rowIndex + 1;
@@ -100,12 +82,9 @@ export class UserService {
           accountType: AccountType.MEMBER,
         };
 
-        // if (userData.email === 'hokanohito1234@gmail.com') {
-        //   errors.push(`Error at row ${rowNumber}: This is a test error`);
-        // }
-        const newUser = this.userRepository.create(userData);
+        const newUser = queryRunner.manager.create(User, userData);
 
-        const savedUser = await this.userRepository.save(newUser);
+        const savedUser = await queryRunner.manager.save(newUser);
 
         const sentBackData: CreateUserResponseDto = {
           id: savedUser.id,
@@ -131,13 +110,12 @@ export class UserService {
     }
 
     await queryRunner.commitTransaction();
+    await queryRunner.release();
 
     return {
       message: 'Bulk user creation completed',
       createdUsers: createdUsers,
     };
-
-    await queryRunner.release();
   }
 
   async getById(id: string): Promise<User> {
@@ -168,9 +146,7 @@ export class UserService {
     status: AccountStatus,
     userId: string,
   ): Promise<User> {
-    // const result = await this.userRepository.update(userId, {
-    //   accountStatus: status,
-    // });
+    console.log('status', status);
     const user = await this.getById(userId);
     if (user.accountStatus === status) {
       console.log(user, user.accountStatus);
@@ -185,13 +161,15 @@ export class UserService {
     const user = await this.getById(userId);
     user.profilePicture = url;
     await this.userRepository.save(user);
-    console.log('done updating to db');
+    return user;
   }
 
   async changePassword(newPassword: string, userId: string) {
     console.log(newPassword);
     if (!this.authService.validatePassword(newPassword)) {
-      throw new BadRequestException('Invalid password');
+      throw new BadRequestException(
+        'Invalid password. Password needs to have at least one uppercase letter, one lowercase letter, one number, and one special character.',
+      );
     }
     const user = await this.getById(userId);
     user.hashedPassword = this.authService.hashPassword(newPassword);

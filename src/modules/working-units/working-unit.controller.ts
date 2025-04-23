@@ -4,6 +4,7 @@ import { WorkingUnit } from './entities/working-unit.entity';
 import { Auth } from '../../decorators/auth.decorator';
 import { Permissions } from '../../enum/permissions.enum';
 import { CreateWorkingUnitDto } from './dtos/create-working-unit.dto';
+import { User } from '../users/entities/user.entity';
 
 @Controller('working-units')
 export class WorkingUnitController {
@@ -27,5 +28,11 @@ export class WorkingUnitController {
   @Auth(Permissions.GET_WORKING_UNIT_BY_ID)
   async getWorkingUnitById(@Param('id') id: string): Promise<WorkingUnit> {
     return this.workingUnitService.getById(id);
+  }
+
+  @Get(':id/members')
+  @Auth(Permissions.GET_WORKING_UNIT_MEMBERS)
+  async getWorkingUnitMembers(@Param('id') id: string): Promise<User[]> {
+    return this.workingUnitService.getWorkingUnitMembers(id);
   }
 }

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { WorkingUnitRepository } from '../repositories/working-unit.repository';
 import { WorkingUnit } from '../entities/working-unit.entity';
 import { CreateWorkingUnitDto } from '../dtos/create-working-unit.dto';
+import { User } from '@/modules/users/entities/user.entity';
 
 @Injectable()
 export class WorkingUnitService {
@@ -16,6 +17,7 @@ export class WorkingUnitService {
   async getById(id: string): Promise<WorkingUnit> {
     const workingUnit = await this.workingUnitRepository.findOne({
       where: { id },
+      relations: ['members'],
     });
 
     if (!workingUnit) {
@@ -39,5 +41,10 @@ export class WorkingUnitService {
     }
 
     return workingUnit;
+  }
+
+  async getWorkingUnitMembers(workingUnitId: string): Promise<User[]> {
+    const workingUnit = await this.getById(workingUnitId);
+    return workingUnit.members;
   }
 }

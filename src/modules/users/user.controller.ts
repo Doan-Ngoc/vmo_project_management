@@ -13,8 +13,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { UserService } from './services/user.service';
-// import { CreateUserDto } from './dtos/create-user.dto';
-import { CreateUserDto } from './dtos';
+import { CreateUserDto, CreateUserResponseDto } from './dtos';
 import { Auth } from '../../decorators/auth.decorator';
 import { Permissions } from '../../enum/permissions.enum';
 import { EmailService } from '../emails/services/email.service';
@@ -24,7 +23,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FirebaseStorageService } from '../../infrastructure/firebase/services/firebase.storage.service';
 import * as multer from 'multer';
 import { extname } from 'path';
-import { CreateUserResponseDto } from './dtos/create-user-response.dto';
 import { AccountStatus } from '../../enum/account-status.enum';
 import { GetUser } from '../../decorators/get-user.decorator';
 @Controller('users')
@@ -74,7 +72,7 @@ export class UserController {
   @Auth(Permissions.UPDATE_ACCOUNT_STATUS)
   async updateUser(
     @Param('id') id: string,
-    @Body() accountStatus: AccountStatus,
+    @Body('accountStatus') accountStatus: AccountStatus,
   ): Promise<User> {
     return this.userService.updateAccountStatus(accountStatus, id);
   }

@@ -163,4 +163,9 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
     path: '/emails/bulk',
     method: 'POST',
   },
+  {
+    name: Permissions.GET_WORKING_UNIT_MEMBERS,
+    path: '/working-units/:id/members',
+    method: 'GET',
+  },
 ];

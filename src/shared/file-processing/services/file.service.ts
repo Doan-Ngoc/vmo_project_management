@@ -1,21 +1,10 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import * as xlsx from 'xlsx';
-// import { CreateUserDto } from '@/modules/users/dtos';
-// import { RoleService } from '@/modules/roles/services/role.service';
 import { CreateUserDto } from '../../../modules/users/dtos';
-import { RoleService } from '../../../modules/roles/services/role.service';
-// import { WorkingUnitService } from '@/modules/working-units/services/working-unit.service';
-import { WorkingUnitService } from '../../../modules/working-units/services/working-unit.service';
-import { generateRandomPassword } from '../../../utils/password-generator.util';
-// import { RoleName } from '@/enum/role.enum';
-import { RoleName } from '../../../enum/role.enum';
 
 @Injectable()
 export class FileService {
-  constructor(
-    private readonly roleService: RoleService,
-    private readonly workingUnitService: WorkingUnitService,
-  ) {}
+  constructor() {}
 
   async processExcelImport(
     file: Express.Multer.File,
@@ -29,14 +18,10 @@ export class FileService {
       await this.validateExcelData(jsonData);
       return jsonData;
     } catch (error) {
-      //   console.log('reach here');
-      //   throw new error();
       if (error instanceof BadRequestException) {
         throw error;
       }
       throw new BadRequestException('Excel file upload failed.');
-      //   // }
-      //   // throw new BadRequestException('Invalid Excel file format');
     }
   }
 
@@ -77,41 +62,4 @@ export class FileService {
       });
     }
   }
-
-  // private async mapExcelToCreateUserDto(data: any[]): Promise<CreateUserDto[]> {
-  //   const transformedData: CreateUserDto[] = [];
-  //   const roles = await this.roleService.getAll();
-  //   const roleNames = roles.map((role) => role.name);
-  //   const workingUnits = await this.workingUnitService.getAll();
-  //   const workingUnitNames = workingUnits.map(
-  //     (workingUnit) => workingUnit.name,
-  //   );
-
-  //   for (const row of data) {
-  //     const role = roles.find((role) => role.name === row['Role']);
-  //     if (!role) {
-  //       throw new BadRequestException(
-  //         `Role ${row['Role']} not found in the system.`,
-  //       );
-  //     }
-  //     const workingUnitId = workingUnits.find(
-  //       (workingUnit) => workingUnit.name === row['Working Unit'],
-  //     )?.id;
-  //     if (!workingUnitId) {
-  //       throw new BadRequestException(
-  //         `Working Unit ${row['Working Unit']} not found in the system.`,
-  //       );
-  //     }
-
-  //     transformedData.push({
-  //       email: row['Email'],
-  //       employeeName: row['Employee Name'],
-  //       roleId: roleId,
-  //       workingUnitId: workingUnitId,
-  //       password: generateRandomPassword(),
-  //     });
-  //   }
-
-  //   return transformedData;
-  // }
 }

@@ -5,13 +5,8 @@ import {
   ForbiddenException,
   BadRequestException,
   UnauthorizedException,
-  NotFoundException,
 } from '@nestjs/common';
 import { ProjectService } from '../modules/projects/services/project.service';
-// import { AccountStatus } from '@/enum/account-status.enum';
-// import { AccountType } from '@/enum/account-type.enum';
-// import { TaskService } from '@/modules/tasks/services/task.service';
-import { AccountStatus } from '../enum/account-status.enum';
 import { AccountType } from '../enum/account-type.enum';
 import { TaskService } from '../modules/tasks/services/task.service';
 
@@ -29,7 +24,7 @@ export class ProjectMemberGuard implements CanActivate {
 
     // For requests that only send taskId, get project from task
     if (!projectId) {
-      const taskId = request.params?.taskId || request.body?.taskId;
+      const taskId = request.body?.taskId || request.params?.taskId;
       if (!taskId) throw new BadRequestException();
       const task = await this.taskService.getById(taskId);
       if (!task.project?.id)

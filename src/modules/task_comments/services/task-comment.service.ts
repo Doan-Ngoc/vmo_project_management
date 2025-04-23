@@ -53,11 +53,23 @@ export class TaskCommentService {
 
   async getById(commentId: string): Promise<TaskComment> {
     const comment = await this.taskCommentRepository.findOne({
-      where: { id: commentId },
+      where: {
+        id: commentId,
+      },
       relations: ['task', 'createdBy'],
     });
     if (!comment) {
       throw new NotFoundException('Comment not found');
+    }
+    if (!comment.task) {
+      throw new NotFoundException(
+        'Task associated with this comment not found',
+      );
+    }
+    if (comment.task.deletedAt) {
+      throw new NotFoundException(
+        'Task associated with this comment has been deleted',
+      );
     }
     return comment;
   }
