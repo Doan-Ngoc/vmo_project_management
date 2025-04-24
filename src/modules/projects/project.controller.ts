@@ -72,7 +72,7 @@ export class ProjectController {
     return this.projectService.updateMembers(updateProjectMemberDto, user.id);
   }
 
-  @Put('/status')
+  @Patch('/status')
   @Auth(Permissions.UPDATE_PROJECT_STATUS)
   async updateProjectStatus(
     @Body() updateProjectStatusDto: UpdateProjectStatusDto,

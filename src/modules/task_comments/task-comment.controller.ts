@@ -7,6 +7,7 @@ import {
   Delete,
   UseGuards,
   Get,
+  Patch,
 } from '@nestjs/common';
 import { TaskCommentService } from './services/task-comment.service';
 import { GetUser } from '../../decorators/get-user.decorator';
@@ -43,7 +44,7 @@ export class TaskCommentController {
     return this.taskCommentService.getByTask(taskId);
   }
 
-  @Put(':commentId')
+  @Patch(':commentId')
   @TaskCommentOwner(Permissions.UPDATE_TASK_COMMENT)
   async updateTaskComment(
     @Param('commentId') commentId: string,

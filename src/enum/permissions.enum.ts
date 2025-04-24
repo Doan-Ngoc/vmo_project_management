@@ -50,4 +50,7 @@ export enum Permissions {
   GET_ALL_WORKING_UNITS = 'get_all_working_units',
   GET_WORKING_UNIT_BY_ID = 'get_working_unit_by_id',
   GET_WORKING_UNIT_MEMBERS = 'get_working_unit_members',
+
+  //file
+  DOWNLOAD_TEMPLATE = 'download_template',
 }

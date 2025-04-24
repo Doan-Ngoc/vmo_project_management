@@ -11,6 +11,7 @@ import {
   BadRequestException,
   Param,
   Put,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './services/user.service';
 import { CreateUserDto, CreateUserResponseDto } from './dtos';
@@ -59,7 +60,7 @@ export class UserController {
     return this.userService.create(userDataArray);
   }
 
-  @Put('/password')
+  @Patch('/password')
   @Auth(Permissions.CHANGE_PASSWORD)
   async changePassword(
     @Body('newPassword') newPassword: string,
@@ -68,7 +69,7 @@ export class UserController {
     return this.userService.changePassword(newPassword, user.id);
   }
 
-  @Put('/:id')
+  @Patch('/:id')
   @Auth(Permissions.UPDATE_ACCOUNT_STATUS)
   async updateUser(
     @Param('id') id: string,

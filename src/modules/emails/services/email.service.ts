@@ -23,7 +23,7 @@ export class EmailService {
     );
     const verificationUrl = `${this.configService.getOrThrow('SITE_URL')}/auth/verify-email?token=${verificationToken}`;
 
-    if (email === 'hokanohito1234@gmail.com') {
+    if (email === 'minhngocd3112@gmail.com') {
       throw new BadRequestException('Testing failed email');
     }
     await this.mailerService.sendMail({

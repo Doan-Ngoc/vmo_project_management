@@ -76,7 +76,7 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
   {
     name: Permissions.UPDATE_TASK_COMMENT,
     path: '/comments/:id',
-    method: 'PUT',
+    method: 'PATCH',
   },
   {
     name: Permissions.GET_ALL_TASKS,
@@ -172,5 +172,15 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
     name: Permissions.GET_USER_BY_ID,
     path: '/users/:id',
     method: 'GET',
+  },
+  {
+    name: Permissions.DOWNLOAD_TEMPLATE,
+    path: '/files/download-template',
+    method: 'GET',
+  },
+  {
+    name: Permissions.UPDATE_ACCOUNT_STATUS,
+    path: '/users/:id',
+    method: 'PATCH',
   },
 ];

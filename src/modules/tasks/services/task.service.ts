@@ -96,7 +96,6 @@ export class TaskService {
     return await this.taskRepository.save(newTask);
   }
 
-  //Every midnight: Update task status to expired if due date is passed
   @Cron(CronExpression.EVERY_MINUTE, {
     // timeZone: 'Asia/Ho_Chi_Minh',
   })
@@ -251,21 +250,18 @@ export class TaskService {
     // Get the user who is updating
     const user = await this.userService.getById(userId);
 
-    // Update the fields
-    if (updateTaskDto.name) {
-      task.name = updateTaskDto.name;
-    }
-    //Allow empty string for description
-    if (updateTaskDto.description !== undefined) {
-      task.description = updateTaskDto.description;
-    }
-    if (updateTaskDto.dueDate) {
-      task.dueDate = new Date(updateTaskDto.dueDate);
-    }
+    const updatedFields = {
+      ...(updateTaskDto.name && { name: updateTaskDto.name }),
+      ...(updateTaskDto.description !== undefined && {
+        description: updateTaskDto.description,
+      }),
+      ...(updateTaskDto.dueDate && {
+        dueDate: new Date(updateTaskDto.dueDate),
+      }),
+      updatedBy: user,
+    };
 
-    // Set who updated it
-    task.updatedBy = user;
-
+    Object.assign(task, updatedFields);
     return await this.taskRepository.save(task);
   }
 
