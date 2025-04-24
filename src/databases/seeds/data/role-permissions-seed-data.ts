@@ -1,8 +1,3 @@
-// import { RoleName } from '@/enum/role.enum';
-// import { Permissions } from '@/enum/permissions.enum';
-// import { PermissionService } from '@/modules/permissions/services/permission.service';
-// import { RoleService } from '@/modules/roles/services/role.service';
-// import { Injectable } from '@nestjs/common';
 import { RoleName } from '../../../enum/role.enum';
 import { Permissions } from '../../../enum/permissions.enum';
 import { PermissionService } from '../../../modules/permissions/services/permission.service';
@@ -62,6 +57,10 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.UPDATE_PROJECT_STATUS),
           getPermissionId(Permissions.CHANGE_PASSWORD),
           getPermissionId(Permissions.GET_WORKING_UNIT_MEMBERS),
+          getPermissionId(Permissions.GET_CLIENT_BY_ID),
+          getPermissionId(Permissions.CREATE_WORKING_UNIT),
+          getPermissionId(Permissions.GET_ALL_WORKING_UNITS),
+          getPermissionId(Permissions.GET_USER_BY_ID),
         ],
       },
       {
@@ -79,6 +78,8 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.GET_WORKING_UNIT_BY_ID),
           getPermissionId(Permissions.CHANGE_PASSWORD),
           getPermissionId(Permissions.GET_WORKING_UNIT_MEMBERS),
+          getPermissionId(Permissions.GET_CLIENT_BY_ID),
+          getPermissionId(Permissions.GET_USER_BY_ID),
         ],
       },
       {
@@ -101,6 +102,8 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.UPDATE_TASK_MEMBERS),
           getPermissionId(Permissions.CHANGE_PASSWORD),
           getPermissionId(Permissions.GET_WORKING_UNIT_MEMBERS),
+          getPermissionId(Permissions.GET_CLIENT_BY_ID),
+          getPermissionId(Permissions.GET_USER_BY_ID),
         ],
       },
     ];

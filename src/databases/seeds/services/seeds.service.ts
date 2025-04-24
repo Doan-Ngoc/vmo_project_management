@@ -47,28 +47,9 @@ export class SeedsService {
 
   async seedPermissions() {
     try {
-      const existingPermissions = await this.permissionRepository.find();
-      const existingPermissionNames = new Set(
-        existingPermissions.map((p) => p.name),
-      );
+      console.log('Starting permission seeding...');
       await this.permissionRepository.upsert(PERMISSION_SEED_DATA, ['name']);
       console.log('Permission seeding completed');
-      // Get all existing permissions
-      const newPermissions = await this.permissionRepository.find();
-
-      // Filter out permissions that already exist
-      const seededPermissions = newPermissions.filter(
-        (permission) => !existingPermissionNames.has(permission.name),
-      );
-
-      if (seededPermissions.length > 0) {
-        console.log(
-          `Added ${seededPermissions.length} new permissions`,
-          seededPermissions,
-        );
-      } else {
-        console.log('No new permissions to add');
-      }
     } catch (error) {
       console.error('Error seeding permissions:', error);
       throw error;
@@ -77,24 +58,9 @@ export class SeedsService {
 
   async seedRoles() {
     try {
-      const existingRoles = await this.roleService.getAll();
-      const existingRoleNames = new Set(existingRoles.map((r) => r.name));
-
+      console.log('Starting role seeding...');
       await this.roleRepository.upsert(ROLE_SEED_DATA, ['name']);
       console.log('Role seeding completed');
-      // Get all existing roles
-      const newRoles = await this.roleRepository.find();
-
-      // Filter out roles that already exist
-      const seededRoles = newRoles.filter(
-        (role) => !existingRoleNames.has(role.name),
-      );
-      if (seededRoles.length > 0) {
-        console.log(`Added ${seededRoles.length} new roles`, seededRoles);
-        console.log(seededRoles);
-      } else {
-        console.log('No new role to add');
-      }
     } catch (error) {
       console.error('Error seeding roles:', error);
       throw error;
@@ -102,6 +68,7 @@ export class SeedsService {
   }
 
   async seedRolePermissions() {
+    console.log('Starting role permission seeding...');
     try {
       // Get role-permission data
       const rolePermissionData =

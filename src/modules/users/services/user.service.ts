@@ -146,18 +146,12 @@ export class UserService {
     status: AccountStatus,
     userId: string,
   ): Promise<User> {
-    console.log('status', status);
     const user = await this.getById(userId);
-    if (user.accountStatus === status) {
-      console.log(user, user.accountStatus);
-      throw new BadRequestException('User already has this status');
-    }
     user.accountStatus = status;
     return await this.userRepository.save(user);
   }
 
   async saveProfilePictureToDatabase(url: string, userId: string) {
-    console.log('url', url);
     const user = await this.getById(userId);
     user.profilePicture = url;
     await this.userRepository.save(user);
@@ -165,7 +159,6 @@ export class UserService {
   }
 
   async changePassword(newPassword: string, userId: string) {
-    console.log(newPassword);
     if (!this.authService.validatePassword(newPassword)) {
       throw new BadRequestException(
         'Invalid password. Password needs to have at least one uppercase letter, one lowercase letter, one number, and one special character.',

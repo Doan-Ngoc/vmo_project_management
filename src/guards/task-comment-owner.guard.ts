@@ -36,7 +36,7 @@ export class TaskCommentOwnerGuard implements CanActivate {
 
     // Check if user is the owner of the comment
     if (taskComment.createdBy.id !== user.id) {
-      return false;
+      throw new ForbiddenException('Only the comment owner is allowed');
     }
     return true;
   }

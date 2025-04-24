@@ -99,11 +99,6 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
     method: 'GET',
   },
   {
-    name: Permissions.CREATE_PERMISSION,
-    path: '/permissions',
-    method: 'POST',
-  },
-  {
     name: Permissions.UPDATE_TASK_STATUS,
     path: '/tasks/:taskId/status',
     method: 'PATCH',
@@ -166,6 +161,16 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
   {
     name: Permissions.GET_WORKING_UNIT_MEMBERS,
     path: '/working-units/:id/members',
+    method: 'GET',
+  },
+  {
+    name: Permissions.GET_CLIENT_BY_ID,
+    path: '/clients/:id',
+    method: 'GET',
+  },
+  {
+    name: Permissions.GET_USER_BY_ID,
+    path: '/users/:id',
     method: 'GET',
   },
 ];

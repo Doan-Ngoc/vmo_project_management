@@ -18,12 +18,11 @@ export class EmailController {
     @Inject(forwardRef(() => QueueService))
     private readonly queueService: QueueService,
   ) {}
-  @Post('bulk')
+  @Post()
   @Auth(Permissions.SEND_BULK_EMAIL)
   async sendBulkEmail(
     @Body() createVerificationEmailDtos: CreateVerificationEmailDto[],
   ) {
-    console.log(createVerificationEmailDtos);
     await Promise.all(
       createVerificationEmailDtos.map((dto) =>
         this.queueService.addSendingEmailJob(dto),

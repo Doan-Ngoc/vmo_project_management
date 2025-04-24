@@ -160,14 +160,11 @@ export class TaskService {
       const usersToRemoveIds = userIds.filter((userId) =>
         currentMemberIds.includes(userId),
       );
-      console.log('usersToRemoveIds', usersToRemoveIds);
-      console.log('usersToAddIds', usersToAddIds);
 
       //Remove members
       const membersAfterRemove = currentMembers.filter(
         (member) => !usersToRemoveIds.includes(member.id),
       );
-
       //Add members
       let usersToAddData: User[] = [];
       for (const userId of usersToAddIds) {
@@ -178,7 +175,6 @@ export class TaskService {
           errors.push(`User ${userId} account is not active`);
           continue;
         }
-        console.log(task.project);
         // Check if user is a member of the project
         if (!task.project.members.some((member) => member.id === user.id)) {
           errors.push(`User ${userId} is not a member of the project`);

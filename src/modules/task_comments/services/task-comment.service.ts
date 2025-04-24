@@ -81,9 +81,6 @@ export class TaskCommentService {
   ): Promise<TaskComment> {
     const { content } = updateTaskCommentDto;
     const comment = await this.getById(commentId);
-    if (comment.createdBy.id !== userId) {
-      throw new BadRequestException('You can only update your own comments');
-    }
 
     const task = await this.taskService.getById(comment.task.id);
     if (
@@ -100,11 +97,6 @@ export class TaskCommentService {
 
   async delete(commentId: string, userId: string): Promise<void> {
     const comment = await this.getById(commentId);
-
-    if (comment.createdBy.id !== userId) {
-      throw new BadRequestException('You can only delete your own comments');
-    }
-
     const task = await this.taskService.getById(comment.task.id);
     if (
       task.status === TaskStatus.COMPLETED ||
@@ -115,6 +107,6 @@ export class TaskCommentService {
       );
     }
 
-    await this.taskCommentRepository.remove(comment);
+    await this.taskCommentRepository.softRemove(comment);
   }
 }

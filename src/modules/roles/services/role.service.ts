@@ -74,9 +74,10 @@ export class RoleService {
     return await this.roleRepository.save(role);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string) {
     const role = await this.getById(id);
     await this.roleRepository.softRemove(role);
+    return { message: 'Role deleted successfully' };
   }
 
   async addPermissionsToRole(

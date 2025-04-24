@@ -21,7 +21,6 @@ export class AuthService {
   ) {}
 
   validatePassword(password: string): boolean {
-    console.log(password);
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
     return passwordRegex.test(password);
@@ -77,6 +76,10 @@ export class AuthService {
       token,
       this.configService.getOrThrow('JWT_VERIFICATION_KEY') as string,
     );
+    const user = await this.userService.getById(decoded.id);
+    if (user.accountStatus === AccountStatus.ACTIVE) {
+      throw new BadRequestException('Account already activated');
+    }
     await this.userService.updateAccountStatus(
       AccountStatus.ACTIVE,
       decoded.id,

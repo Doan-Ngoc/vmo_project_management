@@ -45,32 +45,40 @@ export class EmailProcessor {
     this.logger.error(
       `Job ${job.id} failed after ${job.attemptsMade} attempts: ${error.message}`,
     );
-    const user = await this.userService.getById(job.data.id);
-    this.logger.debug(
-      `Current user status before updating to failed: ${user.accountStatus}`,
-    );
+    const maxAttempts = job.opts.attempts ?? 1;
+    const currentAttempt = job.attemptsMade + 1; // attemptsMade is zero-based
 
-    if (user.accountStatus !== AccountStatus.EMAIL_SEND_FAILED) {
+    if (currentAttempt > maxAttempts) {
+      // Only run this on the final failure
+      console.log(`Final failure after ${maxAttempts} attempts`, error);
       await this.userService.updateAccountStatus(
         AccountStatus.EMAIL_SEND_FAILED,
         job.data.id,
       );
       this.logger.debug(`Updated user status to EMAIL_SEND_FAILED`);
-    } else {
-      this.logger.debug(
-        `User already has EMAIL_SEND_FAILED status, skipping update`,
-      );
     }
+    // const user = await this.userService.getById(job.data.id);
+    // this.logger.debug(
+    //   `Current user status before updating to failed: ${user.accountStatus}`,
+    // );
+
+    // if (user.accountStatus !== AccountStatus.EMAIL_SEND_FAILED) {
+    //   await this.userService.updateAccountStatus(
+    //     AccountStatus.EMAIL_SEND_FAILED,
+    //     job.data.id,
+    //   );
+    //   this.logger.debug(`Updated user status to EMAIL_SEND_FAILED`);
+    // } else {
+    //   this.logger.debug(
+    //     `User already has EMAIL_SEND_FAILED status, skipping update`,
+    //   );
+    // }
   }
 
   @OnQueueCompleted()
   async onCompleted(job: Job) {
     this.logger.debug(
       `Successfully completed job ${job.id} for ${job.data.email}`,
-    );
-    const user = await this.userService.getById(job.data.id);
-    this.logger.debug(
-      `Current user status before updating to pending: ${user.accountStatus}`,
     );
 
     await this.userService.updateAccountStatus(
