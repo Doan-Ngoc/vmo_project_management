@@ -57,22 +57,6 @@ export class EmailProcessor {
       );
       this.logger.debug(`Updated user status to EMAIL_SEND_FAILED`);
     }
-    // const user = await this.userService.getById(job.data.id);
-    // this.logger.debug(
-    //   `Current user status before updating to failed: ${user.accountStatus}`,
-    // );
-
-    // if (user.accountStatus !== AccountStatus.EMAIL_SEND_FAILED) {
-    //   await this.userService.updateAccountStatus(
-    //     AccountStatus.EMAIL_SEND_FAILED,
-    //     job.data.id,
-    //   );
-    //   this.logger.debug(`Updated user status to EMAIL_SEND_FAILED`);
-    // } else {
-    //   this.logger.debug(
-    //     `User already has EMAIL_SEND_FAILED status, skipping update`,
-    //   );
-    // }
   }
 
   @OnQueueCompleted()

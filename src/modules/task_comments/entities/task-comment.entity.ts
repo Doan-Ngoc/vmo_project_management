@@ -9,6 +9,7 @@ import { BaseEntity } from '../../../databases/base.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { User } from '../../users/entities/user.entity';
 
+
 @Entity('task_comments')
 export class TaskComment extends BaseEntity {
   @Column({ type: 'text' })
