@@ -183,4 +183,9 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
     path: '/users/:id',
     method: 'PATCH',
   },
+  {
+    name: Permissions.DELETE_PROJECT,
+    path: '/projects',
+    method: 'DELETE',
+  },
 ];

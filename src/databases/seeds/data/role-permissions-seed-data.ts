@@ -61,6 +61,7 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.CREATE_WORKING_UNIT),
           getPermissionId(Permissions.GET_ALL_WORKING_UNITS),
           getPermissionId(Permissions.GET_USER_BY_ID),
+          getPermissionId(Permissions.DELETE_PROJECT),
         ],
       },
       {

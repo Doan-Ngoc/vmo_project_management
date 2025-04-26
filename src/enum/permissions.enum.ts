@@ -19,6 +19,7 @@ export enum Permissions {
   REMOVE_PROJECT_MEMBERS = 'remove_project_members',
   UPDATE_PROJECT_MEMBERS = 'update_project_members',
   UPDATE_PROJECT_STATUS = 'update_project_status',
+  DELETE_PROJECT = 'delete_project',
 
   //tasks
   CREATE_TASK = 'create_task',

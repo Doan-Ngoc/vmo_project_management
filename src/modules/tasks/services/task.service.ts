@@ -266,27 +266,56 @@ export class TaskService {
   }
 
   //Delete task
-  async deleteTask(
-    taskId: string,
-    deleteTaskDto: DeleteTaskDto,
-    userId: string,
-  ): Promise<Task> {
-    const { deletedReason } = deleteTaskDto;
-    // Get task with its project and members
-    const task = await this.getById(taskId);
+  async delete(taskId: string, deleteTaskDto: DeleteTaskDto, userId: string) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    // Get the user who is deleting
-    const user = await this.userService.getById(userId);
+    try {
+      const { deletedReason } = deleteTaskDto;
+      // Get task with its project, members and comments
+      const task = await this.taskRepository.findOne({
+        where: { id: taskId },
+        relations: ['project', 'members', 'comments'],
+      });
 
-    // Update task properties for soft delete
-    task.deletedBy = user;
-    task.deleted_reason = deletedReason;
-    if ((task.status = TaskStatus.PENDING || TaskStatus.IN_PROGRESS)) {
-      task.status = TaskStatus.CANCELLED;
+      if (!task) {
+        throw new NotFoundException(`Task with ID ${taskId} not found`);
+      }
+
+      // Get the user who is deleting
+      const user = await this.userService.getById(userId);
+
+      // Update task properties for soft delete
+      task.deletedBy = user;
+      task.deleted_reason = deletedReason;
+      if (
+        task.status === TaskStatus.PENDING ||
+        task.status === TaskStatus.IN_PROGRESS
+      ) {
+        task.status = TaskStatus.CANCELLED;
+      }
+
+      // Save the updated task first
+      await queryRunner.manager.save(Task, task);
+
+      // Soft delete all comments
+      if (task.comments?.length > 0) {
+        await queryRunner.manager.softRemove(task.comments);
+      }
+
+      // Soft delete the task
+      const deletedTask = await queryRunner.manager.softRemove(Task, task);
+
+      await queryRunner.commitTransaction();
+      return {
+        message: 'Task deleted successfully',
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-    await this.taskRepository.save(task);
-
-    // Soft delete using TypeORM
-    return await this.taskRepository.softRemove(task);
   }
 }

@@ -33,9 +33,6 @@ export class Task extends BaseEntity {
   @Column({ type: 'date', nullable: true })
   dueDate: Date;
 
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt: Date;
-
   @Column({ type: 'text', nullable: true })
   deleted_reason: string;
 

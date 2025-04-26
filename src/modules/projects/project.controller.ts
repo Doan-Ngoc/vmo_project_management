@@ -25,6 +25,7 @@ import {
   CreateProjectDto,
   UpdateProjectMemberDto,
   UpdateProjectStatusDto,
+  DeleteProjectDto,
 } from './dtos';
 
 @Controller('projects')
@@ -78,5 +79,14 @@ export class ProjectController {
     @Body() updateProjectStatusDto: UpdateProjectStatusDto,
   ) {
     return this.projectService.updateProjectStatus(updateProjectStatusDto);
+  }
+
+  @Delete()
+  @ProjectMember(Permissions.DELETE_PROJECT)
+  async deleteProject(
+    @Body() deleteProjectDto: DeleteProjectDto,
+    @GetUser() user: User,
+  ) {
+    return this.projectService.delete(deleteProjectDto, user.id);
   }
 }

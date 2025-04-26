@@ -101,7 +101,7 @@ export class TaskController {
     @Param('taskId') taskId: string,
     @Body() deleteTaskDto: DeleteTaskDto,
     @GetUser() user: User,
-  ): Promise<Task> {
-    return this.taskService.deleteTask(taskId, deleteTaskDto, user.id);
+  ) {
+    return this.taskService.delete(taskId, deleteTaskDto, user.id);
   }
 }

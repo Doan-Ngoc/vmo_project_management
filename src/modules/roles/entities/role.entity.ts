@@ -32,7 +32,4 @@ export class Role extends BaseEntity {
 
   @OneToMany(() => User, (user) => user.role)
   users: User[];
-
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt: Date;
 }

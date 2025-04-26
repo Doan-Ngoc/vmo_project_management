@@ -44,9 +44,6 @@ export class Project extends BaseEntity {
   @Column({ type: 'integer', nullable: true, name: 'tech_lead_number' })
   techLeadNumber: number;
 
-  @DeleteDateColumn({ name: 'deleted_at' })
-  deletedAt: Date;
-
   @ManyToOne(() => WorkingUnit, (unit) => unit.projects)
   @JoinColumn({ name: 'working_unit_id' })
   workingUnit: WorkingUnit;
@@ -58,6 +55,13 @@ export class Project extends BaseEntity {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'created_by' })
   createdBy: User;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'deleted_by' })
+  deletedBy: User;
+
+  @Column({ type: 'text', nullable: true })
+  deleted_reason: string;
 
   @ManyToMany(() => User, (user) => user.projects, { cascade: true })
   @JoinTable({

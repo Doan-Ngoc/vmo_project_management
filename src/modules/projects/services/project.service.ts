@@ -16,10 +16,16 @@ import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { AccountStatus } from '@/enum/account-status.enum';
 import { AccountType } from '@/enum/account-type.enum';
-import { CreateProjectDto, UpdateProjectMemberDto } from '../dtos';
+import {
+  CreateProjectDto,
+  DeleteProjectDto,
+  UpdateProjectMemberDto,
+} from '../dtos';
 import { DataSource } from 'typeorm';
 import { RoleName } from '../../../enum/role.enum';
 import { UpdateProjectStatusDto } from '../dtos/update-project-status.dto';
+import { TaskStatus } from '../../../enum/task-status.enum';
+import { Task } from '../../tasks/entities/task.entity';
 
 @Injectable()
 export class ProjectService {
@@ -213,5 +219,65 @@ export class ProjectService {
     const project = await this.getById(projectId);
     project.status = status;
     return await this.projectRepository.save(project);
+  }
+
+  async delete(deleteProjectDto: DeleteProjectDto, userId: string) {
+    const { projectId, deletedReason } = deleteProjectDto;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // Get project with its tasks and each task's comments
+      const project = await this.projectRepository.findOne({
+        where: { id: projectId },
+        relations: ['tasks', 'tasks.comments'],
+      });
+
+      if (!project) {
+        throw new NotFoundException(`Project with ID ${projectId} not found`);
+      }
+
+      // Get the user who is deleting
+      const user = await this.userService.getById(userId);
+
+      // Update project status before deletion
+      project.status = ProjectStatus.CANCELLED;
+      project.deletedBy = user;
+      project.deleted_reason = deletedReason;
+      await queryRunner.manager.save(Project, project);
+
+      // If project has tasks, handle their deletion
+      if (project.tasks?.length > 0) {
+        for (const task of project.tasks) {
+          // First soft delete all comments of the task if they exist
+          if (task.comments?.length > 0) {
+            await queryRunner.manager.softRemove(task.comments);
+          }
+
+          // Update task status and mark who deleted it
+          task.status = TaskStatus.CANCELLED;
+          task.deletedBy = user;
+          await queryRunner.manager.save(Task, task);
+
+          // Then soft delete the task
+          await queryRunner.manager.softRemove(task);
+        }
+      }
+
+      // Finally soft delete the project
+      await queryRunner.manager.softRemove(project);
+
+      await queryRunner.commitTransaction();
+
+      return {
+        message: 'Project and all related tasks deleted successfully',
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
