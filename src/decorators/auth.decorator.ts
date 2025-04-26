@@ -15,11 +15,3 @@ export function Auth(
     UseGuards(AuthGuard),
   );
 }
-
-// export function ProjectMember(permission: Permissions): MethodDecorator {
-//   return applyDecorators(
-//     SetMetadata(PERMISSIONS_KEY, permission),
-//     UseGuards(AuthGuard),
-//     UseGuards(ProjectMemberGuard),
-//   );
-// }

@@ -127,7 +127,6 @@ export class TaskService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    const errors: string[] = [];
     const { taskId, userIds } = updateTaskMemberDto;
 
     try {
@@ -145,8 +144,9 @@ export class TaskService {
         task.status === TaskStatus.COMPLETED ||
         task.status === TaskStatus.EXPIRED
       ) {
-        errors.push('Cannot update members of a completed or expired task');
-        throw new BadRequestException();
+        throw new BadRequestException(
+          'Cannot update members of a completed or expired task',
+        );
       }
 
       const currentMembers = task.members;
@@ -167,27 +167,30 @@ export class TaskService {
       //Add members
       let usersToAddData: User[] = [];
       for (const userId of usersToAddIds) {
-        const user = await this.userService.getById(userId);
+        const user = await queryRunner.manager.findOne(User, {
+          where: { id: userId },
+          relations: ['role'],
+        });
+
+        if (!user) {
+          throw new NotFoundException(`User with ID ${userId} not found`);
+        }
 
         //Check if user account is valid
         if (user.accountStatus !== AccountStatus.ACTIVE) {
-          errors.push(`User ${userId} account is not active`);
-          continue;
+          throw new BadRequestException(`User ${userId} account is not active`);
         }
         // Check if user is a member of the project
         if (!task.project.members.some((member) => member.id === user.id)) {
-          errors.push(`User ${userId} is not a member of the project`);
-          continue;
+          throw new BadRequestException(
+            `User ${userId} is not a member of the project`,
+          );
         }
 
         usersToAddData.push(user);
       }
 
       const membersAfterAdd = [...membersAfterRemove, ...usersToAddData];
-
-      if (errors.length > 0) {
-        throw new BadRequestException();
-      }
 
       //Save the task
       task.members = membersAfterAdd;
@@ -196,12 +199,8 @@ export class TaskService {
       await queryRunner.commitTransaction();
       return updatedTask;
     } catch (error) {
-      errors.push(error.message);
       await queryRunner.rollbackTransaction();
-      throw new BadRequestException({
-        message: 'Task member update failed',
-        errors: errors,
-      });
+      throw new BadRequestException(error.message);
     } finally {
       await queryRunner.release();
     }
@@ -235,41 +234,71 @@ export class TaskService {
     updateTaskDto: UpdateTaskDto,
     userId: string,
   ): Promise<Task> {
-    const task = await this.getById(taskId);
-    if (
-      task.status === TaskStatus.COMPLETED ||
-      task.status === TaskStatus.CANCELLED
-    ) {
-      throw new BadRequestException(`Cannot update a ${task.status} task`);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction('REPEATABLE READ');
+
+    try {
+      const task = await queryRunner.manager.findOne(Task, {
+        where: { id: taskId },
+        relations: ['project', 'members', 'members.role'],
+      });
+
+      if (!task) {
+        throw new NotFoundException(`Task with ID ${taskId} not found`);
+      }
+
+      if (
+        task.status === TaskStatus.COMPLETED ||
+        task.status === TaskStatus.CANCELLED
+      ) {
+        throw new BadRequestException(`Cannot update a ${task.status} task`);
+      }
+
+      if (
+        updateTaskDto.dueDate &&
+        new Date(updateTaskDto.dueDate) < new Date()
+      ) {
+        throw new BadRequestException('Due date cannot be in the past');
+      }
+
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id: userId },
+        relations: ['role'],
+      });
+
+      if (!user) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
+
+      const updatedFields = {
+        ...(updateTaskDto.name && { name: updateTaskDto.name }),
+        ...(updateTaskDto.description !== undefined && {
+          description: updateTaskDto.description,
+        }),
+        ...(updateTaskDto.dueDate && {
+          dueDate: new Date(updateTaskDto.dueDate),
+        }),
+        updatedBy: user,
+      };
+
+      Object.assign(task, updatedFields);
+      const updatedTask = await queryRunner.manager.save(Task, task);
+      await queryRunner.commitTransaction();
+      return updatedTask;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-    // Validate due date if provided
-    if (updateTaskDto.dueDate && new Date(updateTaskDto.dueDate) < new Date()) {
-      throw new BadRequestException('Due date cannot be in the past');
-    }
-
-    // Get the user who is updating
-    const user = await this.userService.getById(userId);
-
-    const updatedFields = {
-      ...(updateTaskDto.name && { name: updateTaskDto.name }),
-      ...(updateTaskDto.description !== undefined && {
-        description: updateTaskDto.description,
-      }),
-      ...(updateTaskDto.dueDate && {
-        dueDate: new Date(updateTaskDto.dueDate),
-      }),
-      updatedBy: user,
-    };
-
-    Object.assign(task, updatedFields);
-    return await this.taskRepository.save(task);
   }
 
   //Delete task
   async delete(taskId: string, deleteTaskDto: DeleteTaskDto, userId: string) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
-    await queryRunner.startTransaction();
+    await queryRunner.startTransaction('REPEATABLE READ');
 
     try {
       const { deletedReason } = deleteTaskDto;
@@ -284,7 +313,14 @@ export class TaskService {
       }
 
       // Get the user who is deleting
-      const user = await this.userService.getById(userId);
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id: userId },
+        relations: ['role'],
+      });
+
+      if (!user) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
 
       // Update task properties for soft delete
       task.deletedBy = user;

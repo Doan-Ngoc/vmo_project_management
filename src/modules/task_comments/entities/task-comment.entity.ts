@@ -14,9 +14,7 @@ export class TaskComment extends BaseEntity {
   @Column({ type: 'text' })
   content: string;
 
-  @ManyToOne(() => Task, (task) => task.comments, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => Task, (task) => task.comments)
   @JoinColumn({ name: 'task_id' })
   task: Task;
 

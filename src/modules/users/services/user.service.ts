@@ -80,6 +80,7 @@ export class UserService {
           workingUnit,
           hashedPassword,
           accountType: AccountType.MEMBER,
+          passwordChangedAt: new Date(),
         };
 
         const newUser = queryRunner.manager.create(User, userData);
@@ -166,6 +167,7 @@ export class UserService {
     }
     const user = await this.getById(userId);
     user.hashedPassword = this.authService.hashPassword(newPassword);
+    user.passwordChangedAt = new Date();
     return await this.userRepository.save(user);
   }
 }

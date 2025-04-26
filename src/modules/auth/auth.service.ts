@@ -52,6 +52,7 @@ export class AuthService {
         id: user.id,
         ...(user.role && { roleId: user.role.id }),
         accountType: user.accountType,
+        iat: Math.floor(Date.now() / 1000),
       },
       this.configService.getOrThrow('JWT_ACCESS_KEY') as string,
       {
@@ -60,7 +61,7 @@ export class AuthService {
     );
 
     const refreshToken = this.jwtService.sign(
-      { id: user.id },
+      { id: user.id, iat: Math.floor(Date.now() / 1000) },
       this.configService.getOrThrow('JWT_REFRESH_KEY') as string,
       { expiresIn: this.configService.getOrThrow('JWT_REFRESH_EXPIRE') },
     );

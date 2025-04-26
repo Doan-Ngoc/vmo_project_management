@@ -12,8 +12,8 @@ import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
 import { BaseEntity } from '../../../databases/base.entity';
 import { TaskComment } from '../../task_comments/entities/task-comment.entity';
-// import { TaskStatus } from '@/enum/task-status.enum';
 import { TaskStatus } from '../../../enum/task-status.enum';
+import { Exclude } from 'class-transformer';
 
 @Entity('tasks')
 export class Task extends BaseEntity {
@@ -38,7 +38,6 @@ export class Task extends BaseEntity {
 
   @ManyToOne(() => Project, (project) => project.tasks, {
     nullable: false,
-    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'project_id' })
   project: Project;
@@ -70,5 +69,6 @@ export class Task extends BaseEntity {
   deletedBy: User;
 
   @OneToMany(() => TaskComment, (comment) => comment.task)
+  @Exclude()
   comments: TaskComment[];
 }

@@ -61,6 +61,25 @@ export class ProjectService {
     return paginate<Project>(queryBuilder, options);
   }
 
+  async getById(id: string): Promise<Project> {
+    const project = await this.projectRepository.findOne({
+      where: { id },
+      relations: ['workingUnit', 'members', 'members.role'],
+    });
+
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${id} not found`);
+    }
+
+    return project;
+  }
+
+  async getProjectByWorkingUnit(workingUnitId: string): Promise<Project[]> {
+    return this.projectRepository.find({
+      where: { workingUnit: { id: workingUnitId } },
+    });
+  }
+
   async createProject(createProjectDto: CreateProjectDto, userId: string) {
     const { workingUnitId, clientId, dueDate, ...projectData } =
       createProjectDto;
@@ -98,48 +117,42 @@ export class ProjectService {
     }
   }
 
-  async getById(id: string): Promise<Project> {
-    const project = await this.projectRepository.findOne({
-      where: { id },
-      relations: ['workingUnit', 'members', 'members.role'],
-    });
-
-    if (!project) {
-      throw new NotFoundException(`Project with ID ${id} not found`);
-    }
-
-    return project;
-  }
-
   async updateMembers(
     updateProjectMemberDto: UpdateProjectMemberDto,
     userId: string,
   ): Promise<Project> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
-    await queryRunner.startTransaction();
+    await queryRunner.startTransaction('REPEATABLE READ');
 
-    const errors: string[] = [];
     const { projectId, userIds } = updateProjectMemberDto;
 
     try {
       // Get the project and project members
-      const project = await this.getById(projectId);
-      if (project.status !== ProjectStatus.ACTIVE) {
-        errors.push('You can only update members of an active project');
-        throw new BadRequestException();
+      const project = await queryRunner.manager.findOne(Project, {
+        where: { id: projectId },
+        relations: ['workingUnit', 'members', 'members.role'],
+      });
+
+      if (!project) {
+        throw new NotFoundException(`Project not found`);
       }
+
+      if (project.status !== ProjectStatus.ACTIVE) {
+        throw new BadRequestException('Project is not active');
+      }
+
       const currentMembers = project.members;
       const currentMemberIds = currentMembers.map((member) => member.id);
 
       // Check if the request sender is a project member
       const isIncluded = userIds.some((memberId) => memberId === userId);
       if (isIncluded) {
-        errors.push('You cannot remove yourself from the project');
-        throw new BadRequestException();
+        throw new BadRequestException(
+          'User cannot remove themselves from the project',
+        );
       }
 
-      //Separate the users to be added and removed
       const usersToAddIds = userIds.filter(
         (userId) => !currentMemberIds.includes(userId),
       );
@@ -155,16 +168,26 @@ export class ProjectService {
       //Add members
       let usersToAddData: User[] = [];
       for (const userId of usersToAddIds) {
-        const user = await this.userService.getById(userId);
+        const user = await queryRunner.manager.findOne(User, {
+          where: { id: userId },
+          relations: ['role', 'workingUnit'],
+        });
+
+        if (!user) {
+          throw new NotFoundException(`User with ID ${userId} not found`);
+        }
         //Check if user account is valid
         if (user.accountStatus !== AccountStatus.ACTIVE) {
-          errors.push(`User ${userId} account is not active`);
-          continue;
+          throw new BadRequestException(
+            'One or more selected users are not active',
+          );
         }
         if (user.workingUnit.id !== project.workingUnit.id) {
-          errors.push(`User ${userId} is not a member of this working unit`);
-          continue;
+          throw new BadRequestException(
+            'One or more users are not in the correct working unit',
+          );
         }
+
         usersToAddData.push(user);
       }
 
@@ -182,31 +205,22 @@ export class ProjectService {
       ).length;
 
       if (devNumber > project.devNumber) {
-        errors.push('Developer number limit exceeded');
+        throw new BadRequestException('Developer number limit exceeded');
       }
       if (pmNumber > project.pmNumber) {
-        errors.push('Project manager number limit exceeded');
+        throw new BadRequestException('Project manager number limit exceeded');
       }
       if (techLeadNumber > project.techLeadNumber) {
-        errors.push('Tech lead number limit exceeded');
+        throw new BadRequestException('Tech lead number limit exceeded');
       }
 
-      if (errors.length > 0) {
-        throw new BadRequestException();
-      }
-
-      //Save the project
       project.members = membersAfterAdd;
       const updatedProject = await queryRunner.manager.save(Project, project);
-
       await queryRunner.commitTransaction();
       return updatedProject;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new BadRequestException({
-        message: 'Project member update failed',
-        errors: errors,
-      });
+      throw new BadRequestException(error.message);
     } finally {
       await queryRunner.release();
     }
@@ -225,7 +239,7 @@ export class ProjectService {
     const { projectId, deletedReason } = deleteProjectDto;
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
-    await queryRunner.startTransaction();
+    await queryRunner.startTransaction('REPEATABLE READ');
 
     try {
       // Get project with its tasks and each task's comments
@@ -239,7 +253,14 @@ export class ProjectService {
       }
 
       // Get the user who is deleting
-      const user = await this.userService.getById(userId);
+      const user = await queryRunner.manager.findOne(User, {
+        where: { id: userId },
+        relations: ['role'],
+      });
+
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
 
       // Update project status before deletion
       project.status = ProjectStatus.CANCELLED;
@@ -275,7 +296,7 @@ export class ProjectService {
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw error;
+      throw new BadRequestException('Project deletion failed');
     } finally {
       await queryRunner.release();
     }

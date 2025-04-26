@@ -51,8 +51,10 @@ export class User extends BaseEntity {
   @Column({ type: 'text', nullable: true, name: 'profile_picture' })
   profilePicture: string;
 
+  @Column({ type: 'timestamp', name: 'password_changed_at', nullable: true })
+  passwordChangedAt: Date;
+
   @ManyToOne(() => Role, (role) => role.users, {
-    onDelete: 'CASCADE',
     nullable: true,
   })
   @JoinColumn({ name: 'role_id' })

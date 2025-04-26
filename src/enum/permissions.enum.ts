@@ -14,6 +14,7 @@ export enum Permissions {
   //projects
   CREATE_PROJECT = 'create_project',
   GET_PROJECT_BY_ID = 'get_project_by_id',
+  GET_PROJECT_BY_WORKING_UNIT = 'get_project_by_working_unit',
   GET_PROJECTS = 'get_projects',
   ADD_PROJECT_MEMBERS = 'add_project_members',
   REMOVE_PROJECT_MEMBERS = 'remove_project_members',

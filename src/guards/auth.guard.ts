@@ -38,7 +38,17 @@ export class AuthGuard implements CanActivate {
     );
     const user = await this.userService.getById(decode.id);
 
+    //Check if the token has been issued before a password change
+    const tokenIssuedAt = new Date(decode.iat * 1000);
+    if (tokenIssuedAt < user.passwordChangedAt) {
+      throw new UnauthorizedException(
+        'Password has been changed. Please login again.',
+      );
+    }
+
+    //Add user to request
     request.user = user;
+
     //Only allow active users
     if (user.accountStatus !== AccountStatus.ACTIVE) return false;
 

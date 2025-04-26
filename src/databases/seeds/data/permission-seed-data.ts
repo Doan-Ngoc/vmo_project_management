@@ -188,4 +188,10 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
     path: '/projects',
     method: 'DELETE',
   },
+
+  {
+    name: Permissions.GET_PROJECT_BY_WORKING_UNIT,
+    path: '/projects/working-unit/:workingUnitId',
+    method: 'GET',
+  },
 ];

@@ -27,13 +27,14 @@ import {
   UpdateProjectStatusDto,
   DeleteProjectDto,
 } from './dtos';
+import { WorkingUnitMember } from '@/decorators/working-unit-member.decorator';
 
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
-  @Auth(Permissions.CREATE_PROJECT)
   @Post()
+  @WorkingUnitMember(Permissions.CREATE_PROJECT)
   createProject(
     @Body() createProjectDto: CreateProjectDto,
     @GetUser() user: User,
@@ -42,10 +43,17 @@ export class ProjectController {
   }
 
   @Get(':projectId')
-  @UseGuards(ProjectMemberGuard)
-  @Auth(Permissions.GET_PROJECT_BY_ID)
+  @ProjectMember(Permissions.GET_PROJECT_BY_ID)
   getProjectById(@Param('projectId') id: string): Promise<Project> {
     return this.projectService.getById(id);
+  }
+
+  @Get('working-unit/:workingUnitId')
+  @WorkingUnitMember(Permissions.GET_PROJECT_BY_WORKING_UNIT)
+  getProjectByWorkingUnit(
+    @Param('workingUnitId') id: string,
+  ): Promise<Project[]> {
+    return this.projectService.getProjectByWorkingUnit(id);
   }
 
   @Get()
@@ -74,7 +82,7 @@ export class ProjectController {
   }
 
   @Patch('/status')
-  @Auth(Permissions.UPDATE_PROJECT_STATUS)
+  @ProjectMember(Permissions.UPDATE_PROJECT_STATUS)
   async updateProjectStatus(
     @Body() updateProjectStatusDto: UpdateProjectStatusDto,
   ) {
