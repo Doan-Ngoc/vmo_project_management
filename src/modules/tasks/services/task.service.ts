@@ -96,9 +96,7 @@ export class TaskService {
     return await this.taskRepository.save(newTask);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE, {
-    // timeZone: 'Asia/Ho_Chi_Minh',
-  })
+  @Cron(CronExpression.EVERY_MINUTE, {})
   async handleExpiredTasks() {
     try {
       const now = new Date();
@@ -142,11 +140,10 @@ export class TaskService {
       // Check task status
       if (
         task.status === TaskStatus.COMPLETED ||
-        task.status === TaskStatus.EXPIRED
+        task.status === TaskStatus.EXPIRED ||
+        task.status === TaskStatus.CANCELLED
       ) {
-        throw new BadRequestException(
-          'Cannot update members of a completed or expired task',
-        );
+        throw new BadRequestException('Cannot update members of this task');
       }
 
       const currentMembers = task.members;
@@ -208,11 +205,10 @@ export class TaskService {
 
   //Update task status
   async updateStatus(
-    taskId: string,
     updateTaskStatusDto: UpdateTaskStatusDto,
     userId: string,
   ): Promise<Task> {
-    const { newStatus } = updateTaskStatusDto;
+    const { newStatus, taskId } = updateTaskStatusDto;
     const task = await this.getById(taskId);
     const user = await this.userService.getById(userId);
 
@@ -229,8 +225,7 @@ export class TaskService {
   }
 
   //Update task
-  async updateTask(
-    taskId: string,
+  async updateTaskData(
     updateTaskDto: UpdateTaskDto,
     userId: string,
   ): Promise<Task> {
@@ -239,6 +234,7 @@ export class TaskService {
     await queryRunner.startTransaction('REPEATABLE READ');
 
     try {
+      const { taskId } = updateTaskDto;
       const task = await queryRunner.manager.findOne(Task, {
         where: { id: taskId },
         relations: ['project', 'members', 'members.role'],
@@ -295,13 +291,13 @@ export class TaskService {
   }
 
   //Delete task
-  async delete(taskId: string, deleteTaskDto: DeleteTaskDto, userId: string) {
+  async delete(deleteTaskDto: DeleteTaskDto, userId: string) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction('REPEATABLE READ');
 
     try {
-      const { deletedReason } = deleteTaskDto;
+      const { deletedReason, taskId } = deleteTaskDto;
       // Get task with its project, members and comments
       const task = await this.taskRepository.findOne({
         where: { id: taskId },

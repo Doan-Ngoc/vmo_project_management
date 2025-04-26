@@ -2,10 +2,8 @@ import {
   Controller,
   Get,
   Post,
-  Put,
   Body,
   Param,
-  UseGuards,
   Delete,
   ParseIntPipe,
   DefaultValuePipe,
@@ -18,7 +16,6 @@ import { Permissions } from '../../enum/permissions.enum';
 import { GetUser } from '../../decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { Project } from './entities/project.entity';
-import { ProjectMemberGuard } from '../../guards/project-member.guard';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 import { ProjectMember } from '../../decorators/project-member.decorator';
 import {

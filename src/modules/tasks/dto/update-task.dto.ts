@@ -1,7 +1,16 @@
-// src/modules/task/dto/update-task.dto.ts
-import { IsString, IsOptional, IsDateString } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsDateString,
+  IsNotEmpty,
+  IsUUID,
+} from 'class-validator';
 
 export class UpdateTaskDto {
+  @IsUUID()
+  @IsNotEmpty()
+  taskId: string;
+
   @IsOptional()
   @IsString()
   name?: string;

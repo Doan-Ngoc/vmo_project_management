@@ -6,11 +6,13 @@ import {
 import { TaskComment } from '../entities/task-comment.entity';
 import { TaskService } from '../../tasks/services/task.service';
 import { UserService } from '../../users/services/user.service';
-import { CreateTaskCommentDto } from '../dto/create-task-comment.dto';
+import {
+  CreateTaskCommentDto,
+  UpdateTaskCommentDto,
+  DeleteTaskCommentDto,
+} from '../dto';
 import { TaskCommentRepository } from '../repositories/task-comment.repository';
 import { TaskStatus } from '@/enum/task-status.enum';
-import { UpdateTaskCommentDto } from '../dto/update-task-comment.dto';
-
 @Injectable()
 export class TaskCommentService {
   constructor(
@@ -75,11 +77,10 @@ export class TaskCommentService {
   }
 
   async update(
-    commentId: string,
     updateTaskCommentDto: UpdateTaskCommentDto,
     userId: string,
   ): Promise<TaskComment> {
-    const { content } = updateTaskCommentDto;
+    const { content, commentId } = updateTaskCommentDto;
     const comment = await this.getById(commentId);
 
     const task = await this.taskService.getById(comment.task.id);
@@ -95,7 +96,11 @@ export class TaskCommentService {
     return await this.taskCommentRepository.save(comment);
   }
 
-  async delete(commentId: string, userId: string): Promise<void> {
+  async delete(
+    deleteTaskCommentDto: DeleteTaskCommentDto,
+    userId: string,
+  ): Promise<void> {
+    const { commentId } = deleteTaskCommentDto;
     const comment = await this.getById(commentId);
     const task = await this.taskService.getById(comment.task.id);
     if (

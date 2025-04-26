@@ -6,15 +6,12 @@ import {
   Patch,
   Param,
   Delete,
-  Put,
 } from '@nestjs/common';
 import { RoleService } from './services/role.service';
 import { CreateRoleDto } from './dtos/create-role.dto';
 import { UpdateRoleDto } from './dtos/update-role.dto';
 import { Role } from './entities/role.entity';
-// import { Auth } from '@/decorators/auth.decorator';
 import { Auth } from '../../decorators/auth.decorator';
-// import { Permissions } from '@/enum/permissions.enum';
 import { Permissions } from '../../enum/permissions.enum';
 import { UpdateRolePermissionDto } from './dtos/update-role-permission.dto';
 

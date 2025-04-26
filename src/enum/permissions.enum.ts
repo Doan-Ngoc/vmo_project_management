@@ -28,7 +28,7 @@ export enum Permissions {
   GET_ALL_TASKS = 'get_all_tasks',
   ADD_TASK_MEMBERS = 'add_task_members',
   REMOVE_TASK_MEMBERS = 'remove_task_members',
-  UPDATE_TASK = 'update_task',
+  UPDATE_TASK_DATA = 'update_task_data',
   UPDATE_TASK_STATUS = 'update_task_status',
   DELETE_TASK = 'delete_task',
   UPDATE_TASK_MEMBERS = 'update_task_members',

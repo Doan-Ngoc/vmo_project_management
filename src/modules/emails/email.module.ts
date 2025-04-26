@@ -32,9 +32,7 @@ import { UserModule } from '../users/user.module';
           from: `"Project Management System" <${configService.get('MAIL_FROM')}>`,
         },
         template: {
-          // dir: __dirname + '/templates',
-          dir: 'src/modules/emails/templates',
-          // dir: path.join(process.cwd(), 'src/modules/mail/templates'),
+          dir: path.join(__dirname, 'templates'),
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,

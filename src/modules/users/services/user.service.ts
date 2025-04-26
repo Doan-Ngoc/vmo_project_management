@@ -1,12 +1,9 @@
 import {
   BadRequestException,
-  ConflictException,
   forwardRef,
   Inject,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
-  UseGuards,
 } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { AuthService } from '../../auth/auth.service';

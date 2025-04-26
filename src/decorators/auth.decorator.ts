@@ -1,7 +1,4 @@
 import { applyDecorators, UseGuards, SetMetadata } from '@nestjs/common';
-// import { AuthGuard } from 'src/guards/auth.guard';
-// import { Permissions } from 'src/enum/permissions.enum';
-// import { ProjectMemberGuard } from '@/guards/project-member.guard';
 import { AuthGuard } from '../guards/auth.guard';
 import { Permissions } from '../enum/permissions.enum';
 import { ProjectMemberGuard } from '../guards/project-member.guard';

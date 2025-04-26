@@ -3,7 +3,6 @@ import {
   Post,
   Body,
   Get,
-  Query,
   UploadedFile,
   UseInterceptors,
   FileTypeValidator,
@@ -14,18 +13,18 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UserService } from './services/user.service';
-import { CreateUserDto, CreateUserResponseDto } from './dtos';
 import { Auth } from '../../decorators/auth.decorator';
 import { Permissions } from '../../enum/permissions.enum';
-import { EmailService } from '../emails/services/email.service';
-import { FileService } from '../../shared/file-processing/services/file.service';
+import { FileService } from './services/file.service';
 import { User } from './entities/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FirebaseStorageService } from '../../infrastructure/firebase/services/firebase.storage.service';
 import * as multer from 'multer';
-import { extname } from 'path';
 import { AccountStatus } from '../../enum/account-status.enum';
 import { GetUser } from '../../decorators/get-user.decorator';
+import { join } from 'path';
+import { Response } from 'express';
+import { Res } from '@nestjs/common';
 @Controller('users')
 export class UserController {
   constructor(
@@ -58,6 +57,15 @@ export class UserController {
   ) {
     const userDataArray = await this.fileService.processExcelImport(file);
     return this.userService.create(userDataArray);
+  }
+
+  @Get('download/user-import-template')
+  async downloadTemplate(@Res() res: Response) {
+    const templatePath = join(
+      process.cwd(),
+      'src/templates/user-import-template.xlsx',
+    );
+    res.sendFile(templatePath);
   }
 
   @Patch('/password')

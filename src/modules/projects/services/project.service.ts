@@ -292,7 +292,7 @@ export class ProjectService {
       await queryRunner.commitTransaction();
 
       return {
-        message: 'Project and all related tasks deleted successfully',
+        message: 'Project deleted successfully',
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();

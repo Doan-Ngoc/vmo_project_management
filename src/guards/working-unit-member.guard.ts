@@ -2,10 +2,7 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   BadRequestException,
-  UnauthorizedException,
-  NotFoundException,
 } from '@nestjs/common';
 import { UserService } from '../modules/users/services/user.service';
 import { AccountType } from '../enum/account-type.enum';
@@ -25,7 +22,9 @@ export class WorkingUnitMemberGuard implements CanActivate {
     const workingUnitId =
       request.params?.workingUnitId || request.body?.workingUnitId;
     if (user.workingUnit.id !== workingUnitId) {
-      return false;
+      throw new BadRequestException(
+        'User is not a member of this working unit',
+      );
     }
 
     return true;

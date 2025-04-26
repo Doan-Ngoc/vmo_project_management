@@ -46,7 +46,7 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.UPDATE_TASK_COMMENT),
           getPermissionId(Permissions.DELETE_TASK_COMMENT),
           getPermissionId(Permissions.UPDATE_TASK_STATUS),
-          getPermissionId(Permissions.UPDATE_TASK),
+          getPermissionId(Permissions.UPDATE_TASK_DATA),
           getPermissionId(Permissions.GET_ALL_TASKS),
           getPermissionId(Permissions.GET_ALL_TASK_COMMENTS),
           getPermissionId(Permissions.TEST_PERMISSION),
@@ -68,7 +68,7 @@ export class RolePermissionSeedData {
         roleId: devRoleId,
         permissionIds: [
           getPermissionId(Permissions.UPDATE_TASK_STATUS),
-          getPermissionId(Permissions.UPDATE_TASK),
+          getPermissionId(Permissions.UPDATE_TASK_DATA),
           getPermissionId(Permissions.GET_ALL_TASKS),
           getPermissionId(Permissions.GET_ALL_TASK_COMMENTS),
           getPermissionId(Permissions.CREATE_TASK_COMMENT),
@@ -87,7 +87,7 @@ export class RolePermissionSeedData {
         roleId: leadTechRoleId,
         permissionIds: [
           getPermissionId(Permissions.UPDATE_TASK_STATUS),
-          getPermissionId(Permissions.UPDATE_TASK),
+          getPermissionId(Permissions.UPDATE_TASK_DATA),
           getPermissionId(Permissions.GET_ALL_TASKS),
           getPermissionId(Permissions.GET_ALL_TASK_COMMENTS),
           getPermissionId(Permissions.CREATE_TASK_COMMENT),

@@ -1,11 +1,4 @@
-import {
-  IsArray,
-  IsNotEmpty,
-  IsString,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsArray, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class UpdateProjectMemberDto {
   @IsUUID()

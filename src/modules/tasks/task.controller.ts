@@ -65,14 +65,13 @@ export class TaskController {
     return this.taskService.getAllTasks(projectId, options, query);
   }
 
-  @Patch(':taskId/status')
+  @Patch('/status')
   @ProjectMember(Permissions.UPDATE_TASK_STATUS)
   updateStatus(
-    @Param('taskId') taskId: string,
     @Body() updateStatusDto: UpdateTaskStatusDto,
     @GetUser() user: User,
   ) {
-    return this.taskService.updateStatus(taskId, updateStatusDto, user.id);
+    return this.taskService.updateStatus(updateStatusDto, user.id);
   }
 
   @Patch('/members')
@@ -84,24 +83,22 @@ export class TaskController {
     return this.taskService.updateTaskMembers(updateTaskMemberDto, user.id);
   }
 
-  @Patch(':taskId')
+  @Patch()
   @UseGuards(TaskMemberGuard)
-  @Auth(Permissions.UPDATE_TASK)
-  async updateTask(
-    @Param('taskId') taskId: string,
+  @Auth(Permissions.UPDATE_TASK_DATA)
+  async updateTaskData(
     @Body() updateTaskDto: UpdateTaskDto,
     @GetUser() user: User,
   ): Promise<Task> {
-    return this.taskService.updateTask(taskId, updateTaskDto, user.id);
+    return this.taskService.updateTaskData(updateTaskDto, user.id);
   }
 
-  @Delete(':taskId')
+  @Delete()
   @ProjectMember(Permissions.DELETE_TASK)
   async deleteTask(
-    @Param('taskId') taskId: string,
     @Body() deleteTaskDto: DeleteTaskDto,
     @GetUser() user: User,
   ) {
-    return this.taskService.delete(taskId, deleteTaskDto, user.id);
+    return this.taskService.delete(deleteTaskDto, user.id);
   }
 }

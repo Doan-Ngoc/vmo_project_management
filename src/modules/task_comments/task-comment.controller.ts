@@ -3,24 +3,22 @@ import {
   Controller,
   Param,
   Post,
-  Put,
   Delete,
-  UseGuards,
   Get,
   Patch,
 } from '@nestjs/common';
 import { TaskCommentService } from './services/task-comment.service';
 import { GetUser } from '../../decorators/get-user.decorator';
-import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
-import { TaskMemberGuard } from '@/guards/task-member.guard';
-import { Auth } from '@/decorators/auth.decorator';
+import {
+  CreateTaskCommentDto,
+  UpdateTaskCommentDto,
+  DeleteTaskCommentDto,
+} from './dto';
 import { Permissions } from '@/enum/permissions.enum';
 import { User } from '@/modules/users/entities/user.entity';
-import { ProjectMemberGuard } from '@/guards/project-member.guard';
 import { ProjectMember } from '@/decorators/project-member.decorator';
-import { UpdateTaskCommentDto } from './dto/update-task-comment.dto';
+
 import { TaskComment } from './entities/task-comment.entity';
-import { TaskMember } from '@/decorators/task-member.decorator';
 import { TaskCommentOwner } from '@/decorators/task-comment-owner.decorator';
 
 @Controller('comments')
@@ -44,26 +42,21 @@ export class TaskCommentController {
     return this.taskCommentService.getByTask(taskId);
   }
 
-  @Patch(':commentId')
+  @Patch()
   @TaskCommentOwner(Permissions.UPDATE_TASK_COMMENT)
   async updateTaskComment(
-    @Param('commentId') commentId: string,
     @Body() updateTaskCommentDto: UpdateTaskCommentDto,
     @GetUser() user: User,
   ): Promise<TaskComment> {
-    return await this.taskCommentService.update(
-      commentId,
-      updateTaskCommentDto,
-      user.id,
-    );
+    return await this.taskCommentService.update(updateTaskCommentDto, user.id);
   }
 
-  @Delete(':commentId')
+  @Delete()
   @TaskCommentOwner(Permissions.DELETE_TASK_COMMENT)
   async deleteTaskComment(
-    @Param('commentId') commentId: string,
+    @Body() deleteTaskCommentDto: DeleteTaskCommentDto,
     @GetUser() user: User,
   ): Promise<void> {
-    return this.taskCommentService.delete(commentId, user.id);
+    return this.taskCommentService.delete(deleteTaskCommentDto, user.id);
   }
 }

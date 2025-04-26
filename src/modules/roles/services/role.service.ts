@@ -10,13 +10,12 @@ import { CreateRoleDto } from '../dtos/create-role.dto';
 import { UpdateRoleDto } from '../dtos/update-role.dto';
 import { PermissionService } from '../../permissions/services/permission.service';
 import { Permission } from '../../permissions/entities/permission.entity';
-import { DataSource } from 'typeorm';
+
 @Injectable()
 export class RoleService {
   constructor(
     private readonly roleRepository: RoleRepository,
     private readonly permissionService: PermissionService,
-    private readonly dataSource: DataSource,
   ) {}
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
@@ -115,8 +114,6 @@ export class RoleService {
 
   async removeAllPermissionsFromRole(roleId: string): Promise<Role> {
     const role = await this.getById(roleId);
-
-    // Clear all permissions
     role.permissions = [];
 
     return this.roleRepository.save(role);

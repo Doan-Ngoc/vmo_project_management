@@ -35,7 +35,7 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
   },
   {
     name: Permissions.DELETE_TASK,
-    path: '/tasks/:projectId',
+    path: '/tasks',
     method: 'DELETE',
   },
   {
@@ -75,7 +75,7 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
   },
   {
     name: Permissions.UPDATE_TASK_COMMENT,
-    path: '/comments/:id',
+    path: '/comments',
     method: 'PATCH',
   },
   {
@@ -85,7 +85,7 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
   },
   {
     name: Permissions.DELETE_TASK_COMMENT,
-    path: '/comments/:id',
+    path: '/comments',
     method: 'DELETE',
   },
   {
@@ -100,12 +100,12 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
   },
   {
     name: Permissions.UPDATE_TASK_STATUS,
-    path: '/tasks/:taskId/status',
+    path: '/tasks/status',
     method: 'PATCH',
   },
   {
-    name: Permissions.UPDATE_TASK,
-    path: '/tasks/:taskId',
+    name: Permissions.UPDATE_TASK_DATA,
+    path: '/tasks',
     method: 'PATCH',
   },
   {
@@ -175,7 +175,7 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
   },
   {
     name: Permissions.DOWNLOAD_TEMPLATE,
-    path: '/files/download-template',
+    path: '/users/download/user-import-template',
     method: 'GET',
   },
   {

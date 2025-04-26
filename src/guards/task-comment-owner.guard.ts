@@ -5,7 +5,6 @@ import {
   ForbiddenException,
   BadRequestException,
   UnauthorizedException,
-  NotFoundException,
 } from '@nestjs/common';
 import { TaskCommentService } from '@/modules/task_comments/services/task-comment.service';
 import { AccountType } from '@/enum/account-type.enum';

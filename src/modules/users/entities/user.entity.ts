@@ -1,11 +1,4 @@
-import {
-  Entity,
-  Column,
-  JoinColumn,
-  ManyToOne,
-  JoinTable,
-  ManyToMany,
-} from 'typeorm';
+import { Entity, Column, JoinColumn, ManyToOne, ManyToMany } from 'typeorm';
 import { WorkingUnit } from '../../working-units/entities/working-unit.entity';
 import { Role } from '../../roles/entities/role.entity';
 import { AccountStatus } from '../../../enum/account-status.enum';

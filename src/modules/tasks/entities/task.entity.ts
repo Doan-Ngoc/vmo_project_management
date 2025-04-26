@@ -3,7 +3,6 @@ import {
   Entity,
   ManyToOne,
   JoinColumn,
-  DeleteDateColumn,
   ManyToMany,
   JoinTable,
   OneToMany,

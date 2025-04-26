@@ -9,7 +9,6 @@ import { EmailService } from '../../emails/services/email.service';
 import { CreateVerificationEmailDto } from '../../emails/dtos/create-verification-email.dto';
 import { forwardRef, Inject, Logger } from '@nestjs/common';
 import { UserService } from '../../users/services/user.service';
-// import { AccountStatus } from '@/enum/account-status.enum';
 import { AccountStatus } from '../../../enum/account-status.enum';
 
 @Processor('email')

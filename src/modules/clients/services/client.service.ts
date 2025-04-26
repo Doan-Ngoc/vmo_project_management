@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { CreateClientDto } from '../dto/create-client.dto';
 import { Client } from '../entities/client.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import { ClientRepository } from '../repositories/client.repository';
 
 @Injectable()

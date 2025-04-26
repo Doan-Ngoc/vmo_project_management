@@ -20,8 +20,6 @@ const config = {
   entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
   migrations: [path.join(__dirname, '../migrations/**/*{.ts,.js}')],
   migrationsTableName: 'migrations',
-  // logger: 'advanced-console',
-  // logging: ['query', 'error', 'schema', 'warn', 'info', 'log', 'migration'],
 };
 
 export default registerAs('typeorm', () => config);

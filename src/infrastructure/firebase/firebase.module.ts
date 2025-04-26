@@ -1,5 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { FirebaseStorageService } from './services/firebase.storage.service';
 import { firebaseProvider } from './firebase.provider';
 import { UserService } from '../../modules/users/services/user.service';

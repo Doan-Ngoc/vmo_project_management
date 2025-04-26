@@ -1,7 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Project } from '../../projects/entities/project.entity';
-// import { BaseEntity } from '@/databases/base.entity';
 import { BaseEntity } from '../../../databases/base.entity';
 
 @Entity('working_units')

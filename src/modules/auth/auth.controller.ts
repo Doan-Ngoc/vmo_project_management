@@ -7,6 +7,7 @@ import { join } from 'path';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
   @Post('login')
   logIn(@Body() authLogInDto: AuthLogInDto) {
     return this.authService.logIn(authLogInDto);
@@ -16,14 +17,5 @@ export class AuthController {
   async verifyEmail(@Query('token') token: string) {
     await this.authService.verifyEmail(token);
     return { message: 'Email verified successfully' };
-  }
-
-  @Get('download-template')
-  async downloadTemplate(@Res() res: Response) {
-    const templatePath = join(
-      process.cwd(),
-      'src/shared/file-processing/templates/user-import-template.xlsx',
-    );
-    res.sendFile(templatePath);
   }
 }

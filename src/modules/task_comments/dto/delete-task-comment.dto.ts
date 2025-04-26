@@ -1,11 +1,7 @@
 import { IsString, IsNotEmpty, IsUUID } from 'class-validator';
 
-export class UpdateTaskCommentDto {
+export class DeleteTaskCommentDto {
   @IsUUID()
   @IsNotEmpty()
   commentId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  content: string;
 }
