@@ -2,14 +2,6 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { registerAs } from '@nestjs/config';
-import { Permission } from '../../modules/permissions/entities/permission.entity';
-import { Role } from '../../modules/roles/entities/role.entity';
-import { User } from '../../modules/users/entities/user.entity';
-import { WorkingUnit } from '../../modules/working-units/entities/working-unit.entity';
-import { Project } from '../../modules/projects/entities/project.entity';
-import { Task } from '../../modules/tasks/entities/task.entity';
-import { TaskComment } from '../../modules/task_comments/entities/task-comment.entity';
-import { Client } from '../../modules/clients/entities/client.entity';
 
 dotenv.config({
   path: path.join(
@@ -25,7 +17,6 @@ const config = {
   database: process.env.POSTGRES_DATABASE,
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
-  // Include all related entities
   entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
   migrations: [],
   migrationsTableName: 'migrations',

@@ -18,7 +18,6 @@ import { FirebaseModule } from './infrastructure/firebase/firebase.module';
 import { EmailModule } from './modules/emails/email.module';
 import { QueueModule } from './modules/queue/queue.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { SeedsModule } from './databases/seeds/seeds.module';
 @Module({
   imports: [
     ConfigModule.forRoot({

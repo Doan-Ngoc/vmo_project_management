@@ -1,27 +1,20 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PermissionService } from '../../../modules/permissions/services/permission.service';
-import * as fs from 'fs';
-import * as path from 'path';
 import { RoleService } from '../../../modules/roles/services/role.service';
 import { AccountType } from '../../../enum/account-type.enum';
 import { AccountStatus } from '../../../enum/account-status.enum';
-import { UserService } from '../../../modules/users/services/user.service';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../../../modules/auth/auth.service';
 import { UserRepository } from '../../../modules/users/repositories/user.repository';
 import { PermissionRepository } from '../../../modules/permissions/repositories/permission.repository';
 import { PERMISSION_SEED_DATA } from '../data/permission-seed-data';
 import { RolePermissionSeedData } from '../data/role-permissions-seed-data';
-import { RoleName } from '../../../enum/role.enum';
 import { RoleRepository } from '../../../modules/roles/repositories/role.repository';
 import { ROLE_SEED_DATA } from '../data/role-seed-data';
 
 @Injectable()
 export class SeedsService {
   constructor(
-    private readonly permissionService: PermissionService,
     private readonly roleService: RoleService,
-    private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly authService: AuthService,
     private readonly userRepository: UserRepository,
