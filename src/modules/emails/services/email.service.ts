@@ -25,9 +25,6 @@ export class EmailService {
 
     const verificationUrl = `${this.configService.getOrThrow('SITE_URL')}/auth/verify-email?token=${verificationToken}`;
 
-    if (email === 'minhngocd3112@gmail.com') {
-      throw new BadRequestException('Testing failed email');
-    }
     await this.mailerService.sendMail({
       to: email,
       subject: 'Please verify your account',

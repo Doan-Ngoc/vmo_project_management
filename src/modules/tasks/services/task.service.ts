@@ -146,24 +146,9 @@ export class TaskService {
         throw new BadRequestException('Cannot update members of this task');
       }
 
-      const currentMembers = task.members;
-      const currentMemberIds = currentMembers.map((member) => member.id);
-
-      //Separate the users to be added and removed
-      const usersToAddIds = userIds.filter(
-        (userId) => !currentMemberIds.includes(userId),
-      );
-      const usersToRemoveIds = userIds.filter((userId) =>
-        currentMemberIds.includes(userId),
-      );
-
-      //Remove members
-      const membersAfterRemove = currentMembers.filter(
-        (member) => !usersToRemoveIds.includes(member.id),
-      );
-      //Add members
-      let usersToAddData: User[] = [];
-      for (const userId of usersToAddIds) {
+      //Validate and add members
+      let members: User[] = [];
+      for (const userId of userIds) {
         const user = await queryRunner.manager.findOne(User, {
           where: { id: userId },
           relations: ['role'],
@@ -184,13 +169,11 @@ export class TaskService {
           );
         }
 
-        usersToAddData.push(user);
+        members.push(user);
       }
 
-      const membersAfterAdd = [...membersAfterRemove, ...usersToAddData];
-
       //Save the task
-      task.members = membersAfterAdd;
+      task.members = members;
       const updatedTask = await queryRunner.manager.save(Task, task);
 
       await queryRunner.commitTransaction();

@@ -75,7 +75,7 @@ export class ProjectController {
     @Body() updateProjectMemberDto: UpdateProjectMemberDto,
     @GetUser() user: User,
   ) {
-    return this.projectService.updateMembers(updateProjectMemberDto, user.id);
+    return this.projectService.updateMembers(updateProjectMemberDto, user);
   }
 
   @Patch('/status')

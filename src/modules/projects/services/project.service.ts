@@ -102,7 +102,7 @@ export class ProjectService {
 
   async updateMembers(
     updateProjectMemberDto: UpdateProjectMemberDto,
-    userId: string,
+    user: User,
   ): Promise<Project> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -110,6 +110,11 @@ export class ProjectService {
 
     const { projectId, userIds } = updateProjectMemberDto;
 
+    if (user.accountType !== 'admin' && !userIds.includes(user.id)) {
+      throw new BadRequestException(
+        'User cannot remove themselves from a project.',
+      );
+    }
     try {
       // Get the project and project members
       const project = await queryRunner.manager.findOne(Project, {
@@ -125,33 +130,9 @@ export class ProjectService {
         throw new BadRequestException('Project is not active');
       }
 
-      const currentMembers = project.members;
-      const currentMemberIds = currentMembers.map((member) => member.id);
-
-      // Check if the request sender is removing themselves
-      const isIncluded = userIds.some((memberId) => memberId === userId);
-      if (isIncluded) {
-        throw new BadRequestException(
-          'User cannot remove themselves from the project',
-        );
-      }
-
-      //Separate users to add and remove
-      const usersToAddIds = userIds.filter(
-        (userId) => !currentMemberIds.includes(userId),
-      );
-      const usersToRemoveIds = userIds.filter((userId) =>
-        currentMemberIds.includes(userId),
-      );
-
-      //Remove members
-      const membersAfterRemove = currentMembers.filter(
-        (member) => !usersToRemoveIds.includes(member.id),
-      );
-
-      //Add members
-      let usersToAddData: User[] = [];
-      for (const userId of usersToAddIds) {
+      //Validate and add members
+      let members: User[] = [];
+      for (const userId of userIds) {
         const user = await queryRunner.manager.findOne(User, {
           where: { id: userId },
           relations: ['role', 'workingUnit'],
@@ -172,19 +153,17 @@ export class ProjectService {
           );
         }
 
-        usersToAddData.push(user);
+        members.push(user);
       }
 
-      const membersAfterAdd = [...membersAfterRemove, ...usersToAddData];
-
       //Check if the number of members is within the limit
-      const devNumber = membersAfterAdd.filter(
+      const devNumber = members.filter(
         (member) => member.role.name === RoleName.DEV,
       ).length;
-      const pmNumber = membersAfterAdd.filter(
+      const pmNumber = members.filter(
         (member) => member.role.name === RoleName.PM,
       ).length;
-      const techLeadNumber = membersAfterAdd.filter(
+      const techLeadNumber = members.filter(
         (member) => member.role.name === RoleName.TECH_LEAD,
       ).length;
 
@@ -199,7 +178,7 @@ export class ProjectService {
       }
 
       //Update the database
-      project.members = membersAfterAdd;
+      project.members = members;
       const updatedProject = await queryRunner.manager.save(Project, project);
       await queryRunner.commitTransaction();
       return updatedProject;
