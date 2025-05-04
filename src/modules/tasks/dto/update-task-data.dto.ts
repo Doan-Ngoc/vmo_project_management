@@ -6,7 +6,7 @@ import {
   IsUUID,
 } from 'class-validator';
 
-export class UpdateTaskDto {
+export class UpdateTaskDataDto {
   @IsUUID()
   @IsNotEmpty()
   taskId: string;

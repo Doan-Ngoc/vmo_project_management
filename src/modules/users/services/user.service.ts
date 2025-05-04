@@ -12,10 +12,11 @@ import { AccountStatus } from '../../../enum/account-status.enum';
 import { AccountType } from '../../../enum/account-type.enum';
 import { RoleService } from '../../roles/services/role.service';
 import { WorkingUnitService } from '../../working-units/services/working-unit.service';
-import { CreateUserDto } from '../dtos';
+import { CreateUserDto, UpdateAccountStatusDto } from '../dtos';
 import { DataSource } from 'typeorm';
 import { CreateUserResponseDto } from '../dtos/create-user-response.dto';
 import { generateRandomPassword } from '../../../utils/password-generator.util';
+import { UpdateUserDataDto } from '../dtos/update-user-data.dto';
 
 @Injectable()
 export class UserService {
@@ -28,7 +29,9 @@ export class UserService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(newUserDataArray: CreateUserDto[]) {
+  async create(
+    newUserDataArray: CreateUserDto[],
+  ): Promise<CreateUserResponseDto[]> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -110,10 +113,7 @@ export class UserService {
     await queryRunner.commitTransaction();
     await queryRunner.release();
 
-    return {
-      message: 'Bulk user creation completed',
-      createdUsers: createdUsers,
-    };
+    return createdUsers;
   }
 
   async getById(id: string): Promise<User> {
@@ -141,12 +141,31 @@ export class UserService {
   }
 
   async updateAccountStatus(
-    status: AccountStatus,
-    userId: string,
+    updateAccountStatusDto: UpdateAccountStatusDto,
   ): Promise<User> {
+    const { userId, status } = updateAccountStatusDto;
     const user = await this.getById(userId);
     user.accountStatus = status;
     return await this.userRepository.save(user);
+  }
+
+  async updateUserData(updateUserDataDto: UpdateUserDataDto) {
+    const { userId, ...updateUserData } = updateUserDataDto;
+    const user = await this.getById(userId);
+
+    const updatedFields = {
+      ...(updateUserData.email && {
+        email: updateUserData.email,
+        username: updateUserData.email,
+      }),
+      ...(updateUserData.employeeName && {
+        employeeName: updateUserData.employeeName,
+      }),
+    };
+
+    Object.assign(user, updatedFields);
+    await this.userRepository.save(user);
+    return user;
   }
 
   async saveProfilePictureToDatabase(url: string, userId: string) {
@@ -165,6 +184,9 @@ export class UserService {
     const user = await this.getById(userId);
     user.hashedPassword = this.authService.hashPassword(newPassword);
     user.passwordChangedAt = new Date();
-    return await this.userRepository.save(user);
+    await this.userRepository.save(user);
+    return {
+      message: 'Password changed successfully',
+    };
   }
 }

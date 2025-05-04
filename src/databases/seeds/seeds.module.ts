@@ -1,15 +1,3 @@
-// import { Module } from '@nestjs/common';
-// import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-// import { Permission } from '@/modules/permissions/entities/permission.entity';
-// import { SeederService } from './services/seeder.service';
-// import { ConfigModule, ConfigService } from '@nestjs/config';
-// import { PermissionModule } from '@/modules/permissions/permission.module';
-// import typeorm from '../typeorm';
-// import * as path from 'path';
-// import { RoleModule } from '@/modules/roles/role.module';
-// import { AuthModule } from '@/modules/auth/auth.module';
-// import { UserModule } from '@/modules/users/user.module';
-// import { RolePermissionSeedData } from './data/new-role-permissions-seed-data';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Permission } from '../../modules/permissions/entities/permission.entity';
@@ -32,11 +20,6 @@ import { RolePermissionSeedData } from './data/role-permissions-seed-data';
         __dirname,
         `../../../configs/.env-${process.env.NODE_ENV || 'dev'}`,
       ),
-      // path.join(
-      //   __dirname,
-      //   'configs',
-      //   `.env-${process.env.NODE_ENV || 'dev'}`,
-      // )
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

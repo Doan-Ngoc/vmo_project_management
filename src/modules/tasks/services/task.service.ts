@@ -4,6 +4,7 @@ import {
   NotFoundException,
   forwardRef,
   Inject,
+  Logger,
 } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Task } from '../entities/task.entity';
@@ -11,22 +12,23 @@ import { ProjectService } from '../../projects/services/project.service';
 import { UserService } from '../../users/services/user.service';
 import { Cron } from '@nestjs/schedule';
 import { CronExpression } from '@nestjs/schedule';
-import { TaskStatus } from '@/enum/task-status.enum';
+import { TaskStatus } from '../../../enum/task-status.enum';
 import { AccountStatus } from '../../../enum/account-status.enum';
 import { ProjectStatus } from '../../../enum/project-status.enum';
 import {
   CreateTaskDto,
   DeleteTaskDto,
-  UpdateTaskDto,
+  UpdateTaskDataDto,
   UpdateTaskStatusDto,
+  UpdateTaskMemberDto,
 } from '../dto';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { TaskRepository } from '../repositories/task.repository';
-import { UpdateTaskMemberDto } from '../dto/update-task-member.dto';
 import { User } from '../../users/entities/user.entity';
 @Injectable()
 export class TaskService {
+  private readonly logger = new Logger(TaskService.name);
   constructor(
     private readonly taskRepository: TaskRepository,
     @Inject(forwardRef(() => ProjectService))
@@ -54,7 +56,6 @@ export class TaskService {
     options: IPaginationOptions,
     query?: string,
   ): Promise<Pagination<Task>> {
-    const project = await this.projectService.getById(projectId);
     const queryBuilder = this.taskRepository.createQueryBuilder('task');
     queryBuilder.where('task.project_id = :projectId', { projectId });
     if (query) {
@@ -72,7 +73,7 @@ export class TaskService {
     userId: string,
   ): Promise<Task> {
     const { projectId, dueDate, ...taskData } = createTaskDto;
-    // Check if due date is in the past
+
     if (dueDate && new Date(dueDate) < new Date()) {
       throw new BadRequestException('Due date cannot be in the past');
     }
@@ -111,15 +112,14 @@ export class TaskService {
         })
         .execute();
 
-      console.log(`${result.affected} task(s) marked as expired.`);
+      this.logger.log(`${result.affected} task(s) marked as expired.`);
     } catch (err) {
-      console.error('Cron job error:', err);
+      this.logger.error('Cron job error:', err);
     }
   }
 
   async updateTaskMembers(
     updateTaskMemberDto: UpdateTaskMemberDto,
-    userId: string,
   ): Promise<Task> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -226,7 +226,7 @@ export class TaskService {
 
   //Update task
   async updateTaskData(
-    updateTaskDto: UpdateTaskDto,
+    updateTaskDataDto: UpdateTaskDataDto,
     userId: string,
   ): Promise<Task> {
     const queryRunner = this.dataSource.createQueryRunner();
@@ -234,7 +234,7 @@ export class TaskService {
     await queryRunner.startTransaction('REPEATABLE READ');
 
     try {
-      const { taskId } = updateTaskDto;
+      const { taskId } = updateTaskDataDto;
       const task = await queryRunner.manager.findOne(Task, {
         where: { id: taskId },
         relations: ['project', 'members', 'members.role'],
@@ -252,8 +252,8 @@ export class TaskService {
       }
 
       if (
-        updateTaskDto.dueDate &&
-        new Date(updateTaskDto.dueDate) < new Date()
+        updateTaskDataDto.dueDate &&
+        new Date(updateTaskDataDto.dueDate) < new Date()
       ) {
         throw new BadRequestException('Due date cannot be in the past');
       }
@@ -268,12 +268,12 @@ export class TaskService {
       }
 
       const updatedFields = {
-        ...(updateTaskDto.name && { name: updateTaskDto.name }),
-        ...(updateTaskDto.description !== undefined && {
-          description: updateTaskDto.description,
+        ...(updateTaskDataDto.name && { name: updateTaskDataDto.name }),
+        ...(updateTaskDataDto.description !== undefined && {
+          description: updateTaskDataDto.description,
         }),
-        ...(updateTaskDto.dueDate && {
-          dueDate: new Date(updateTaskDto.dueDate),
+        ...(updateTaskDataDto.dueDate && {
+          dueDate: new Date(updateTaskDataDto.dueDate),
         }),
         updatedBy: user,
       };
@@ -294,7 +294,7 @@ export class TaskService {
   async delete(deleteTaskDto: DeleteTaskDto, userId: string) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
-    await queryRunner.startTransaction('REPEATABLE READ');
+    await queryRunner.startTransaction();
 
     try {
       const { deletedReason, taskId } = deleteTaskDto;
@@ -337,12 +337,9 @@ export class TaskService {
       }
 
       // Soft delete the task
-      const deletedTask = await queryRunner.manager.softRemove(Task, task);
+      await queryRunner.manager.softRemove(Task, task);
 
       await queryRunner.commitTransaction();
-      return {
-        message: 'Task deleted successfully',
-      };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;

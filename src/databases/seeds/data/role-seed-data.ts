@@ -1,4 +1,3 @@
-// import { Permissions } from '@/enum/permissions.enum';
 import { RoleName } from '../../../enum/role.enum';
 
 export interface RoleSeed {

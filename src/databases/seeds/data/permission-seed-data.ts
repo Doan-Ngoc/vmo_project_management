@@ -1,4 +1,3 @@
-// import { Permissions } from '@/enum/permissions.enum';
 import { Permissions } from '../../../enum/permissions.enum';
 
 export interface PermissionSeed {
@@ -50,7 +49,7 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
   },
   {
     name: Permissions.GET_ALL_TASK_COMMENTS,
-    path: '/comments/:id',
+    path: '/comments/tasks/:taskId',
     method: 'GET',
   },
   {
@@ -192,6 +191,30 @@ export const PERMISSION_SEED_DATA: PermissionSeed[] = [
   {
     name: Permissions.GET_PROJECT_BY_WORKING_UNIT,
     path: '/projects/working-unit/:workingUnitId',
+    method: 'GET',
+  },
+
+  {
+    name: Permissions.UPDATE_USER_DATA,
+    path: '/users/data',
+    method: 'PATCH',
+  },
+
+  {
+    name: Permissions.CREATE_COMMENT_REPLY,
+    path: '/comments/replies',
+    method: 'POST',
+  },
+
+  {
+    name: Permissions.GET_COMMENT_REPLIES,
+    path: '/comments/:commentId/replies',
+    method: 'GET',
+  },
+
+  {
+    name: Permissions.GET_TASK_COMMENT_BY_ID,
+    path: '/comments/:commentId',
     method: 'GET',
   },
 ];

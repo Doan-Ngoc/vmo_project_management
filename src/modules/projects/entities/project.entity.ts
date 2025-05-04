@@ -6,7 +6,6 @@ import {
   JoinTable,
   JoinColumn,
   OneToMany,
-  DeleteDateColumn,
 } from 'typeorm';
 import { WorkingUnit } from '../../working-units/entities/working-unit.entity';
 import { Client } from '../../clients/entities/client.entity';
@@ -18,7 +17,7 @@ import { Exclude } from 'class-transformer';
 
 @Entity('projects')
 export class Project extends BaseEntity {
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'varchar', length: 255 })
   name: string;
 
   @Column({ type: 'text', nullable: true })
@@ -62,7 +61,7 @@ export class Project extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   deleted_reason: string;
 
-  @ManyToMany(() => User, (user) => user.projects, { cascade: true })
+  @ManyToMany(() => User, (user) => user.projects)
   @JoinTable({
     name: 'project_member',
     joinColumn: {
@@ -76,7 +75,7 @@ export class Project extends BaseEntity {
   })
   members: User[];
 
-  @OneToMany(() => Task, (task) => task.project, { cascade: true })
+  @OneToMany(() => Task, (task) => task.project)
   @Exclude()
   tasks: Task[];
 }

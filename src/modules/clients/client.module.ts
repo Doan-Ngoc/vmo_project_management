@@ -5,6 +5,7 @@ import { ClientRepository } from './repositories/client.repository';
 import { JwtModule } from '../jwt/jwt.module';
 import { PermissionModule } from '../permissions/permission.module';
 import { UserModule } from '../users/user.module';
+
 @Module({
   imports: [JwtModule, PermissionModule, UserModule],
   controllers: [ClientController],

@@ -25,6 +25,11 @@ import { GetUser } from '../../decorators/get-user.decorator';
 import { join } from 'path';
 import { Response } from 'express';
 import { Res } from '@nestjs/common';
+import {
+  CreateUserResponseDto,
+  UpdateAccountStatusDto,
+  UpdateUserDataDto,
+} from './dtos';
 @Controller('users')
 export class UserController {
   constructor(
@@ -32,12 +37,6 @@ export class UserController {
     private readonly fileService: FileService,
     private readonly storageService: FirebaseStorageService,
   ) {}
-
-  @Get(':id')
-  @Auth(Permissions.GET_USER_BY_ID)
-  async getUserById(@Param('id') id: string): Promise<User> {
-    return this.userService.getById(id);
-  }
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
@@ -54,9 +53,15 @@ export class UserController {
       }),
     )
     file: Express.Multer.File,
-  ) {
+  ): Promise<CreateUserResponseDto[]> {
     const userDataArray = await this.fileService.processExcelImport(file);
     return this.userService.create(userDataArray);
+  }
+
+  @Get(':id')
+  @Auth(Permissions.GET_USER_BY_ID)
+  async getUserById(@Param('id') id: string): Promise<User> {
+    return this.userService.getById(id);
   }
 
   @Get('download/user-import-template')
@@ -77,13 +82,18 @@ export class UserController {
     return this.userService.changePassword(newPassword, user.id);
   }
 
-  @Patch('/:id')
+  @Patch('/data')
+  @Auth(Permissions.UPDATE_USER_DATA)
+  async updateUserData(@Body() updateUserDataDto: UpdateUserDataDto) {
+    return this.userService.updateUserData(updateUserDataDto);
+  }
+
+  @Patch('/status')
   @Auth(Permissions.UPDATE_ACCOUNT_STATUS)
   async updateUser(
-    @Param('id') id: string,
-    @Body('accountStatus') accountStatus: AccountStatus,
+    @Body() updateAccountStatusDto: UpdateAccountStatusDto,
   ): Promise<User> {
-    return this.userService.updateAccountStatus(accountStatus, id);
+    return this.userService.updateAccountStatus(updateAccountStatusDto);
   }
 
   @Post('profile-picture')
@@ -107,8 +117,12 @@ export class UserController {
   )
   async uploadProfilePicture(
     @UploadedFile() file: Express.Multer.File,
-    @Body('userId') userId: string,
+    @GetUser() user: User,
   ) {
-    return this.storageService.uploadProfilePicture(file, userId);
+    const publicUrl = await this.storageService.uploadProfilePicture(
+      file,
+      user.id,
+    );
+    return this.userService.saveProfilePictureToDatabase(publicUrl, user.id);
   }
 }

@@ -35,6 +35,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       useFactory: async (configService: ConfigService) =>
         configService.get('typeorm') as TypeOrmModuleOptions,
     }),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     JwtModule,
@@ -43,7 +44,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     ProjectModule,
     TaskModule,
     TaskCommentModule,
-    ScheduleModule.forRoot(),
     FirebaseModule,
     EmailModule,
     QueueModule,

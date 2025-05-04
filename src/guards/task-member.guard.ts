@@ -22,7 +22,7 @@ export class TaskMemberGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    // Get projectId from either params or body
+    // Get taskId from either params or body
     let taskId = request.params?.taskId || request.body?.taskId;
 
     // For requests that only send taskCommentId, get task from taskComment
@@ -31,23 +31,17 @@ export class TaskMemberGuard implements CanActivate {
         request.params?.taskCommentId || request.body?.taskCommentId;
       if (!taskCommentId) throw new BadRequestException();
       const taskComment = await this.taskCommentService.getById(taskCommentId);
-      if (!taskComment) {
-        throw new NotFoundException('Task comment not found');
-      }
-      if (!taskComment.task?.id)
-        throw new BadRequestException(
-          'Task comment is not associated with any task',
-        );
       taskId = taskComment.task.id;
     }
-
     const task = await this.taskService.getById(taskId);
+
+    //Get user from request
     const user = request.user;
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    //If user is admin, allow access
+    //Bypass authorization check for admin
     if (user.accountType === AccountType.ADMIN) {
       return true;
     }

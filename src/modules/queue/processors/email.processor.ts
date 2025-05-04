@@ -49,11 +49,11 @@ export class EmailProcessor {
 
     if (currentAttempt > maxAttempts) {
       // Only run this on the final failure
-      console.log(`Final failure after ${maxAttempts} attempts`, error);
-      await this.userService.updateAccountStatus(
-        AccountStatus.EMAIL_SEND_FAILED,
-        job.data.id,
-      );
+      this.logger.error(`Final failure after ${maxAttempts} attempts`, error);
+      await this.userService.updateAccountStatus({
+        userId: job.data.id,
+        status: AccountStatus.EMAIL_SEND_FAILED,
+      });
       this.logger.debug(`Updated user status to EMAIL_SEND_FAILED`);
     }
   }
@@ -64,10 +64,10 @@ export class EmailProcessor {
       `Successfully completed job ${job.id} for ${job.data.email}`,
     );
 
-    await this.userService.updateAccountStatus(
-      AccountStatus.PENDING_ACTIVATION,
-      job.data.id,
-    );
+    await this.userService.updateAccountStatus({
+      userId: job.data.id,
+      status: AccountStatus.PENDING_ACTIVATION,
+    });
     this.logger.debug(`Updated user status to PENDING_ACTIVATION`);
   }
 }

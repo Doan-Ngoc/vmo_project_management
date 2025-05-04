@@ -1,20 +1,16 @@
 import {
   Injectable,
-  ConflictException,
-  InternalServerErrorException,
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreatePermissionDto } from '../dto/create-permission.dto';
+import { CreatePermissionDto } from '../dtos';
 import { Permission } from '../entities/permission.entity';
 import { PermissionRepository } from '../repositories/permission.repository';
-import { Role } from '../../roles/entities/role.entity';
 
 @Injectable()
 export class PermissionService {
   constructor(private readonly permissionRepository: PermissionRepository) {}
 
-  //Create New Permission
   async create(
     createPermissionDtos: CreatePermissionDto[],
   ): Promise<Permission[]> {
@@ -27,20 +23,10 @@ export class PermissionService {
     }
   }
 
-  //Get All Permissions
   async getAll(): Promise<Permission[]> {
     return await this.permissionRepository.find({
       relations: ['roles'],
     });
-  }
-
-  //Get Permission Roles
-  async getPermissionRoles(requiredPermission: string): Promise<string[]> {
-    const permission = await this.permissionRepository.findOne({
-      where: { name: requiredPermission },
-      relations: ['roles'],
-    });
-    return permission ? permission.roles.map((role) => role.id) : [];
   }
 
   async getById(id: string): Promise<Permission> {
@@ -53,5 +39,13 @@ export class PermissionService {
       throw new NotFoundException(`Permission with id ${id} not found`);
     }
     return permission;
+  }
+
+  async getPermissionRoles(requiredPermission: string): Promise<string[]> {
+    const permission = await this.permissionRepository.findOne({
+      where: { name: requiredPermission },
+      relations: ['roles'],
+    });
+    return permission ? permission.roles.map((role) => role.id) : [];
   }
 }

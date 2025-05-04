@@ -21,9 +21,13 @@ export class RolePermissionSeedData {
     )?.id;
 
     const getPermissionId = (name: string) => {
-      return (
-        permissions.find((permission) => permission.name === name)?.id || ''
+      const permission = permissions.find(
+        (permission) => permission.name === name,
       );
+      if (!permission) {
+        throw new Error(`Permission ${name} not found`);
+      }
+      return permission.id;
     };
 
     return [
@@ -62,6 +66,10 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.GET_ALL_WORKING_UNITS),
           getPermissionId(Permissions.GET_USER_BY_ID),
           getPermissionId(Permissions.DELETE_PROJECT),
+          getPermissionId(Permissions.UPDATE_USER_DATA),
+          getPermissionId(Permissions.CREATE_COMMENT_REPLY),
+          getPermissionId(Permissions.GET_COMMENT_REPLIES),
+          getPermissionId(Permissions.GET_TASK_COMMENT_BY_ID),
         ],
       },
       {
@@ -81,6 +89,10 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.GET_WORKING_UNIT_MEMBERS),
           getPermissionId(Permissions.GET_CLIENT_BY_ID),
           getPermissionId(Permissions.GET_USER_BY_ID),
+          getPermissionId(Permissions.UPDATE_USER_DATA),
+          getPermissionId(Permissions.CREATE_COMMENT_REPLY),
+          getPermissionId(Permissions.GET_COMMENT_REPLIES),
+          getPermissionId(Permissions.GET_TASK_COMMENT_BY_ID),
         ],
       },
       {
@@ -105,6 +117,10 @@ export class RolePermissionSeedData {
           getPermissionId(Permissions.GET_WORKING_UNIT_MEMBERS),
           getPermissionId(Permissions.GET_CLIENT_BY_ID),
           getPermissionId(Permissions.GET_USER_BY_ID),
+          getPermissionId(Permissions.UPDATE_USER_DATA),
+          getPermissionId(Permissions.CREATE_COMMENT_REPLY),
+          getPermissionId(Permissions.GET_COMMENT_REPLIES),
+          getPermissionId(Permissions.GET_TASK_COMMENT_BY_ID),
         ],
       },
     ];

@@ -17,30 +17,29 @@ import { Permissions } from '../../enum/permissions.enum';
 import { GetUser } from '../../decorators/get-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { Task } from './entities/task.entity';
-import { TaskMemberGuard } from '@/guards/task-member.guard';
+import { TaskMemberGuard } from '../../guards/task-member.guard';
 import {
   CreateTaskDto,
   DeleteTaskDto,
   UpdateTaskStatusDto,
-  UpdateTaskDto,
+  UpdateTaskDataDto,
   UpdateTaskMemberDto,
 } from './dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
-import { ProjectMember } from '@/decorators/project-member.decorator';
+import { ProjectMember } from '../../decorators/project-member.decorator';
+import { TaskMember } from '../../decorators/task-member.decorator';
 
 @Controller('tasks')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
-  //Create new task
   @Post()
   @ProjectMember(Permissions.CREATE_TASK)
   createTask(@Body() createTaskDto: CreateTaskDto, @GetUser() user: User) {
     return this.taskService.createTask(createTaskDto, user.id);
   }
 
-  //Get task by id
   @Get(':taskId')
   @ProjectMember(Permissions.GET_TASK_BY_ID)
   getTaskById(@Param('taskId') id: string): Promise<Task> {
@@ -76,21 +75,17 @@ export class TaskController {
 
   @Patch('/members')
   @ProjectMember(Permissions.UPDATE_TASK_MEMBERS)
-  updateTaskMembers(
-    @Body() updateTaskMemberDto: UpdateTaskMemberDto,
-    @GetUser() user: User,
-  ) {
-    return this.taskService.updateTaskMembers(updateTaskMemberDto, user.id);
+  updateTaskMembers(@Body() updateTaskMemberDto: UpdateTaskMemberDto) {
+    return this.taskService.updateTaskMembers(updateTaskMemberDto);
   }
 
   @Patch()
-  @UseGuards(TaskMemberGuard)
-  @Auth(Permissions.UPDATE_TASK_DATA)
+  @TaskMember(Permissions.UPDATE_TASK_DATA)
   async updateTaskData(
-    @Body() updateTaskDto: UpdateTaskDto,
+    @Body() updateTaskDataDto: UpdateTaskDataDto,
     @GetUser() user: User,
   ): Promise<Task> {
-    return this.taskService.updateTaskData(updateTaskDto, user.id);
+    return this.taskService.updateTaskData(updateTaskDataDto, user.id);
   }
 
   @Delete()
@@ -99,6 +94,7 @@ export class TaskController {
     @Body() deleteTaskDto: DeleteTaskDto,
     @GetUser() user: User,
   ) {
-    return this.taskService.delete(deleteTaskDto, user.id);
+    await this.taskService.delete(deleteTaskDto, user.id);
+    return { message: 'Task deleted successfully' };
   }
 }

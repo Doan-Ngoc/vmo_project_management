@@ -81,9 +81,9 @@ export class AuthService {
     if (user.accountStatus === AccountStatus.ACTIVE) {
       throw new BadRequestException('Account already activated');
     }
-    await this.userService.updateAccountStatus(
-      AccountStatus.ACTIVE,
-      decoded.id,
-    );
+    await this.userService.updateAccountStatus({
+      userId: decoded.id,
+      status: AccountStatus.ACTIVE,
+    });
   }
 }

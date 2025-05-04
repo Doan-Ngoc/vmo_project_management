@@ -1,5 +1,5 @@
 import { IsUUID, IsNotEmpty, IsEnum } from 'class-validator';
-import { ProjectStatus } from '@/enum/project-status.enum';
+import { ProjectStatus } from '../../../enum/project-status.enum';
 
 export class UpdateProjectStatusDto {
   @IsUUID()

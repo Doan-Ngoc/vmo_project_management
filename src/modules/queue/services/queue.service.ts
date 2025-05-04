@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Job, Queue } from 'bull';
-import { CreateVerificationEmailDto } from '@/modules/emails/dtos/create-verification-email.dto';
+import { CreateVerificationEmailDto } from '../../emails/dtos';
 
 @Injectable()
 export class QueueService {

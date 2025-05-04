@@ -1,5 +1,5 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
-import { ProjectMemberGuard } from '@/guards/project-member.guard';
+import { ProjectMemberGuard } from '../guards/project-member.guard';
 import { Auth } from './auth.decorator';
 import { Permissions } from '../enum/permissions.enum';
 

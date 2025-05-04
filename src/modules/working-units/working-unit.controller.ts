@@ -3,7 +3,7 @@ import { WorkingUnitService } from './services/working-unit.service';
 import { WorkingUnit } from './entities/working-unit.entity';
 import { Auth } from '../../decorators/auth.decorator';
 import { Permissions } from '../../enum/permissions.enum';
-import { CreateWorkingUnitDto } from './dtos/create-working-unit.dto';
+import { CreateWorkingUnitDto } from './dtos';
 import { User } from '../users/entities/user.entity';
 
 @Controller('working-units')

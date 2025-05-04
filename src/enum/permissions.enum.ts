@@ -7,6 +7,7 @@ export enum Permissions {
   GET_USER_BY_ID = 'get_user_by_id',
   CREATE_USERS = 'create_users',
   UPLOAD_PROFILE_PICTURE = 'upload_profile_picture',
+  UPDATE_USER_DATA = 'update_user_data',
   UPDATE_ACCOUNT_STATUS = 'update_account_status',
   CHANGE_PASSWORD = 'change_password',
   SEND_BULK_EMAIL = 'send_bulk_email',
@@ -38,6 +39,9 @@ export enum Permissions {
   GET_ALL_TASK_COMMENTS = 'get_all_task_comments',
   UPDATE_TASK_COMMENT = 'update_task_comment',
   DELETE_TASK_COMMENT = 'delete_task_comment',
+  GET_COMMENT_REPLIES = 'get_comment_replies',
+  GET_TASK_COMMENT_BY_ID = 'get_task_comment_by_id',
+  CREATE_COMMENT_REPLY = 'create_comment_reply',
 
   //test
   TEST_PERMISSION = 'test_permission',

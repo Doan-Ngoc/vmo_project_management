@@ -1,10 +1,7 @@
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
-export class UpdateRoleDto {
+export class DeleteRolePermissionDto {
   @IsUUID()
   @IsNotEmpty()
   id: string;
-
-  @IsString()
-  name: string;
 }

@@ -8,27 +8,10 @@ import { extname } from 'path';
 export class FirebaseStorageService {
   private storage: any;
 
-  constructor(
-    @Inject('FIREBASE_APP') private firebaseApp: app.App,
-    @Inject(forwardRef(() => UserService))
-    private readonly userService: UserService,
-  ) {
+  constructor(@Inject('FIREBASE_APP') private firebaseApp: app.App) {
     this.storage = getStorage(firebaseApp);
   }
 
-  // Create a reference to a file
-  getFileRef(path: string) {
-    const bucket = this.storage.bucket();
-    return bucket.file(path);
-  }
-
-  // Create a reference to a folder
-  getFolderRef(path: string) {
-    const bucket = this.storage.bucket();
-    return bucket.file(path);
-  }
-
-  // Upload a file
   async uploadProfilePicture(file: Express.Multer.File, userId: string) {
     const path = `users/profile-picture/${userId}${extname(file.originalname)}`;
     const bucket = this.storage.bucket();
@@ -38,8 +21,7 @@ export class FirebaseStorageService {
         contentType: file.mimetype,
         public: true,
       });
-      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${path}`;
-      return this.userService.saveProfilePictureToDatabase(publicUrl, userId);
+      return `https://storage.googleapis.com/${bucket.name}/${path}`;
     } catch (error) {
       console.error('Error uploading profile picture:', error);
       throw new Error('Error uploading profile picture');

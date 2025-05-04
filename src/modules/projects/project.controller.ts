@@ -24,7 +24,7 @@ import {
   UpdateProjectStatusDto,
   DeleteProjectDto,
 } from './dtos';
-import { WorkingUnitMember } from '@/decorators/working-unit-member.decorator';
+import { WorkingUnitMember } from '../../decorators/working-unit-member.decorator';
 
 @Controller('projects')
 export class ProjectController {
@@ -92,6 +92,9 @@ export class ProjectController {
     @Body() deleteProjectDto: DeleteProjectDto,
     @GetUser() user: User,
   ) {
-    return this.projectService.delete(deleteProjectDto, user.id);
+    await this.projectService.delete(deleteProjectDto, user.id);
+    return {
+      message: 'Project deleted successfully',
+    };
   }
 }

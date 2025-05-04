@@ -8,12 +8,16 @@ import {
   Delete,
 } from '@nestjs/common';
 import { RoleService } from './services/role.service';
-import { CreateRoleDto } from './dtos/create-role.dto';
-import { UpdateRoleDto } from './dtos/update-role.dto';
+import {
+  CreateRoleDto,
+  UpdateRoleDto,
+  UpdateRolePermissionDto,
+  DeleteRoleDto,
+} from './dtos';
 import { Role } from './entities/role.entity';
 import { Auth } from '../../decorators/auth.decorator';
 import { Permissions } from '../../enum/permissions.enum';
-import { UpdateRolePermissionDto } from './dtos/update-role-permission.dto';
+import { DeleteRolePermissionDto } from './dtos/delete-all-role-permissions.dto';
 
 @Controller('roles')
 @Auth(Permissions.MANAGE_ROLES)
@@ -35,52 +39,40 @@ export class RoleController {
     return this.roleService.getById(id);
   }
 
-  @Patch(':id')
-  updateRole(
-    @Param('id') id: string,
-    @Body() updateRoleDto: UpdateRoleDto,
-  ): Promise<Role> {
-    return this.roleService.update(id, updateRoleDto);
+  @Patch()
+  updateRole(@Body() updateRoleDto: UpdateRoleDto): Promise<Role> {
+    return this.roleService.update(updateRoleDto);
   }
 
-  @Delete(':id')
-  deleteRole(@Param('id') id: string) {
-    return this.roleService.delete(id);
+  @Delete()
+  async deleteRole(@Body() deleteRoleDto: DeleteRoleDto) {
+    await this.roleService.delete(deleteRoleDto);
+    return { message: 'Role deleted successfully' };
   }
 
-  // Get role permissions
+  //Role-Permission logic
+
   @Get(':id/permissions')
   async getRolePermissions(@Param('id') id: string) {
     return this.roleService.getRolePermissions(id);
   }
 
-  // Add permissions to role
-  @Post(':id/permissions')
-  async addPermissionsToRole(
-    @Param('id') id: string,
+  //Update permissions of a role
+  @Patch('/permissions')
+  async updateRolePermissions(
     @Body() updateRolePermissionDto: UpdateRolePermissionDto,
   ) {
-    return this.roleService.addPermissionsToRole(
-      id,
-      updateRolePermissionDto.permissionIds,
-    );
-  }
-
-  // Remove permissions from role
-  @Delete(':id/permissions')
-  async removePermissionsFromRole(
-    @Param('id') id: string,
-    @Body() updateRolePermissionDto: UpdateRolePermissionDto,
-  ) {
-    return this.roleService.removePermissionsFromRole(
-      id,
-      updateRolePermissionDto.permissionIds,
-    );
+    return this.roleService.updateRolePermissions(updateRolePermissionDto);
   }
 
   // Remove all permissions from role
-  @Delete(':id/permissions/all')
-  async removeAllPermissionsFromRole(@Param('id') id: string) {
-    return this.roleService.removeAllPermissionsFromRole(id);
+  @Delete('/permissions/all')
+  async deleteAllPermissionsFromRole(
+    @Body() deleteRolePermissionDto: DeleteRolePermissionDto,
+  ) {
+    await this.roleService.deleteAllPermissionsFromRole(
+      deleteRolePermissionDto,
+    );
+    return { message: 'All permissions deleted from role' };
   }
 }

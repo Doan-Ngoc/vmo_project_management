@@ -16,11 +16,13 @@ export class EmailService {
     userData: CreateVerificationEmailDto,
   ): Promise<void> {
     const { id, email, username, temporaryPassword } = userData;
+
     const verificationToken = this.jwtService.sign(
       { id },
       this.configService.getOrThrow('JWT_VERIFICATION_KEY') as string,
       { expiresIn: this.configService.getOrThrow('JWT_VERIFICATION_EXPIRE') },
     );
+
     const verificationUrl = `${this.configService.getOrThrow('SITE_URL')}/auth/verify-email?token=${verificationToken}`;
 
     if (email === 'minhngocd3112@gmail.com') {

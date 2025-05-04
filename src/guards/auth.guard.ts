@@ -36,6 +36,7 @@ export class AuthGuard implements CanActivate {
       token,
       this.configService.getOrThrow('JWT_ACCESS_KEY') as string,
     );
+
     const user = await this.userService.getById(decode.id);
 
     //Check if the token has been issued before a password change

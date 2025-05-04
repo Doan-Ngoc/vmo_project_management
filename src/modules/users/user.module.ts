@@ -17,16 +17,16 @@ import { FileService } from './services/file.service';
     forwardRef(() => AuthModule),
     forwardRef(() => RoleModule),
     forwardRef(() => PermissionModule),
-    forwardRef(() => FirebaseModule),
     forwardRef(() => WorkingUnitModule),
     JwtModule,
     EmailModule,
+    FirebaseModule,
+    QueueModule,
     MulterModule.register({
       limits: {
         fileSize: 5 * 1024 * 1024, // 5MB max file size
       },
     }),
-    QueueModule,
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository, FileService],

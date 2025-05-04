@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -14,8 +13,7 @@ import { ClientService } from '../../clients/services/client.service';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { paginate } from 'nestjs-typeorm-paginate';
-import { AccountStatus } from '@/enum/account-status.enum';
-import { AccountType } from '@/enum/account-type.enum';
+import { AccountStatus } from '../../../enum/account-status.enum';
 import {
   CreateProjectDto,
   DeleteProjectDto,
@@ -36,6 +34,28 @@ export class ProjectService {
     private readonly userService: UserService,
     private readonly dataSource: DataSource,
   ) {}
+
+  async createProject(createProjectDto: CreateProjectDto, userId: string) {
+    const { workingUnitId, clientId, dueDate, ...projectData } =
+      createProjectDto;
+    if (dueDate && new Date(dueDate) < new Date()) {
+      throw new BadRequestException('Due date cannot be in the past');
+    }
+    const workingUnit = await this.workingUnitService.getById(workingUnitId);
+    const client = await this.clientService.getById(clientId);
+    const user = await this.userService.getById(userId);
+    const project = this.projectRepository.create({
+      ...projectData,
+      workingUnit,
+      client,
+      dueDate: dueDate ? new Date(dueDate) : undefined,
+      createdBy: user,
+      status: ProjectStatus.ACTIVE,
+      //If the creator is a project manager, add them as a project member (not if they are an admin)
+      members: user.role?.name === 'pm' ? [user] : [],
+    });
+    return await this.projectRepository.save(project);
+  }
 
   async getProjects(
     options: IPaginationOptions,
@@ -80,50 +100,13 @@ export class ProjectService {
     });
   }
 
-  async createProject(createProjectDto: CreateProjectDto, userId: string) {
-    const { workingUnitId, clientId, dueDate, ...projectData } =
-      createProjectDto;
-    if (dueDate && new Date(dueDate) < new Date()) {
-      throw new BadRequestException('Due date cannot be in the past');
-    }
-    const workingUnit = await this.workingUnitService.getById(workingUnitId);
-    const client = await this.clientService.getById(clientId);
-    const user = await this.userService.getById(userId);
-    if (user.accountType !== AccountType.ADMIN) {
-      if (user.workingUnit.id !== workingUnitId) {
-        throw new BadRequestException(
-          'PM can only create projects for their own working unit',
-        );
-      }
-    }
-    try {
-      const project = this.projectRepository.create({
-        ...projectData,
-        workingUnit,
-        client,
-        dueDate: dueDate ? new Date(dueDate) : undefined,
-        createdBy: user,
-        status: ProjectStatus.ACTIVE,
-        //If the creator is a project manager, add them as a project member (not if they are an admin)
-        members: user.role?.name === 'pm' ? [user] : [],
-      });
-      return await this.projectRepository.save(project);
-    } catch (error) {
-      if (error.code === '23505') {
-        throw new ConflictException('Project name already exists');
-      } else {
-        throw new BadRequestException();
-      }
-    }
-  }
-
   async updateMembers(
     updateProjectMemberDto: UpdateProjectMemberDto,
     userId: string,
   ): Promise<Project> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
-    await queryRunner.startTransaction('REPEATABLE READ');
+    await queryRunner.startTransaction();
 
     const { projectId, userIds } = updateProjectMemberDto;
 
@@ -145,7 +128,7 @@ export class ProjectService {
       const currentMembers = project.members;
       const currentMemberIds = currentMembers.map((member) => member.id);
 
-      // Check if the request sender is a project member
+      // Check if the request sender is removing themselves
       const isIncluded = userIds.some((memberId) => memberId === userId);
       if (isIncluded) {
         throw new BadRequestException(
@@ -153,6 +136,7 @@ export class ProjectService {
         );
       }
 
+      //Separate users to add and remove
       const usersToAddIds = userIds.filter(
         (userId) => !currentMemberIds.includes(userId),
       );
@@ -214,6 +198,7 @@ export class ProjectService {
         throw new BadRequestException('Tech lead number limit exceeded');
       }
 
+      //Update the database
       project.members = membersAfterAdd;
       const updatedProject = await queryRunner.manager.save(Project, project);
       await queryRunner.commitTransaction();
@@ -239,7 +224,7 @@ export class ProjectService {
     const { projectId, deletedReason } = deleteProjectDto;
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
-    await queryRunner.startTransaction('REPEATABLE READ');
+    await queryRunner.startTransaction();
 
     try {
       // Get project with its tasks and each task's comments
@@ -290,10 +275,6 @@ export class ProjectService {
       await queryRunner.manager.softRemove(project);
 
       await queryRunner.commitTransaction();
-
-      return {
-        message: 'Project deleted successfully',
-      };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new BadRequestException('Project deletion failed');

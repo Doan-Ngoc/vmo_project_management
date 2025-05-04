@@ -1,13 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { SeedsModule } from './seeds.module';
 import { SeedsService } from './services/seeds.service';
-import * as path from 'path';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(SeedsModule);
   const seeder = app.get(SeedsService);
+  const logger = new Logger(bootstrap.name);
   try {
-    console.log('Seeding started');
+    logger.log('Starting database seeding...');
     const seedType = process.argv[2];
 
     switch (seedType) {
@@ -29,14 +30,15 @@ async function bootstrap() {
 
       default:
         // Run all seeds if no specific seed is specified
+        logger.log('Running all seeds...');
         await seeder.seedPermissions();
         await seeder.seedRoles();
         await seeder.seedRolePermissions();
         await seeder.seedDefaultAdmin();
-        console.log('All seeding completed');
+        logger.log('All seeding operations completed successfully');
     }
   } catch (error) {
-    console.error('Seeding failed:', error);
+    logger.error('Database seeding failed:', error);
     throw error;
   } finally {
     await app.close();

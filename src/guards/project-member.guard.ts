@@ -9,31 +9,37 @@ import {
 import { ProjectService } from '../modules/projects/services/project.service';
 import { AccountType } from '../enum/account-type.enum';
 import { TaskService } from '../modules/tasks/services/task.service';
-
+import { TaskCommentService } from '../modules/task_comments/services/task-comment.service';
 @Injectable()
 export class ProjectMemberGuard implements CanActivate {
   constructor(
     private projectService: ProjectService,
     private taskService: TaskService,
+    private taskCommentService: TaskCommentService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
+
     // Get projectId from either params or body
     let projectId = request.params?.projectId || request.body?.projectId;
 
-    // For requests that only send taskId, get project from task
+    //For task and comment related requests, get the projectId from the task or comment
     if (!projectId) {
-      const taskId = request.body?.taskId || request.params?.taskId;
-      if (!taskId) throw new BadRequestException();
+      let taskId = request.body?.taskId || request.params?.taskId;
+      if (!taskId) {
+        const commentId = request.body?.commentId || request.params?.commentId;
+        if (!commentId) {
+          throw new BadRequestException();
+        }
+        const comment = await this.taskCommentService.getById(commentId);
+        taskId = comment.task.id;
+      }
       const task = await this.taskService.getById(taskId);
-      if (!task.project?.id)
-        throw new BadRequestException(
-          'Task is not associated with any project',
-        );
       projectId = task.project.id;
     }
 
+    //Get user from request
     const user = request.user;
     if (!user) {
       throw new UnauthorizedException();

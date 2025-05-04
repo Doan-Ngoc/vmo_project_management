@@ -1,7 +1,7 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
 import { Auth } from './auth.decorator';
 import { Permissions } from '../enum/permissions.enum';
-import { TaskCommentOwnerGuard } from '@/guards/task-comment-owner.guard';
+import { TaskCommentOwnerGuard } from '../guards/task-comment-owner.guard';
 
 export function TaskCommentOwner(
   permission: Permissions,

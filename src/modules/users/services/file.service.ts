@@ -14,8 +14,8 @@ export class FileService {
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const jsonData: CreateUserDto[] = xlsx.utils.sheet_to_json(worksheet);
 
-      // Validate data
       await this.validateExcelData(jsonData);
+
       return jsonData;
     } catch (error) {
       if (error instanceof BadRequestException) {

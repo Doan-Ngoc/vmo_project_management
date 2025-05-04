@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateClientDto } from '../dto/create-client.dto';
+import { CreateClientDto } from '../dtos';
 import { Client } from '../entities/client.entity';
 import { ClientRepository } from '../repositories/client.repository';
 

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../databases/base.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { User } from '../../users/entities/user.entity';
@@ -15,4 +15,17 @@ export class TaskComment extends BaseEntity {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'created_by' })
   createdBy: User;
+
+  @Column({ type: 'text', nullable: true })
+  path: string;
+
+  @Column()
+  level: number;
+
+  @ManyToOne(() => TaskComment)
+  @JoinColumn({ name: 'parent_id' })
+  parent: TaskComment;
+
+  @OneToMany(() => TaskComment, (comment) => comment.parent)
+  replies: TaskComment[];
 }

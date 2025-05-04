@@ -7,7 +7,7 @@ import { JwtModule } from '../jwt/jwt.module';
 import { PermissionModule } from '../permissions/permission.module';
 import { ProjectModule } from '../projects/project.module';
 import { TaskCommentRepository } from './repositories/task-comment.repository';
-import { ProjectMemberGuard } from '@/guards/project-member.guard';
+import { ProjectMemberGuard } from '../../guards/project-member.guard';
 @Module({
   imports: [
     forwardRef(() => TaskModule),

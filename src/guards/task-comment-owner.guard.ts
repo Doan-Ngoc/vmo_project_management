@@ -6,8 +6,8 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { TaskCommentService } from '@/modules/task_comments/services/task-comment.service';
-import { AccountType } from '@/enum/account-type.enum';
+import { TaskCommentService } from '../modules/task_comments/services/task-comment.service';
+import { AccountType } from '../enum/account-type.enum';
 
 @Injectable()
 export class TaskCommentOwnerGuard implements CanActivate {
@@ -15,12 +15,14 @@ export class TaskCommentOwnerGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
+    // Get taskCommentId from either params or body
     const taskCommentId = request.params?.commentId || request.body?.commentId;
 
     if (!taskCommentId) {
       throw new BadRequestException('Task comment ID is required');
     }
 
+    //Get user from request
     const user = request.user;
     if (!user) {
       throw new UnauthorizedException();
@@ -37,6 +39,7 @@ export class TaskCommentOwnerGuard implements CanActivate {
     if (taskComment.createdBy.id !== user.id) {
       throw new ForbiddenException('Only the comment owner is allowed');
     }
+
     return true;
   }
 }

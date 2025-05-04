@@ -9,10 +9,12 @@ import { ClientModule } from '../clients/client.module';
 import { UserModule } from '../users/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { TaskModule } from '../tasks/task.module';
+import { TaskCommentModule } from '../task_comments/task-comment.module';
 
 @Module({
   imports: [
     forwardRef(() => TaskModule),
+    forwardRef(() => TaskCommentModule),
     JwtModule,
     PermissionModule,
     WorkingUnitModule,
