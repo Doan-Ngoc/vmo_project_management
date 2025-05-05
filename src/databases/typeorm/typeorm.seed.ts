@@ -20,14 +20,6 @@ const config = {
   entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
   migrations: [],
   migrationsTableName: 'migrations',
-  logger: 'advanced-console',
-  logging: ['error', 'warn'],
-  synchronize: false,
-  cache: false,
-  connectTimeoutMS: 10000,
-  extra: {
-    max: 5,
-  },
 };
 
 export default registerAs('typeorm.seed', () => config);

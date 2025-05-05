@@ -14,6 +14,6 @@ export class AuthController {
   @Get('verify-email')
   async verifyEmail(@Query('token') token: string) {
     await this.authService.verifyEmail(token);
-    return { message: 'Email verified successfully' };
+    return { message: 'Account activated successfully' };
   }
 }

@@ -2,7 +2,7 @@ export function generateRandomPassword(length: number = 12): string {
   const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const lowercase = 'abcdefghijklmnopqrstuvwxyz';
   const numbers = '0123456789';
-  const special = '!@#$%^&*';
+  const special = '!@#$%&';
   const allChars = uppercase + lowercase + numbers + special;
 
   let password = '';

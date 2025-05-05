@@ -214,7 +214,7 @@ export class TaskService {
   ): Promise<Task> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
-    await queryRunner.startTransaction('REPEATABLE READ');
+    await queryRunner.startTransaction();
 
     try {
       const { taskId } = updateTaskDataDto;
